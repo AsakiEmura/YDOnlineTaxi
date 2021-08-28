@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.YDOnlineTaxi.mapper.DriverAccountMapper">
+
+    <resultMap type="com.ruoyi.YDOnlineTaxi.domain.DriverAccount" id="DriverAccountResult">
+        <result property="driverName"    column="driver_name"    />
+        <result property="idNumber"    column="id_number"    />
+        <result property="phoneNumber"    column="phone_number"    />
+        <result property="emergencyContactNumber"    column="emergency_contact_number"    />
+        <result property="address"    column="address"    />
+        <result property="motorcycleType"    column="motorcycle_type"    />
+        <result property="licensePlateNumber"    column="license_plate_number"    />
+        <result property="idPhotoFront"    column="id_photo_front"    />
+        <result property="idPhotoBack"    column="id_photo_back"    />
+        <result property="vehicleLicensePhoto"    column="vehicle_license_photo"    />
+        <result property="driverLicencePhoto"    column="driver_licence_photo"    />
+        <result property="status"    column="status"    />
+        <result property="driverPassword"    column="driver_password"    />
+        <result property="salt"    column="salt"    />
+    </resultMap>
+
+    <sql id="selectDriverAccountVo">
+        select driver_name, id_number, phone_number, emergency_contact_number, address, motorcycle_type, license_plate_number, id_photo_front, id_photo_back, vehicle_license_photo, driver_licence_photo, status, driver_password, salt from YDOnlineTaxi.driver_account
+    </sql>
+
+    <select id="selectDriverAccountList" parameterType="com.ruoyi.YDOnlineTaxi.domain.DriverAccount" resultMap="DriverAccountResult">
+        <include refid="selectDriverAccountVo"/>
+        <where>
+            <if test="driverName != null  and driverName != ''"> and driver_name like concat('%', #{driverName}, '%')</if>
+            <if test="phoneNumber != null  and phoneNumber != ''"> and phone_number like concat('%', #{phoneNumber}, '%')</if>
+            <if test="motorcycleType != null  and motorcycleType != ''"> and motorcycle_type like concat('%', #{motorcycleType}, '%')</if>
+            <if test="licensePlateNumber != null  and licensePlateNumber != ''"> and license_plate_number like concat('%', #{licensePlateNumber}, '%')</if>
+        </where>
+    </select>
+
+    <select id="selectDriverAccountByIdNumber" parameterType="String" resultMap="DriverAccountResult">
+        <include refid="selectDriverAccountVo"/>
+        where id_number = #{idNumber}
+    </select>
+
+    <insert id="insertDriverAccount" parameterType="com.ruoyi.YDOnlineTaxi.domain.DriverAccount">
+        insert into YDOnlineTaxi.driver_account
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="driverName != null and driverName != ''">driver_name,</if>
+            <if test="idNumber != null and idNumber != ''">id_number,</if>
+            <if test="phoneNumber != null and phoneNumber != ''">phone_number,</if>
+            <if test="emergencyContactNumber != null">emergency_contact_number,</if>
+            <if test="address != null and address != ''">address,</if>
+            <if test="motorcycleType != null and motorcycleType != ''">motorcycle_type,</if>
+            <if test="licensePlateNumber != null and licensePlateNumber != ''">license_plate_number,</if>
+            <if test="idPhotoFront != null and idPhotoFront != ''">id_photo_front,</if>
+            <if test="idPhotoBack != null and idPhotoBack != ''">id_photo_back,</if>
+            <if test="vehicleLicensePhoto != null and vehicleLicensePhoto != ''">vehicle_license_photo,</if>
+            <if test="driverLicencePhoto != null and driverLicencePhoto != ''">driver_licence_photo,</if>
+            <if test="status != null and status != ''">status,</if>
+            <if test="driverPassword != null and driverPassword != ''">driver_password,</if>
+            <if test="salt != null">salt,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="driverName != null and driverName != ''">#{driverName},</if>
+            <if test="idNumber != null and idNumber != ''">#{idNumber},</if>
+            <if test="phoneNumber != null and phoneNumber != ''">#{phoneNumber},</if>
+            <if test="emergencyContactNumber != null">#{emergencyContactNumber},</if>
+            <if test="address != null and address != ''">#{address},</if>
+            <if test="motorcycleType != null and motorcycleType != ''">#{motorcycleType},</if>
+            <if test="licensePlateNumber != null and licensePlateNumber != ''">#{licensePlateNumber},</if>
+            <if test="idPhotoFront != null and idPhotoFront != ''">#{idPhotoFront},</if>
+            <if test="idPhotoBack != null and idPhotoBack != ''">#{idPhotoBack},</if>
+            <if test="vehicleLicensePhoto != null and vehicleLicensePhoto != ''">#{vehicleLicensePhoto},</if>
+            <if test="driverLicencePhoto != null and driverLicencePhoto != ''">#{driverLicencePhoto},</if>
+            <if test="status != null and status != ''">#{status},</if>
+            <if test="driverPassword != null and driverPassword != ''">#{driverPassword},</if>
+            <if test="salt != null">#{salt},</if>
+        </trim>
+    </insert>
+
+    <update id="updateDriverAccount" parameterType="com.ruoyi.YDOnlineTaxi.domain.DriverAccount">
+        update YDOnlineTaxi.driver_account
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="driverName != null and driverName != ''">driver_name = #{driverName},</if>
+            <if test="phoneNumber != null and phoneNumber != ''">phone_number = #{phoneNumber},</if>
+            <if test="emergencyContactNumber != null">emergency_contact_number = #{emergencyContactNumber},</if>
+            <if test="address != null and address != ''">address = #{address},</if>
+            <if test="motorcycleType != null and motorcycleType != ''">motorcycle_type = #{motorcycleType},</if>
+            <if test="licensePlateNumber != null and licensePlateNumber != ''">license_plate_number = #{licensePlateNumber},</if>
+            <if test="idPhotoFront != null and idPhotoFront != ''">id_photo_front = #{idPhotoFront},</if>
+            <if test="idPhotoBack != null and idPhotoBack != ''">id_photo_back = #{idPhotoBack},</if>
+            <if test="vehicleLicensePhoto != null and vehicleLicensePhoto != ''">vehicle_license_photo = #{vehicleLicensePhoto},</if>
+            <if test="driverLicencePhoto != null and driverLicencePhoto != ''">driver_licence_photo = #{driverLicencePhoto},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="driverPassword != null and driverPassword != ''">driver_password = #{driverPassword},</if>
+            <if test="salt != null">salt = #{salt},</if>
+        </trim>
+        where id_number = #{idNumber}
+    </update>
+
+    <delete id="deleteDriverAccountByIdNumber" parameterType="String">
+        delete from YDOnlineTaxi.driver_account where id_number = #{idNumber}
+    </delete>
+
+    <delete id="deleteDriverAccountByIdNumbers" parameterType="String">
+        delete from YDOnlineTaxi.driver_account where id_number in
+        <foreach item="idNumber" collection="array" open="(" separator="," close=")">
+            #{idNumber}
+        </foreach>
+    </delete>
+
+    <select id="checkIdNumberUnique" parameterType="String" resultType="int">
+        select count(1) from YDOnlineTaxi.driver_account where id_number = #{idNumber} limit 1
+    </select>
+</mapper>
