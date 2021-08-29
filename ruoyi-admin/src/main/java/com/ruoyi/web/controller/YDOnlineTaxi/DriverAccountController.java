@@ -7,8 +7,10 @@ import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.ShiroKit;
 import com.ruoyi.common.utils.file.FileUploadUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -97,6 +99,7 @@ public class DriverAccountController extends BaseController {
     @Log(title = "司机详细信息", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody DriverAccount driverAccount) {
+
         return toAjax(driverAccountService.updateDriverAccount(driverAccount));
     }
 
@@ -121,34 +124,6 @@ public class DriverAccountController extends BaseController {
         driverAccount.setDriverPassword(driverPassword);
         driverAccount.setSalt(salt);
         return AjaxResult.success("注册成功");
-    }
-
-    //    @RequestMapping("/register/uploadImg")
-//    public AjaxResult uploadImg(@RequestBody DriverAccount driverAccount) {
-//
-//    }
-    public String changeImgToBase64(MultipartFile file) {
-        //创建base64对象
-        BASE64Encoder encoder = new BASE64Encoder();
-        //获取文件后缀
-        String filename = file.getOriginalFilename();
-        String fileType = "";
-        String image = "";
-        if (filename != null)
-            fileType = filename.substring(filename.lastIndexOf("."));
-        try {
-            //图片前缀
-            if (".jpg".equals(fileType))
-                fileType = "jpeg";
-            else
-                fileType = "png";
-            //base64结果
-            image = "data:image/" + fileType + ";base64," + encoder.encode(file.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return image;
     }
 
     @PostMapping("/register/uploadPhotos")
@@ -184,5 +159,22 @@ public class DriverAccountController extends BaseController {
         } catch (Exception e) {
             return AjaxResult.error(e.getMessage());
         }
+    }
+
+    /**
+     * 重置密码
+     */
+    @PreAuthorize("@ss.hasPermi('YDOnlineTaxi:DriverAccount:resetPwd')")
+    @Log(title = "司机密码修改", businessType = BusinessType.UPDATE)
+    @PutMapping("/resetPwd")
+    public AjaxResult resetPwd(@RequestBody DriverAccount driverAccount)
+    {
+        String salt = ShiroKit.getRandomSalt(5);
+        String driverPassword = ShiroKit.md5(driverAccount.getDriverPassword(), salt);
+
+        driverAccount.setDriverPassword(driverPassword);
+        driverAccount.setSalt(salt);
+        driverAccount.setUpdateBy(getUsername());
+        return toAjax(driverAccountService.resetPwd(driverAccount));
     }
 }

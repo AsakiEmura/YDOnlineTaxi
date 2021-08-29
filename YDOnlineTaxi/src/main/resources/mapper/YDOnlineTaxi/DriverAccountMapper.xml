@@ -110,4 +110,8 @@
     <select id="checkIdNumberUnique" parameterType="String" resultType="int">
         select count(1) from YDOnlineTaxi.driver_account where id_number = #{idNumber} limit 1
     </select>
+
+    <update id="resetUserPwd" parameterType="com.ruoyi.YDOnlineTaxi.domain.DriverAccount">
+        update YDOnlineTaxi.driver_account set driver_password = #{driverPassword} where id_number = #{idNumber}
+    </update>
 </mapper>

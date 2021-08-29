@@ -109,4 +109,14 @@ public class DriverAccountServiceImpl implements IDriverAccountService
         }
         return UserConstants.UNIQUE;
     }
+
+    @Override
+    public int resetPwd(DriverAccount driverAccount) {
+        return driverAccountMapper.updateDriverAccount(driverAccount);
+    }
+
+    @Override
+    public int resetUserPwd(String idNumber, String driverPassword) {
+        return driverAccountMapper.resetUserPwd(idNumber, driverPassword);
+    }
 }

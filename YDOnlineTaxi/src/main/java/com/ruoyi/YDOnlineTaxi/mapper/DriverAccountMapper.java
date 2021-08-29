@@ -62,5 +62,14 @@ public interface DriverAccountMapper
 
     public int checkIdNumberUnique(String idNumber);
 
+    /**
+     * 重置用户密码
+     *
+     * @param idNumber       用户名
+     * @param driverPassword 密码
+     * @return 结果
+     */
+    public int resetUserPwd(@Param("idNumber") String idNumber, @Param("driverPassword") String driverPassword);
+
 
 }
