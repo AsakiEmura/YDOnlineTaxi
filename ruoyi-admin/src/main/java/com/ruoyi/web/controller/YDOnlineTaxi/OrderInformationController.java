@@ -1,6 +1,11 @@
 package com.ruoyi.web.controller.YDOnlineTaxi;
 
 import java.util.List;
+
+import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.core.domain.model.LoginUser;
+import com.ruoyi.common.utils.ServletUtils;
+import com.ruoyi.framework.web.service.TokenService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +24,7 @@ import com.ruoyi.YDOnlineTaxi.domain.OrderInformation;
 import com.ruoyi.YDOnlineTaxi.service.IOrderInformationService;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.page.TableDataInfo;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 订单信息Controller
@@ -32,6 +38,9 @@ public class OrderInformationController extends BaseController
 {
     @Autowired
     private IOrderInformationService orderInformationService;
+
+    @Autowired
+    private TokenService tokenService;
 
     /**
      * 查询订单信息列表
@@ -100,4 +109,25 @@ public class OrderInformationController extends BaseController
     {
         return toAjax(orderInformationService.deleteOrderInformationByOrderIds(orderIds));
     }
+
+    @GetMapping("/importTemplate")
+    public AjaxResult importTemplate()
+    {
+        ExcelUtil<OrderInformation> util = new ExcelUtil<OrderInformation>(OrderInformation.class);
+        return util.importTemplateExcel("订单数据");
+    }
+
+    @Log(title = "订单信息管理", businessType = BusinessType.IMPORT)
+    @PreAuthorize("@ss.hasPermi('YDOnlineTaxi:OrderInformation:import')")
+    @PostMapping("/importData")
+    public AjaxResult importData(MultipartFile file, boolean updateSupport) throws Exception
+    {
+        ExcelUtil<OrderInformation> util = new ExcelUtil<OrderInformation>(OrderInformation.class);
+        List<OrderInformation> orderList = util.importExcel(file.getInputStream());
+        LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
+        String operName = loginUser.getUsername();
+        String message = orderInformationService.importOrder(orderList, updateSupport, operName);
+        return AjaxResult.success(message);
+    }
+
 }

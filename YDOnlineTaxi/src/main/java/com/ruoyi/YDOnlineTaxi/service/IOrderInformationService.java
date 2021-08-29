@@ -2,6 +2,7 @@ package com.ruoyi.YDOnlineTaxi.service;
 
 import java.util.List;
 import com.ruoyi.YDOnlineTaxi.domain.OrderInformation;
+import com.ruoyi.common.core.domain.entity.SysUser;
 
 /**
  * 订单信息Service接口
@@ -58,4 +59,16 @@ public interface IOrderInformationService
      * @return 结果
      */
     public int deleteOrderInformationByOrderId(String orderId);
+
+    /**
+     * 导入用户数据
+     *
+     * @param orderList       用户数据列表
+     * @param isUpdateSupport 是否更新支持，如果已存在，则进行更新数据
+     * @param operName        操作用户
+     * @return 结果
+     */
+    public String importOrder(List<OrderInformation> orderList, Boolean isUpdateSupport, String operName);
+
+    public String parseTimeFormat(String time);
 }
