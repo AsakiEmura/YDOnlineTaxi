@@ -2,6 +2,7 @@ package com.ruoyi.YDOnlineTaxi.service;
 
 import java.util.List;
 import com.ruoyi.YDOnlineTaxi.domain.DriverAccount;
+import com.ruoyi.common.core.domain.entity.SysUser;
 
 /**
  * 司机详细信息Service接口
@@ -61,5 +62,21 @@ public interface IDriverAccountService
 
     public String checkIdNumberUnique(String idNumber);
 
+    /**
+     * 重置用户密码
+     *
+     * @param driverAccount 用户信息
+     * @return 结果
+     */
+    public int resetPwd(DriverAccount driverAccount);
+
+    /**
+     * 重置用户密码
+     *
+     * @param idNumber 用户名
+     * @param driverPassword 密码
+     * @return 结果
+     */
+    public int resetUserPwd(String idNumber, String driverPassword);
 
 }
