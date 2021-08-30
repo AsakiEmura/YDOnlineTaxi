@@ -8,11 +8,10 @@ import com.ruoyi.YDOnlineTaxi.domain.DriverInformation;
 import com.ruoyi.YDOnlineTaxi.service.IDriverInformationService;
 
 /**
- * 司机线上账户信息
-Service业务层处理
+ * 司机账户信息Service业务层处理
  * 
  * @author ruoyi
- * @date 2021-08-28
+ * @date 2021-08-30
  */
 @Service
 public class DriverInformationServiceImpl implements IDriverInformationService 
@@ -21,13 +20,10 @@ public class DriverInformationServiceImpl implements IDriverInformationService
     private DriverInformationMapper driverInformationMapper;
 
     /**
-     * 查询司机线上账户信息
-
+     * 查询司机账户信息
      * 
-     * @param driverPhoneNumber 司机线上账户信息
-主键
-     * @return 司机线上账户信息
-
+     * @param driverPhoneNumber 司机账户信息主键
+     * @return 司机账户信息
      */
     @Override
     public DriverInformation selectDriverInformationByDriverPhoneNumber(String driverPhoneNumber)
@@ -36,13 +32,10 @@ public class DriverInformationServiceImpl implements IDriverInformationService
     }
 
     /**
-     * 查询司机线上账户信息
-列表
+     * 查询司机账户信息列表
      * 
-     * @param driverInformation 司机线上账户信息
-
-     * @return 司机线上账户信息
-
+     * @param driverInformation 司机账户信息
+     * @return 司机账户信息
      */
     @Override
     public List<DriverInformation> selectDriverInformationList(DriverInformation driverInformation)
@@ -51,11 +44,9 @@ public class DriverInformationServiceImpl implements IDriverInformationService
     }
 
     /**
-     * 新增司机线上账户信息
-
+     * 新增司机账户信息
      * 
-     * @param driverInformation 司机线上账户信息
-
+     * @param driverInformation 司机账户信息
      * @return 结果
      */
     @Override
@@ -65,11 +56,9 @@ public class DriverInformationServiceImpl implements IDriverInformationService
     }
 
     /**
-     * 修改司机线上账户信息
-
+     * 修改司机账户信息
      * 
-     * @param driverInformation 司机线上账户信息
-
+     * @param driverInformation 司机账户信息
      * @return 结果
      */
     @Override
@@ -79,11 +68,9 @@ public class DriverInformationServiceImpl implements IDriverInformationService
     }
 
     /**
-     * 批量删除司机线上账户信息
-
+     * 批量删除司机账户信息
      * 
-     * @param driverPhoneNumbers 需要删除的司机线上账户信息
-主键
+     * @param driverPhoneNumbers 需要删除的司机账户信息主键
      * @return 结果
      */
     @Override
@@ -93,11 +80,9 @@ public class DriverInformationServiceImpl implements IDriverInformationService
     }
 
     /**
-     * 删除司机线上账户信息
-信息
+     * 删除司机账户信息信息
      * 
-     * @param driverPhoneNumber 司机线上账户信息
-主键
+     * @param driverPhoneNumber 司机账户信息主键
      * @return 结果
      */
     @Override

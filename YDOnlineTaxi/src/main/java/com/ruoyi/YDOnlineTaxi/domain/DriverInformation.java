@@ -6,11 +6,10 @@ import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 
 /**
- * 司机线上账户信息
-对象 driver_information
+ * 司机账户信息对象 driver_information
  * 
  * @author ruoyi
- * @date 2021-08-28
+ * @date 2021-08-30
  */
 public class DriverInformation extends BaseEntity
 {
@@ -36,10 +35,6 @@ public class DriverInformation extends BaseEntity
     @Excel(name = "司机车牌号")
     private String driverCarId;
 
-    /** 司机总收入 */
-    @Excel(name = "司机总收入")
-    private String driverIncome;
-
     /** 司机完成单子数量 */
     @Excel(name = "司机完成单子数量")
     private String driverCompleteOrderNumber;
@@ -56,9 +51,9 @@ public class DriverInformation extends BaseEntity
     @Excel(name = "司机评分")
     private String driverRateNumber;
 
-    /** 司机审核状态 */
-    @Excel(name = "司机审核状态")
-    private String status;
+    /** 汽车型号 */
+    @Excel(name = "汽车型号")
+    private String carModel;
 
     public void setDriverName(String driverName) 
     {
@@ -105,15 +100,6 @@ public class DriverInformation extends BaseEntity
     {
         return driverCarId;
     }
-    public void setDriverIncome(String driverIncome) 
-    {
-        this.driverIncome = driverIncome;
-    }
-
-    public String getDriverIncome() 
-    {
-        return driverIncome;
-    }
     public void setDriverCompleteOrderNumber(String driverCompleteOrderNumber) 
     {
         this.driverCompleteOrderNumber = driverCompleteOrderNumber;
@@ -150,14 +136,14 @@ public class DriverInformation extends BaseEntity
     {
         return driverRateNumber;
     }
-    public void setStatus(String status) 
+    public void setCarModel(String carModel) 
     {
-        this.status = status;
+        this.carModel = carModel;
     }
 
-    public String getStatus() 
+    public String getCarModel() 
     {
-        return status;
+        return carModel;
     }
 
     @Override
@@ -168,12 +154,11 @@ public class DriverInformation extends BaseEntity
             .append("driverCarType", getDriverCarType())
             .append("driverEmergencyContactPhoneNumber", getDriverEmergencyContactPhoneNumber())
             .append("driverCarId", getDriverCarId())
-            .append("driverIncome", getDriverIncome())
             .append("driverCompleteOrderNumber", getDriverCompleteOrderNumber())
             .append("driverCompleteOrderNumberMonthly", getDriverCompleteOrderNumberMonthly())
             .append("driverLevel", getDriverLevel())
             .append("driverRateNumber", getDriverRateNumber())
-            .append("status", getStatus())
+            .append("carModel", getCarModel())
             .toString();
     }
 }
