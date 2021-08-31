@@ -15,26 +15,33 @@ public class BaseEntity implements Serializable
 {
     private static final long serialVersionUID = 1L;
 
+    @javax.persistence.Transient
     /** 搜索值 */
     private String searchValue;
 
+    @javax.persistence.Transient
     /** 创建者 */
     private String createBy;
 
+    @javax.persistence.Transient
     /** 创建时间 */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
+    @javax.persistence.Transient
     /** 更新者 */
     private String updateBy;
 
+    @javax.persistence.Transient
     /** 更新时间 */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
+    @javax.persistence.Transient
     /** 备注 */
     private String remark;
 
+    @javax.persistence.Transient
     /** 请求参数 */
     private Map<String, Object> params;
 
