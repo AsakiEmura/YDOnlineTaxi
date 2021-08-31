@@ -115,8 +115,25 @@ public class DriverAccountServiceImpl implements IDriverAccountService
         return driverAccountMapper.updateDriverAccount(driverAccount);
     }
 
+    /**
+     * 重置用户密码
+     *
+     * @param idNumber       用户名
+     * @param driverPassword 密码
+     * @return 结果
+     */
     @Override
     public int resetUserPwd(String idNumber, String driverPassword) {
         return driverAccountMapper.resetUserPwd(idNumber, driverPassword);
+    }
+
+    /**
+     *
+     * @param status 账号审核状态
+     * @return
+     */
+    @Override
+    public List<DriverAccount> selectAllByStatus(String status) {
+        return driverAccountMapper.selectAllByStatus(status);
     }
 }

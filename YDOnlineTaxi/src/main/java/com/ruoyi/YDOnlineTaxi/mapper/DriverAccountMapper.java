@@ -71,5 +71,11 @@ public interface DriverAccountMapper
      */
     public int resetUserPwd(@Param("idNumber") String idNumber, @Param("driverPassword") String driverPassword);
 
+    /**
+     *
+     * @param status 账号审核状态
+     * @return
+     */
+    List<DriverAccount> selectAllByStatus(@Param("status")String status);
 
 }

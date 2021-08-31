@@ -1,15 +1,9 @@
 package com.ruoyi.YDOnlineTaxi.domain;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * 订单信息对象 order_information
@@ -47,7 +41,6 @@ public class OrderInformation extends BaseEntity {
     /**
      * 用车时间
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
     @Excel(name = "用车时间")
     private String transportTime;
 
@@ -137,13 +130,13 @@ public class OrderInformation extends BaseEntity {
         return passengerPhone;
     }
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+
     public void setTransportTime(String transportTime) {
 
         this.transportTime = transportTime;
     }
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+
     public String getTransportTime() {
         return transportTime;
     }

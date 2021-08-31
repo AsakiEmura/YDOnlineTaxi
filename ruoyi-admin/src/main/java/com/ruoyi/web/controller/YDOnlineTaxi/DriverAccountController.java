@@ -45,9 +45,9 @@ public class DriverAccountController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('YDOnlineTaxi:DriverAccount:list')")
     @GetMapping("/list")
-    public TableDataInfo list(DriverAccount driverAccount) {
+    public TableDataInfo list() {
         startPage();
-        List<DriverAccount> list = driverAccountService.selectDriverAccountList(driverAccount);
+        List<DriverAccount> list = driverAccountService.selectAllByStatus("审核通过");
         return getDataTable(list);
     }
 
@@ -129,6 +129,7 @@ public class DriverAccountController extends BaseController {
         driverInformation.setDriverCarType(driverAccount.getMotorcycleType());
         driverInformation.setDriverCarId(driverAccount.getLicensePlateNumber());
         driverInformation.setDriverEmergencyContactPhoneNumber(driverAccount.getEmergencyContactNumber());
+
 
         driverInformationService.insertDriverInformation(driverInformation);
         driverAccountService.insertDriverAccount(driverAccount);

@@ -3,6 +3,7 @@ package com.ruoyi.YDOnlineTaxi.service;
 import java.util.List;
 import com.ruoyi.YDOnlineTaxi.domain.DriverAccount;
 import com.ruoyi.common.core.domain.entity.SysUser;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 司机详细信息Service接口
@@ -78,5 +79,12 @@ public interface IDriverAccountService
      * @return 结果
      */
     public int resetUserPwd(String idNumber, String driverPassword);
+
+    /**
+     *
+     * @param status 账号审核状态
+     * @return
+     */
+    public List<DriverAccount> selectAllByStatus(@Param("status")String status);
 
 }
