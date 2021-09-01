@@ -39,7 +39,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="未支付报酬" prop="unpaidRemuneration">
+      <el-form-item label="未支付" prop="unpaidRemuneration">
         <el-input
           v-model="queryParams.unpaidRemuneration"
           placeholder="请输入未支付报酬"
