@@ -134,7 +134,7 @@ public class OrderInformationServiceImpl implements IOrderInformationService
                     OrderInformation o = orderInformationMapper.selectOrderInformationByOrderId(order.getOrderId());
                     if (StringUtils.isNull(o))
                     {
-                        order.setOrderId(UUID.fastUUID().toString().trim().replace("-",""));
+                        order.setOrderId(randomID());
                         order.setCreateBy(operName);
                         order.setTransportTime(parseTimeFormat(order.getTransportTime()));
                         this.insertOrderInformation(order);
@@ -157,7 +157,7 @@ public class OrderInformationServiceImpl implements IOrderInformationService
                 }
                 else
                 {
-                    order.setOrderId(UUID.fastUUID().toString().trim().replace("-",""));
+                    order.setOrderId(randomID());
                     order.setCreateBy(operName);
                     order.setTransportTime(parseTimeFormat(order.getTransportTime()));
                     this.insertOrderInformation(order);
@@ -197,5 +197,11 @@ public class OrderInformationServiceImpl implements IOrderInformationService
         }
         String formatStr = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(date);
         return formatStr;
+    }
+
+    @Override
+    public String randomID() {
+        String id = UUID.fastUUID().toString().trim().replace("-","");
+        return id;
     }
 }

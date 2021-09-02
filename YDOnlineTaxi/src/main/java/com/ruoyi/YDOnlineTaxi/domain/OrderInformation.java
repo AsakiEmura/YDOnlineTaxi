@@ -1,5 +1,6 @@
 package com.ruoyi.YDOnlineTaxi.domain;
 
+import com.ruoyi.YDOnlineTaxi.utils.OrderStatus;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -78,7 +79,7 @@ public class OrderInformation extends BaseEntity {
      * 订单状态
      */
     @Excel(name = "订单状态")
-    private String orderStatus;
+    private OrderStatus orderStatus;
 
     /**
      * 司机手机号
@@ -181,11 +182,11 @@ public class OrderInformation extends BaseEntity {
         return orderId;
     }
 
-    public void setOrderStatus(String orderStatus) {
+    public void setOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
     }
 
-    public String getOrderStatus() {
+    public OrderStatus getOrderStatus() {
         return orderStatus;
     }
 

@@ -71,4 +71,6 @@ public interface IOrderInformationService
     public String importOrder(List<OrderInformation> orderList, Boolean isUpdateSupport, String operName);
 
     public String parseTimeFormat(String time);
+
+    public String randomID();
 }
