@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import com.ruoyi.YDOnlineTaxi.service.OrderService;
+import com.ruoyi.YDOnlineTaxi.utils.OrderStatus;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
@@ -32,6 +34,7 @@ public class OrderInformationServiceImpl implements IOrderInformationService
 
     @Autowired(required = false)
     private OrderInformationMapper orderInformationMapper;
+
 
     /**
      * 查询订单信息
@@ -134,9 +137,9 @@ public class OrderInformationServiceImpl implements IOrderInformationService
                     OrderInformation o = orderInformationMapper.selectOrderInformationByOrderId(order.getOrderId());
                     if (StringUtils.isNull(o))
                     {
-                        order.setOrderId(randomID());
                         order.setCreateBy(operName);
                         order.setTransportTime(parseTimeFormat(order.getTransportTime()));
+                        order.setOrderStatus(OrderStatus.WAIT_DISPATCH);
                         this.insertOrderInformation(order);
                         successNum++;
                         successMsg.append("<br/>" + successNum + "、订单信息 " + order.getOrderId() + " 导入成功");
@@ -145,6 +148,7 @@ public class OrderInformationServiceImpl implements IOrderInformationService
                     {
                         order.setUpdateBy(operName);
                         order.setTransportTime(parseTimeFormat(order.getTransportTime()));
+                        order.setOrderStatus(OrderStatus.WAIT_DISPATCH);
                         this.insertOrderInformation(order);
                         successNum++;
                         successMsg.append("<br/>" + successNum + "、订单信息 " + order.getOrderId() + " 更新成功");
@@ -159,6 +163,7 @@ public class OrderInformationServiceImpl implements IOrderInformationService
                 {
                     order.setOrderId(randomID());
                     order.setCreateBy(operName);
+                    order.setOrderStatus(OrderStatus.WAIT_DISPATCH);
                     order.setTransportTime(parseTimeFormat(order.getTransportTime()));
                     this.insertOrderInformation(order);
                     successNum++;

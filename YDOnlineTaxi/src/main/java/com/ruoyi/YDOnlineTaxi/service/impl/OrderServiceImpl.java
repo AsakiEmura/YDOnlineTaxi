@@ -30,7 +30,7 @@ public class OrderServiceImpl implements OrderService {
 
     public OrderInformation create() {
         OrderInformation order = new OrderInformation();
-        order.setOrderStatus(OrderStatus.WAIT_PAYMENT);
+        order.setOrderStatus(OrderStatus.WAIT_DISPATCH);
         order.setOrderId(orderInformationService.randomID());
         orders.put(order.getOrderId(), order);
         return order;
@@ -38,8 +38,7 @@ public class OrderServiceImpl implements OrderService {
 
     public OrderInformation dispatch(String orderId) {
         OrderInformation order = orders.get(orderId);
-        System.out.println("线程名称：" + Thread.currentThread().getName() + " 尝试支付，订单号：" + orderId);
-        Message message = MessageBuilder.withPayload(OrderStatusChangeEvent.PAYED).setHeader("order", order).build();
+        Message message = MessageBuilder.withPayload(OrderStatusChangeEvent.DISPATCHED).setHeader("order", order).build();
         if (!sendEvent(message, order)) {
             System.out.println("线程名称：" + Thread.currentThread().getName() + " 支付失败, 状态异常，订单号：" + orderId);
         }
@@ -57,7 +56,7 @@ public class OrderServiceImpl implements OrderService {
 
     public OrderInformation payment(String orderId) {
         OrderInformation order = orders.get(orderId);
-        System.out.println("线程名称：" + Thread.currentThread().getName() + " 尝试收货，订单号：" + orderId);
+
         if (!sendEvent(MessageBuilder.withPayload(OrderStatusChangeEvent.PAYED).setHeader("order", order).build(), orders.get(orderId))) {
             System.out.println("线程名称：" + Thread.currentThread().getName() + " 收货失败，状态异常，订单号：" + orderId);
         }
