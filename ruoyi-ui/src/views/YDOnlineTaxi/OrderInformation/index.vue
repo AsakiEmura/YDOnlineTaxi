@@ -175,6 +175,7 @@
 
     <el-table v-loading="loading" :data="OrderInformationList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
+      <el-table-column label="订单编号" align="center" prop="orderId" />
       <el-table-column label="出发地" align="center" prop="departure" />
       <el-table-column label="到达地" align="center" prop="destination" />
       <el-table-column label="乘客称呼" align="center" prop="passenger" />
@@ -184,7 +185,6 @@
       <el-table-column label="用车类型" align="center" prop="carType" />
       <el-table-column label="订单价格" align="center" prop="remuneration" />
       <el-table-column label="订单备注" align="center" prop="note" />
-      <el-table-column label="订单编号" align="center" prop="orderId" />
       <el-table-column label="订单状态" align="center" prop="orderStatus" />
       <el-table-column label="司机手机" align="center" prop="driverPhoneNumber" />
       <el-table-column label="接单时间" align="center" prop="orderTime" />

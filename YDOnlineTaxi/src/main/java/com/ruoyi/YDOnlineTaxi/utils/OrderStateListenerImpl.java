@@ -13,7 +13,7 @@ public class OrderStateListenerImpl {
     @OnTransition(source = "WAIT_DISPATCH", target = "WAIT_AUDIT")
     public boolean dispatchTransition(Message<OrderStatusChangeEvent> message) {
         OrderInformation orderInformation = (OrderInformation) message.getHeaders().get("orderInformation");
-        orderInformation.setOrderStatus(OrderStatus.WAIT_AUDIT);
+        orderInformation.setOrderStatus(OrderStatus.WAIT_AUDIT.toString());
         System.out.println("支付，状态机反馈信息：" + message.getHeaders().toString());
         return true;
     }
@@ -21,7 +21,7 @@ public class OrderStateListenerImpl {
     @OnTransition(source = "WAIT_AUDIT", target = "WAIT_PAYMENT")
     public boolean auditTransition(Message<OrderStatusChangeEvent> message) {
         OrderInformation orderInformation = (OrderInformation) message.getHeaders().get("orderInformation");
-        orderInformation.setOrderStatus(OrderStatus.WAIT_PAYMENT);
+        orderInformation.setOrderStatus(OrderStatus.WAIT_PAYMENT.toString());
         System.out.println("发货，状态机反馈信息：" + message.getHeaders().toString());
         return true;
     }
@@ -29,7 +29,7 @@ public class OrderStateListenerImpl {
     @OnTransition(source = "WAIT_PAYMENT", target = "FINISH")
     public boolean paymentTransition(Message<OrderStatusChangeEvent> message) {
         OrderInformation orderInformation = (OrderInformation) message.getHeaders().get("orderInformation");
-        orderInformation.setOrderStatus(OrderStatus.FINISH);
+        orderInformation.setOrderStatus(OrderStatus.FINISH.toString());
         System.out.println("收货，状态机反馈信息：" + message.getHeaders().toString());
         return true;
     }

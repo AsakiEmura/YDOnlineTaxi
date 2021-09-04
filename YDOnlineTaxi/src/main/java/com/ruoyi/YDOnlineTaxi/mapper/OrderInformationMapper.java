@@ -1,4 +1,5 @@
 package com.ruoyi.YDOnlineTaxi.mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import com.ruoyi.YDOnlineTaxi.domain.OrderInformation;
@@ -58,4 +59,5 @@ public interface OrderInformationMapper
      * @return 结果
      */
     public int deleteOrderInformationByOrderIds(String[] orderIds);
+
 }

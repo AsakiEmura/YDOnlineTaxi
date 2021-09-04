@@ -30,7 +30,7 @@ public class OrderServiceImpl implements OrderService {
 
     public OrderInformation create() {
         OrderInformation order = new OrderInformation();
-        order.setOrderStatus(OrderStatus.WAIT_DISPATCH);
+        order.setOrderStatus(OrderStatus.WAIT_DISPATCH.toString());
         order.setOrderId(orderInformationService.randomID());
         orders.put(order.getOrderId(), order);
         return order;

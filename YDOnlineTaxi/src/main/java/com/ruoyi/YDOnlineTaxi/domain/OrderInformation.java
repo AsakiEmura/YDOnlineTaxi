@@ -79,7 +79,7 @@ public class OrderInformation extends BaseEntity {
      * 订单状态
      */
     @Excel(name = "订单状态")
-    private OrderStatus orderStatus;
+    private String orderStatus;
 
     /**
      * 司机手机号
@@ -182,11 +182,11 @@ public class OrderInformation extends BaseEntity {
         return orderId;
     }
 
-    public void setOrderStatus(OrderStatus orderStatus) {
+    public void setOrderStatus(String orderStatus) {
         this.orderStatus = orderStatus;
     }
 
-    public OrderStatus getOrderStatus() {
+    public String getOrderStatus() {
         return orderStatus;
     }
 

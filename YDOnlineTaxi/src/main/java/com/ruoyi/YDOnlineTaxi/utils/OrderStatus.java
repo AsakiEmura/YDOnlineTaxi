@@ -21,5 +21,21 @@ public enum OrderStatus {
             return "结单";
         }
     },
+    ;
 
+    @Override
+    public String toString() {
+        switch (this){
+            case WAIT_DISPATCH:
+                return "待派单";
+            case WAIT_AUDIT:
+                return "待审核";
+            case WAIT_PAYMENT:
+                return "待支付";
+            case FINISH:
+                return "结单";
+            default:
+                return "未知";
+        }
+    }
 }

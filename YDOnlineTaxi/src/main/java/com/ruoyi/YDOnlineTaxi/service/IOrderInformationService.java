@@ -73,4 +73,5 @@ public interface IOrderInformationService
     public String parseTimeFormat(String time);
 
     public String randomID();
+
 }

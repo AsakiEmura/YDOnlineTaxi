@@ -139,7 +139,7 @@ public class OrderInformationServiceImpl implements IOrderInformationService
                     {
                         order.setCreateBy(operName);
                         order.setTransportTime(parseTimeFormat(order.getTransportTime()));
-                        order.setOrderStatus(OrderStatus.WAIT_DISPATCH);
+                        order.setOrderStatus(OrderStatus.WAIT_DISPATCH.toString());
                         this.insertOrderInformation(order);
                         successNum++;
                         successMsg.append("<br/>" + successNum + "、订单信息 " + order.getOrderId() + " 导入成功");
@@ -148,7 +148,7 @@ public class OrderInformationServiceImpl implements IOrderInformationService
                     {
                         order.setUpdateBy(operName);
                         order.setTransportTime(parseTimeFormat(order.getTransportTime()));
-                        order.setOrderStatus(OrderStatus.WAIT_DISPATCH);
+                        order.setOrderStatus(OrderStatus.WAIT_DISPATCH.toString());
                         this.insertOrderInformation(order);
                         successNum++;
                         successMsg.append("<br/>" + successNum + "、订单信息 " + order.getOrderId() + " 更新成功");
@@ -163,7 +163,7 @@ public class OrderInformationServiceImpl implements IOrderInformationService
                 {
                     order.setOrderId(randomID());
                     order.setCreateBy(operName);
-                    order.setOrderStatus(OrderStatus.WAIT_DISPATCH);
+                    order.setOrderStatus(OrderStatus.WAIT_DISPATCH.toString());
                     order.setTransportTime(parseTimeFormat(order.getTransportTime()));
                     this.insertOrderInformation(order);
                     successNum++;
