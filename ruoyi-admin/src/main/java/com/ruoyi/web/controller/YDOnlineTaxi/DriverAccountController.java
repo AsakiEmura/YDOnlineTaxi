@@ -20,7 +20,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 司机详细信息Controller
@@ -47,7 +49,7 @@ public class DriverAccountController extends BaseController {
     @GetMapping("/list")
     public TableDataInfo list() {
         startPage();
-        List<DriverAccount> list = driverAccountService.selectAllByStatus("审核通过");
+        List<DriverAccount> list = driverAccountService.selectAllByStatus("待审核");
         return getDataTable(list);
     }
 
@@ -115,7 +117,7 @@ public class DriverAccountController extends BaseController {
     @PostMapping("/register")
     public AjaxResult register(@RequestBody DriverAccount driverAccount) {
         if (UserConstants.NOT_UNIQUE.equals(driverAccountService.checkIdNumberUnique(driverAccount.getIdNumber()))) {
-            return AjaxResult.error("账号已存在!");
+            return AjaxResult.error("10000");
         }
         String salt = ShiroKit.getRandomSalt(5);
         String driverPassword = ShiroKit.md5(driverAccount.getDriverPassword(), salt);
@@ -149,16 +151,20 @@ public class DriverAccountController extends BaseController {
 
             switch (type) {
                 case "front_id":
-                    driverAccount.setIdPhotoFront(url);
+                    driverAccount.setIdPhotoFront(fileName);
+                    break;
                 case "observe_id":
-                    driverAccount.setIdPhotoFront(url);
+                    driverAccount.setIdPhotoBack(fileName);
+                    break;
                 case "car_id":
-                    driverAccount.setIdPhotoFront(url);
+                    driverAccount.setVehicleLicensePhoto(fileName);
+                    break;
                 case "driver_id":
-                    driverAccount.setIdPhotoFront(url);
+                    driverAccount.setDriverLicencePhoto(fileName);
+                    break;
             }
 
-            driverAccountService.insertDriverAccount(driverAccount);
+            driverAccountService.updateDriverAccount(driverAccount);
 
             AjaxResult ajax = AjaxResult.success();
             ajax.put("fileName", fileName);
