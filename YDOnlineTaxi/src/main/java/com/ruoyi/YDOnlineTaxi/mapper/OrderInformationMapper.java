@@ -60,4 +60,6 @@ public interface OrderInformationMapper
      */
     public int deleteOrderInformationByOrderIds(String[] orderIds);
 
+    public List<OrderInformation> selectAllByDriverPhoneNumber(@Param("driverPhoneNumber")String driverPhoneNumber);
+
 }

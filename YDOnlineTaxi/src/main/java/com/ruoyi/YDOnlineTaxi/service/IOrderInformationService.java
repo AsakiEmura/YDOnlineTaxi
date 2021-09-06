@@ -3,6 +3,7 @@ package com.ruoyi.YDOnlineTaxi.service;
 import java.util.List;
 import com.ruoyi.YDOnlineTaxi.domain.OrderInformation;
 import com.ruoyi.common.core.domain.entity.SysUser;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 订单信息Service接口
@@ -74,4 +75,5 @@ public interface IOrderInformationService
 
     public String randomID();
 
+    public List<OrderInformation> selectAllByDriverPhoneNumber(@Param("driverPhoneNumber")String driverPhoneNumber);
 }

@@ -130,4 +130,9 @@ public class OrderInformationController extends BaseController
         return AjaxResult.success(message);
     }
 
+    @GetMapping("/{driverPhoneNumber}")
+    public TableDataInfo selectAllByDriverPhoneNumber(@PathVariable String driverPhoneNumber) {
+        List<OrderInformation> list = orderInformationService.selectAllByDriverPhoneNumber(driverPhoneNumber);
+        return getDataTable(list);
+    }
 }

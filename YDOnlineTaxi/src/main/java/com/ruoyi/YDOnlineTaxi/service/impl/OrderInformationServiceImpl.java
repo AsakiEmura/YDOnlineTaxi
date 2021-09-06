@@ -209,4 +209,9 @@ public class OrderInformationServiceImpl implements IOrderInformationService
         String id = UUID.fastUUID().toString().trim().replace("-","");
         return id;
     }
+
+    @Override
+    public List<OrderInformation> selectAllByDriverPhoneNumber(String driverPhoneNumber) {
+        return orderInformationMapper.selectAllByDriverPhoneNumber(driverPhoneNumber);
+    }
 }
