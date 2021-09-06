@@ -15,6 +15,11 @@ import com.ruoyi.common.utils.ShiroKit;
 import com.ruoyi.common.utils.file.FileUploadUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.framework.config.ServerConfig;
+import org.apache.shiro.authc.SimpleAuthenticationInfo;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
+import org.apache.shiro.crypto.hash.Md5Hash;
+import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -119,11 +124,6 @@ public class DriverAccountController extends BaseController {
         if (UserConstants.NOT_UNIQUE.equals(driverAccountService.checkIdNumberUnique(driverAccount.getIdNumber()))) {
             return AjaxResult.error("10000");
         }
-        String salt = ShiroKit.getRandomSalt(5);
-        String driverPassword = ShiroKit.md5(driverAccount.getDriverPassword(), salt);
-
-        driverAccount.setDriverPassword(driverPassword);
-        driverAccount.setSalt(salt);
 
         DriverInformation driverInformation = new DriverInformation();
         driverInformation.setDriverName(driverAccount.getDriverName());
@@ -183,8 +183,7 @@ public class DriverAccountController extends BaseController {
     @PreAuthorize("@ss.hasPermi('YDOnlineTaxi:DriverAccount:resetPwd')")
     @Log(title = "司机密码修改", businessType = BusinessType.UPDATE)
     @PutMapping("/resetPwd")
-    public AjaxResult resetPwd(@RequestBody DriverAccount driverAccount)
-    {
+    public AjaxResult resetPwd(@RequestBody DriverAccount driverAccount) {
         String salt = ShiroKit.getRandomSalt(5);
         String driverPassword = ShiroKit.md5(driverAccount.getDriverPassword(), salt);
 
@@ -192,5 +191,56 @@ public class DriverAccountController extends BaseController {
         driverAccount.setSalt(salt);
         driverAccount.setUpdateBy(getUsername());
         return toAjax(driverAccountService.resetPwd(driverAccount));
+    }
+
+    /** TODO penpen
+     * 登录验证密码
+     */
+    @PostMapping("/testPwd")
+    public AjaxResult testPwd(@RequestBody Map<String, Object> data) {
+        String phoneNumber;
+        String driverPassword;
+        try {
+            phoneNumber = data.get("phoneNumber").toString();
+            driverPassword = data.get("driverPassword").toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return AjaxResult.error("20002");
+        }
+        DriverAccount driverAccount = driverAccountService.selectDriverPassWordByPhoneNumber(phoneNumber);
+
+        String salt = driverAccount.getSalt();
+        String oldPassWord = driverAccount.getDriverPassword();
+        String newPassWord = ShiroKit.md5(driverPassword, salt);
+        String status = driverAccount.getStatus();
+
+        if (oldPassWord.equals(newPassWord) && "审核通过".equals(status)) {
+            return AjaxResult.success("20000");
+        } else {
+            return AjaxResult.error("20001");
+        }
+    }
+
+    /** TODO penpen
+     * 登录验证密码
+     */
+    @PostMapping("/testPhone")
+    public AjaxResult testPhone(@RequestBody Map<String, Object> data) {
+        String phoneNumber;
+        int check;
+        try {
+            phoneNumber = data.get("phoneNumber").toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return AjaxResult.error("40000");
+        }
+        check = driverAccountService.isDriverAccountByPhoneNumber(phoneNumber);
+        if (check == 1) {
+            //有这个号
+            return AjaxResult.success("40001");
+        }else {
+            //没这个号
+            return AjaxResult.success("40002");
+        }
     }
 }

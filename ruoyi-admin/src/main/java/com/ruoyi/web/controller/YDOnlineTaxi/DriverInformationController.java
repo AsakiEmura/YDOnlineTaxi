@@ -53,9 +53,9 @@ public class DriverInformationController extends BaseController
     }
 
     /**
+     * TODO penpen
      * 获取司机账户信息详细信息
      */
-    @PreAuthorize("@ss.hasPermi('YDOnlineTaxi:DriverInformation:query')")
     @GetMapping(value = "/{driverPhoneNumber}")
     public AjaxResult getInfo(@PathVariable("driverPhoneNumber") String driverPhoneNumber)
     {

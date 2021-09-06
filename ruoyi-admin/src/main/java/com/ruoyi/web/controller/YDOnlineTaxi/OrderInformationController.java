@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.YDOnlineTaxi;
 
 import java.util.List;
+import java.util.Map;
 
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.model.LoginUser;
@@ -45,7 +46,7 @@ public class OrderInformationController extends BaseController
     /**
      * 查询订单信息列表
      */
-    @PreAuthorize("@ss.hasPermi('YDOnlineTaxi:OrderInformation:list')")
+
     @GetMapping("/list")
     public TableDataInfo list(OrderInformation orderInformation)
     {
@@ -128,11 +129,5 @@ public class OrderInformationController extends BaseController
         String operName = loginUser.getUsername();
         String message = orderInformationService.importOrder(orderList, updateSupport, operName);
         return AjaxResult.success(message);
-    }
-
-    @GetMapping("/{driverPhoneNumber}")
-    public TableDataInfo selectAllByDriverPhoneNumber(@PathVariable String driverPhoneNumber) {
-        List<OrderInformation> list = orderInformationService.selectAllByDriverPhoneNumber(driverPhoneNumber);
-        return getDataTable(list);
     }
 }

@@ -3,7 +3,7 @@ package com.ruoyi.web.controller.YDOnlineTaxi;
 import com.alibaba.fastjson.JSONObject;
 import com.ruoyi.YDOnlineTaxi.config.MessageConfig;
 import com.ruoyi.YDOnlineTaxi.utils.MobileUtil;
-import com.ruoyi.YDOnlineTaxi.utils.RedisUtils;
+import com.ruoyi.common.core.redis.RedisCache;
 import com.zhenzi.sms.ZhenziSmsClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -16,40 +16,46 @@ import java.util.Random;
 @RequestMapping("/YDOnlineTaxi/message")
 public class SendMessage {
     @Autowired
-    private RedisUtils redisUtils;
+    private RedisCache redisUtils;
 
     @Autowired
     private MobileUtil mobileUtil;
 
     /**
+     * TODO penpen
      * 榛子平台，用于测试
      *
-     * @param phone 手机号
+     * @param data 手机号
      * @return 结果
      */
     @PostMapping("/sendMessage")
-    public Map<String, Object> send(@RequestParam("phone") String phone) {
+    public Map<String, Object> send(@RequestBody Map<String, Object> data) {
         Map<String, Object> res = new HashMap<>();
+        String phone;
+        try {
+            phone = data.get("phone").toString();
+        }catch (Exception e) {
+            e.printStackTrace();
+            res.put("msg", "30012");
+            return res;
+        }
         //手机号码校验
         boolean isMobile = MobileUtil.isPhoneLegal(phone);
         if (!isMobile) {
-            res.put("status", 401);
-            res.put("msg", "手机号格式错误");
+            res.put("msg", "30007");
             return res;
         }
         //间隔时间校验
         boolean send = mobileUtil.canSend(phone);
         if (!send) {
-            res.put("status", 403);
-            res.put("msg", "发送间隔小于60秒");
+            res.put("msg", "30008");
             return res;
         }
 
         try {
             boolean isMore = mobileUtil.isTotalFive(phone);
             if (isMore) {
-                res.put("status", 402);
-                res.put("msg", "今日短信次数超过5次");
+                res.put("msg", "30009");
                 return res;
             }
             JSONObject json;
@@ -65,27 +71,19 @@ public class SendMessage {
             String result = client.send(params);
             json = JSONObject.parseObject(result);
             if ((int) json.get("code") == 0) {
-                res.put("msg", "发送成功");
-                res.put("status", 200);
+                res.put("msg", "30010");
                 //验证码存入redis,时间为10分钟
                 //判断redis中是否有该用户手机号码key，有的话先删除
-                if (redisUtils.hasKey(phone))
+                if (redisUtils.hasKey(phone)) {
                     redisUtils.del(phone);
-                //存入redis并设置时间为10分钟
-                long count = redisUtils.sSetAndTime(phone, 60 * 10, verifyCode);
-                if (count == 0)
-                    res.put("error", "时间未知");
-                else {
-                    res.put("your_time", redisUtils.getExpire(phone));
-                    res.put("success", "有效时间10分钟");
                 }
+                //存入redis并设置时间为10分钟
+                redisUtils.sSetAndTime(phone, 60 * 10, verifyCode);
             } else {
-                res.put("msg", "发送失败");
-                res.put("status", 400);
+                res.put("msg", "30011");
             }
         } catch (Exception e) {
-            res.put("msg", "发送失败");
-            res.put("status", 400);
+            res.put("msg", "30011");
             e.printStackTrace();
         }
         return res;
