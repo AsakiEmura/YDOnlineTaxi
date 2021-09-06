@@ -56,11 +56,6 @@ public class DriverInformationController extends BaseController
      * TODO penpen
      * 获取司机账户信息详细信息
      */
-    @GetMapping(value = "/{driverPhoneNumber}")
-    public AjaxResult getInfo(@PathVariable("driverPhoneNumber") String driverPhoneNumber)
-    {
-        return AjaxResult.success(driverInformationService.selectDriverInformationByDriverPhoneNumber(driverPhoneNumber));
-    }
 
     /**
      * 新增司机账户信息

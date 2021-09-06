@@ -41,12 +41,6 @@ public class DriverAccountController extends BaseController {
     @Autowired
     private DriverAccountServiceImpl driverAccountService;
 
-    @Autowired
-    private ServerConfig serverConfig;
-
-    @Autowired
-    private DriverInformationServiceImpl driverInformationService;
-
     /**
      * 查询司机详细信息列表
      */
@@ -119,64 +113,6 @@ public class DriverAccountController extends BaseController {
         return toAjax(driverAccountService.deleteDriverAccountByIdNumbers(idNumbers));
     }
 
-    @PostMapping("/register")
-    public AjaxResult register(@RequestBody DriverAccount driverAccount) {
-        if (UserConstants.NOT_UNIQUE.equals(driverAccountService.checkIdNumberUnique(driverAccount.getIdNumber()))) {
-            return AjaxResult.error("10000");
-        }
-
-        DriverInformation driverInformation = new DriverInformation();
-        driverInformation.setDriverName(driverAccount.getDriverName());
-        driverInformation.setDriverPhoneNumber(driverAccount.getPhoneNumber());
-        driverInformation.setDriverCarType(driverAccount.getMotorcycleType());
-        driverInformation.setDriverCarId(driverAccount.getLicensePlateNumber());
-        driverInformation.setDriverEmergencyContactPhoneNumber(driverAccount.getEmergencyContactNumber());
-
-
-        driverInformationService.insertDriverInformation(driverInformation);
-        driverAccountService.insertDriverAccount(driverAccount);
-        return AjaxResult.success("注册成功");
-    }
-
-    @PostMapping("/register/uploadPhotos")
-    public AjaxResult uploadImage(@RequestParam("files") MultipartFile file, @RequestParam("type") String type, @RequestParam("idCard") String idCard) throws Exception {
-        try {
-            // 上传文件路径
-            String filePath = RuoYiConfig.getUploadPath();
-            // 上传并返回新文件名称
-            String fileName = FileUploadUtils.upload(filePath, file);
-            String url = serverConfig.getUrl() + fileName;
-
-            DriverAccount driverAccount = driverAccountService.selectDriverAccountByIdNumber(idCard);
-
-            switch (type) {
-                case "front_id":
-                    driverAccount.setIdPhotoFront(fileName);
-                    break;
-                case "observe_id":
-                    driverAccount.setIdPhotoBack(fileName);
-                    break;
-                case "car_id":
-                    driverAccount.setVehicleLicensePhoto(fileName);
-                    break;
-                case "driver_id":
-                    driverAccount.setDriverLicencePhoto(fileName);
-                    break;
-            }
-
-            driverAccountService.updateDriverAccount(driverAccount);
-
-            AjaxResult ajax = AjaxResult.success();
-            ajax.put("fileName", fileName);
-            ajax.put("url", url);
-            ajax.put("status", "ok");
-            ajax.put("msg", "上传图片成功");
-            return ajax;
-        } catch (Exception e) {
-            return AjaxResult.error(e.getMessage());
-        }
-    }
-
     /**
      * 重置密码
      */
@@ -191,56 +127,5 @@ public class DriverAccountController extends BaseController {
         driverAccount.setSalt(salt);
         driverAccount.setUpdateBy(getUsername());
         return toAjax(driverAccountService.resetPwd(driverAccount));
-    }
-
-    /** TODO penpen
-     * 登录验证密码
-     */
-    @PostMapping("/testPwd")
-    public AjaxResult testPwd(@RequestBody Map<String, Object> data) {
-        String phoneNumber;
-        String driverPassword;
-        try {
-            phoneNumber = data.get("phoneNumber").toString();
-            driverPassword = data.get("driverPassword").toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return AjaxResult.error("20002");
-        }
-        DriverAccount driverAccount = driverAccountService.selectDriverPassWordByPhoneNumber(phoneNumber);
-
-        String salt = driverAccount.getSalt();
-        String oldPassWord = driverAccount.getDriverPassword();
-        String newPassWord = ShiroKit.md5(driverPassword, salt);
-        String status = driverAccount.getStatus();
-
-        if (oldPassWord.equals(newPassWord) && "审核通过".equals(status)) {
-            return AjaxResult.success("20000");
-        } else {
-            return AjaxResult.error("20001");
-        }
-    }
-
-    /** TODO penpen
-     * 登录验证密码
-     */
-    @PostMapping("/testPhone")
-    public AjaxResult testPhone(@RequestBody Map<String, Object> data) {
-        String phoneNumber;
-        int check;
-        try {
-            phoneNumber = data.get("phoneNumber").toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return AjaxResult.error("40000");
-        }
-        check = driverAccountService.isDriverAccountByPhoneNumber(phoneNumber);
-        if (check == 1) {
-            //有这个号
-            return AjaxResult.success("40001");
-        }else {
-            //没这个号
-            return AjaxResult.success("40002");
-        }
     }
 }
