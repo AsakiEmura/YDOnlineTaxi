@@ -13,6 +13,23 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface IDriverAccountService 
 {
+    //TODO penpen
+    /**
+     * 验证密码是否正确
+     *
+     * @param phoneNumber 司机手机号
+     * @return 司机详细信息
+     */
+    public DriverAccount selectDriverPassWordByPhoneNumber(String phoneNumber);
+
+    /**
+     * 查询司机手机号是否存在
+     * TODO penpen
+     * @param phoneNumber 司机详细信息主键
+     * @return 司机详细信息
+     */
+    public int isDriverAccountByPhoneNumber(String phoneNumber);
+
     /**
      * 查询司机详细信息
      * 

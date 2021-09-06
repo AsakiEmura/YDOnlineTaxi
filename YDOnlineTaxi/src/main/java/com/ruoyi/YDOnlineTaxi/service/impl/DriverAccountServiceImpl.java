@@ -22,6 +22,30 @@ public class DriverAccountServiceImpl implements IDriverAccountService
     @Autowired(required = false)
     private DriverAccountMapper driverAccountMapper;
 
+    //TODO penpen
+    /**
+     * 密码验证
+     *
+     * @param phoneNumber 司机手机号
+     * @return 司机详细信息
+     */
+    @Override
+    public DriverAccount selectDriverPassWordByPhoneNumber(String phoneNumber) {
+        return driverAccountMapper.selectDriverPassWordByPhoneNumber(phoneNumber);
+    }
+
+    /**
+     * 查询司机手机号是否存在
+     * TODO penpen
+     * @param phoneNumber 司机详细信息主键
+     * @return 司机详细信息
+     */
+    @Override
+    public int isDriverAccountByPhoneNumber(String phoneNumber)
+    {
+        return driverAccountMapper.isDriverAccountByPhoneNumber(phoneNumber);
+    }
+
     /**
      * 查询司机详细信息
      * 

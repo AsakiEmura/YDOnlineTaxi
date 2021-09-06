@@ -12,6 +12,24 @@ import com.ruoyi.YDOnlineTaxi.domain.DriverAccount;
  */
 public interface DriverAccountMapper 
 {
+    //TODO penpen
+    /**
+     * 查询司机详细信息
+     *
+     * @param phoneNumber 司机手机号
+     * @return 司机详细信息
+     */
+    public DriverAccount selectDriverPassWordByPhoneNumber(String phoneNumber);
+
+    /**
+     * 查询司机手机号是否存在
+     *
+     * @param phoneNumber 司机详细信息主键
+     * @return 司机详细信息
+     */
+    public int isDriverAccountByPhoneNumber(String phoneNumber);
+
+
     /**
      * 查询司机详细信息
      * 
@@ -22,7 +40,7 @@ public interface DriverAccountMapper
 
     /**
      * 查询司机详细信息列表
-     * 
+     *
      * @param driverAccount 司机详细信息
      * @return 司机详细信息集合
      */

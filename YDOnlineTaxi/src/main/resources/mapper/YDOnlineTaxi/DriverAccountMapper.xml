@@ -55,6 +55,15 @@
         where id_number = #{idNumber}
     </select>
 
+<!--    penpen-->
+    <select id="selectDriverPassWordByPhoneNumber" parameterType="String" resultMap="DriverAccountResult">
+        <include refid="selectDriverAccountVo"/>
+        where phone_number = #{phoneNumber}
+    </select>
+    <select id="isDriverAccountByPhoneNumber" parameterType="String" resultType="int">
+        select count(*) from YDOnlineTaxi.driver_account where phone_number = #{phoneNumber}
+    </select>
+
     <insert id="insertDriverAccount" parameterType="com.ruoyi.YDOnlineTaxi.domain.DriverAccount">
         insert into YDOnlineTaxi.driver_account
         <trim prefix="(" suffix=")" suffixOverrides=",">

@@ -1,9 +1,8 @@
 package com.ruoyi.YDOnlineTaxi.utils;
 
-import org.apache.commons.lang.StringUtils;
+import com.ruoyi.common.core.redis.RedisCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
-import com.ruoyi.YDOnlineTaxi.utils.RedisUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -17,7 +16,7 @@ import java.util.regex.PatternSyntaxException;
 @RestController
 public class MobileUtil {
     @Autowired
-    private RedisUtils redisUtils;
+    private RedisCache redisUtils;
     /**
      * ^ 匹配输入字符串开始的位置
      * \d 匹配一个或多个数字，其中 \ 要转义，所以是 \\d
@@ -110,8 +109,9 @@ public class MobileUtil {
             for (Object count : counts) {
                 phoneNum = (int) count;
                 //超过5次
-                if (phoneNum >= 5)
+                if (phoneNum >= 5) {
                     return true;
+                }
                 break;
             }
             //没有超过5次,次数加一
