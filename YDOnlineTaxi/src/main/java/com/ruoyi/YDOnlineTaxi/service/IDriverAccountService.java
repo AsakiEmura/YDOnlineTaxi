@@ -104,4 +104,5 @@ public interface IDriverAccountService
      */
     public List<DriverAccount> selectAllByStatus(@Param("status")String status);
 
+    public DriverAccount selectAllByPhoneNumber(@Param("phoneNumber")String phoneNumber);
 }

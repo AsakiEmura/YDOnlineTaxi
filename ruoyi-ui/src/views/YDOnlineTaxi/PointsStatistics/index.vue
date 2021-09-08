@@ -10,51 +10,77 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="电话" prop="driverPhoneNumber">
+      <el-form-item label="手机号" prop="driverPhoneNumber">
         <el-input
           v-model="queryParams.driverPhoneNumber"
-          placeholder="请输入电话"
+          placeholder="请输入手机号"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="紧急电话" prop="driverEmergencyContactPhoneNumber">
+      <el-form-item label="未支付" prop="notPaid">
         <el-input
-          v-model="queryParams.driverEmergencyContactPhoneNumber"
-          placeholder="请输入紧急电话"
+          v-model="queryParams.notPaid"
+          placeholder="请输入未支付"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="车牌号" prop="driverCarId">
+      <el-form-item label="已支付" prop="paid">
         <el-input
-          v-model="queryParams.driverCarId"
-          placeholder="请输入车牌号"
+          v-model="queryParams.paid"
+          placeholder="请输入已支付"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="车型" prop="driverCarType">
-        <el-select v-model="queryParams.driverCarType" placeholder="请选择车型" clearable size="small">
-          <el-option label="请选择字典生成" value="" />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="汽车型号" prop="carModel">
+      <el-form-item label="未结算" prop="noSettlement">
         <el-input
-          v-model="queryParams.carModel"
-          placeholder="请输入汽车型号"
+          v-model="queryParams.noSettlement"
+          placeholder="请输入未结算"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="等级" prop="driverLevel">
-        <el-select v-model="queryParams.driverLevel" placeholder="请选择等级" clearable size="small">
-          <el-option label="请选择字典生成" value="" />
-        </el-select>
+      <el-form-item label="已结算" prop="settlemented">
+        <el-input
+          v-model="queryParams.settlemented"
+          placeholder="请输入已结算"
+          clearable
+          size="small"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="月积分" prop="monthPoints">
+        <el-input
+          v-model="queryParams.monthPoints"
+          placeholder="请输入月积分"
+          clearable
+          size="small"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="总积分" prop="totalPoints">
+        <el-input
+          v-model="queryParams.totalPoints"
+          placeholder="请输入总积分"
+          clearable
+          size="small"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="奖惩积分" prop="rewardsPunishmentPoints">
+        <el-input
+          v-model="queryParams.rewardsPunishmentPoints"
+          placeholder="请输入奖惩积分"
+          clearable
+          size="small"
+          @keyup.enter.native="handleQuery"
+        />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -70,7 +96,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['YDOnlineTaxi:DriverInformation:add']"
+          v-hasPermi="['YDOnlineTaxi:PointsStatistics:add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -81,7 +107,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['YDOnlineTaxi:DriverInformation:edit']"
+          v-hasPermi="['YDOnlineTaxi:PointsStatistics:edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -92,7 +118,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['YDOnlineTaxi:DriverInformation:remove']"
+          v-hasPermi="['YDOnlineTaxi:PointsStatistics:remove']"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -103,24 +129,23 @@
           size="mini"
           :loading="exportLoading"
           @click="handleExport"
-          v-hasPermi="['YDOnlineTaxi:DriverInformation:export']"
+          v-hasPermi="['YDOnlineTaxi:PointsStatistics:export']"
         >导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="DriverInformationList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="PointsStatisticsList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="姓名" align="center" prop="driverName" />
-      <el-table-column label="电话" align="center" prop="driverPhoneNumber" />
-      <el-table-column label="紧急电话" align="center" prop="driverEmergencyContactPhoneNumber" />
-      <el-table-column label="车牌号" align="center" prop="driverCarId" />
-      <el-table-column label="车型" align="center" prop="driverCarType" />
-      <el-table-column label="汽车型号" align="center" prop="carModel" />
-      <el-table-column label="车辆颜色" align="center" prop="carColor" />
-      <el-table-column label="已完成单数" align="center" prop="driverCompleteOrderNumber" />
-      <el-table-column label="本月完成单数" align="center" prop="driverCompleteOrderNumberMonthly" />
-      <el-table-column label="等级" align="center" prop="driverLevel" />
+      <el-table-column label="手机号" align="center" prop="driverPhoneNumber" />
+      <el-table-column label="未支付" align="center" prop="notPaid" />
+      <el-table-column label="已支付" align="center" prop="paid" />
+      <el-table-column label="未结算" align="center" prop="noSettlement" />
+      <el-table-column label="已结算" align="center" prop="settlemented" />
+      <el-table-column label="月积分" align="center" prop="monthPoints" />
+      <el-table-column label="总积分" align="center" prop="totalPoints" />
+      <el-table-column label="奖惩积分" align="center" prop="rewardsPunishmentPoints" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -128,19 +153,19 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['YDOnlineTaxi:DriverInformation:edit']"
+            v-hasPermi="['YDOnlineTaxi:PointsStatistics:edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['YDOnlineTaxi:DriverInformation:remove']"
+            v-hasPermi="['YDOnlineTaxi:PointsStatistics:remove']"
           >删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-
+    
     <pagination
       v-show="total>0"
       :total="total"
@@ -149,40 +174,32 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改司机线上账户信息
-对话框 -->
+    <!-- 添加或修改积分统计对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="姓名" prop="driverName">
           <el-input v-model="form.driverName" placeholder="请输入姓名" />
         </el-form-item>
-        <el-form-item label="紧急电话" prop="driverEmergencyContactPhoneNumber">
-          <el-input v-model="form.driverEmergencyContactPhoneNumber" placeholder="请输入紧急电话" />
+        <el-form-item label="未支付" prop="notPaid">
+          <el-input v-model="form.notPaid" placeholder="请输入未支付" />
         </el-form-item>
-        <el-form-item label="车牌号" prop="driverCarId">
-          <el-input v-model="form.driverCarId" placeholder="请输入车牌号" />
+        <el-form-item label="已支付" prop="paid">
+          <el-input v-model="form.paid" placeholder="请输入已支付" />
         </el-form-item>
-        <el-form-item label="车型" prop="driverCarType">
-          <el-select v-model="form.driverCarType" placeholder="请选择车型">
-            <el-option label="请选择字典生成" value="" />
-          </el-select>
+        <el-form-item label="未结算" prop="noSettlement">
+          <el-input v-model="form.noSettlement" placeholder="请输入未结算" />
         </el-form-item>
-        <el-form-item label="汽车型号" prop="carModel">
-          <el-input v-model="form.carModel" placeholder="请输入汽车型号" />
+        <el-form-item label="已结算" prop="settlemented">
+          <el-input v-model="form.settlemented" placeholder="请输入已结算" />
         </el-form-item>
-        <el-form-item label="车辆颜色" prop="carColor">
-          <el-input v-model="form.carColor" placeholder="请输入车辆颜色" />
+        <el-form-item label="月积分" prop="monthPoints">
+          <el-input v-model="form.monthPoints" placeholder="请输入月积分" />
         </el-form-item>
-        <el-form-item label="已完成单数" prop="driverCompleteOrderNumber">
-          <el-input v-model="form.driverCompleteOrderNumber" placeholder="请输入已完成单数" />
+        <el-form-item label="总积分" prop="totalPoints">
+          <el-input v-model="form.totalPoints" placeholder="请输入总积分" />
         </el-form-item>
-        <el-form-item label="本月完成单数" prop="driverCompleteOrderNumberMonthly">
-          <el-input v-model="form.driverCompleteOrderNumberMonthly" placeholder="请输入本月完成单数" />
-        </el-form-item>
-        <el-form-item label="等级" prop="driverLevel">
-          <el-select v-model="form.driverLevel" placeholder="请选择等级">
-            <el-option label="请选择字典生成" value="" />
-          </el-select>
+        <el-form-item label="奖惩积分" prop="rewardsPunishmentPoints">
+          <el-input v-model="form.rewardsPunishmentPoints" placeholder="请输入奖惩积分" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -194,10 +211,10 @@
 </template>
 
 <script>
-import { listDriverInformation, getDriverInformation, delDriverInformation, addDriverInformation, updateDriverInformation, exportDriverInformation } from "@/api/YDOnlineTaxi/DriverInformation";
+import { listPointsStatistics, getPointsStatistics, delPointsStatistics, addPointsStatistics, updatePointsStatistics, exportPointsStatistics } from "@/api/YDOnlineTaxi/PointsStatistics";
 
 export default {
-  name: "DriverInformation",
+  name: "PointsStatistics",
   data() {
     return {
       // 遮罩层
@@ -214,8 +231,8 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 司机线上账户信息表格数据
-      DriverInformationList: [],
+      // 积分统计表格数据
+      PointsStatisticsList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -226,11 +243,13 @@ export default {
         pageSize: 10,
         driverName: null,
         driverPhoneNumber: null,
-        driverEmergencyContactPhoneNumber: null,
-        driverCarId: null,
-        driverCarType: null,
-        carModel: null,
-        driverLevel: null
+        notPaid: null,
+        paid: null,
+        noSettlement: null,
+        settlemented: null,
+        monthPoints: null,
+        totalPoints: null,
+        rewardsPunishmentPoints: null
       },
       // 表单参数
       form: {},
@@ -240,29 +259,8 @@ export default {
           { required: true, message: "姓名不能为空", trigger: "blur" }
         ],
         driverPhoneNumber: [
-          { required: true, message: "电话不能为空", trigger: "blur" }
+          { required: true, message: "手机号不能为空", trigger: "blur" }
         ],
-        driverCarId: [
-          { required: true, message: "车牌号不能为空", trigger: "blur" }
-        ],
-        driverCarType: [
-          { required: true, message: "车型不能为空", trigger: "change" }
-        ],
-        carModel: [
-          { required: true, message: "汽车型号不能为空", trigger: "blur" }
-        ],
-        carColor: [
-          { required: true, message: "车辆颜色不能为空", trigger: "blur" }
-        ],
-        driverCompleteOrderNumber: [
-          { required: true, message: "已完成单数不能为空", trigger: "blur" }
-        ],
-        driverCompleteOrderNumberMonthly: [
-          { required: true, message: "本月完成单数不能为空", trigger: "blur" }
-        ],
-        driverLevel: [
-          { required: true, message: "等级不能为空", trigger: "change" }
-        ]
       }
     };
   },
@@ -270,12 +268,11 @@ export default {
     this.getList();
   },
   methods: {
-    /** 查询司机线上账户信息
-列表 */
+    /** 查询积分统计列表 */
     getList() {
       this.loading = true;
-      listDriverInformation(this.queryParams).then(response => {
-        this.DriverInformationList = response.rows;
+      listPointsStatistics(this.queryParams).then(response => {
+        this.PointsStatisticsList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
@@ -290,14 +287,13 @@ export default {
       this.form = {
         driverName: null,
         driverPhoneNumber: null,
-        driverEmergencyContactPhoneNumber: null,
-        driverCarId: null,
-        driverCarType: null,
-        carModel: null,
-        carColor: null,
-        driverCompleteOrderNumber: null,
-        driverCompleteOrderNumberMonthly: null,
-        driverLevel: null
+        notPaid: null,
+        paid: null,
+        noSettlement: null,
+        settlemented: null,
+        monthPoints: null,
+        totalPoints: null,
+        rewardsPunishmentPoints: null
       };
       this.resetForm("form");
     },
@@ -321,16 +317,16 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加司机线上账户信息";
+      this.title = "添加积分统计";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
       const driverPhoneNumber = row.driverPhoneNumber || this.ids
-      getDriverInformation(driverPhoneNumber).then(response => {
+      getPointsStatistics(driverPhoneNumber).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改司机线上账户信息";
+        this.title = "修改积分统计";
       });
     },
     /** 提交按钮 */
@@ -338,13 +334,13 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.driverPhoneNumber != null) {
-            updateDriverInformation(this.form).then(response => {
+            updatePointsStatistics(this.form).then(response => {
               this.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addDriverInformation(this.form).then(response => {
+            addPointsStatistics(this.form).then(response => {
               this.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -356,12 +352,12 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const driverPhoneNumbers = row.driverPhoneNumber || this.ids;
-      this.$confirm('是否确认删除司机线上账户信息编号为"' + driverPhoneNumbers + '"的数据项?', "警告", {
+      this.$confirm('是否确认删除积分统计编号为"' + driverPhoneNumbers + '"的数据项?', "警告", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning"
         }).then(function() {
-          return delDriverInformation(driverPhoneNumbers);
+          return delPointsStatistics(driverPhoneNumbers);
         }).then(() => {
           this.getList();
           this.msgSuccess("删除成功");
@@ -370,13 +366,13 @@ export default {
     /** 导出按钮操作 */
     handleExport() {
       const queryParams = this.queryParams;
-      this.$confirm('是否确认导出所有司机线上账户信息数据项?', "警告", {
+      this.$confirm('是否确认导出所有积分统计数据项?', "警告", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning"
         }).then(() => {
           this.exportLoading = true;
-          return exportDriverInformation(queryParams);
+          return exportPointsStatistics(queryParams);
         }).then(response => {
           this.download(response.msg);
           this.exportLoading = false;

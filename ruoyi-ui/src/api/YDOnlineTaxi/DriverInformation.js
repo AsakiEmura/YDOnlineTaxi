@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-// 查询司机账户信息列表
+// 查询司机线上账户信息列表
 export function listDriverInformation(query) {
   return request({
     url: '/YDOnlineTaxi/DriverInformation/list',
@@ -9,7 +9,7 @@ export function listDriverInformation(query) {
   })
 }
 
-// 查询司机账户信息详细
+// 查询司机线上账户信息详细
 export function getDriverInformation(driverPhoneNumber) {
   return request({
     url: '/YDOnlineTaxi/DriverInformation/' + driverPhoneNumber,
@@ -17,7 +17,8 @@ export function getDriverInformation(driverPhoneNumber) {
   })
 }
 
-// 新增司机账户信息
+// 新增司机线上账户信息
+
 export function addDriverInformation(data) {
   return request({
     url: '/YDOnlineTaxi/DriverInformation',
@@ -26,7 +27,8 @@ export function addDriverInformation(data) {
   })
 }
 
-// 修改司机账户信息
+// 修改司机线上账户信息
+
 export function updateDriverInformation(data) {
   return request({
     url: '/YDOnlineTaxi/DriverInformation',
@@ -35,7 +37,8 @@ export function updateDriverInformation(data) {
   })
 }
 
-// 删除司机账户信息
+// 删除司机线上账户信息
+
 export function delDriverInformation(driverPhoneNumber) {
   return request({
     url: '/YDOnlineTaxi/DriverInformation/' + driverPhoneNumber,
@@ -43,7 +46,8 @@ export function delDriverInformation(driverPhoneNumber) {
   })
 }
 
-// 导出司机账户信息
+// 导出司机线上账户信息
+
 export function exportDriverInformation(query) {
   return request({
     url: '/YDOnlineTaxi/DriverInformation/export',

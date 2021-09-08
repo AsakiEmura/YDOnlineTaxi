@@ -39,6 +39,7 @@ public class YDOnlineTaxiWxService extends BaseController {
     @Autowired
     private IOrderInformationService orderInformationService;
 
+
     @PostMapping("/register")
     public AjaxResult register(@RequestBody DriverAccount driverAccount) {
         if (UserConstants.NOT_UNIQUE.equals(driverAccountService.checkIdNumberUnique(driverAccount.getIdNumber()))) {
@@ -98,8 +99,8 @@ public class YDOnlineTaxiWxService extends BaseController {
     }
 
 
-    /** TODO penpen
-     * 登录验证密码
+    /**
+     * 登录验证手机号
      */
     @PostMapping("/testPhone")
     public AjaxResult testPhone(@RequestBody Map<String, Object> data) {
@@ -121,7 +122,7 @@ public class YDOnlineTaxiWxService extends BaseController {
         }
     }
 
-    /** TODO penpen
+    /**
      * 登录验证密码
      */
     @PostMapping("/testPwd")
@@ -149,12 +150,37 @@ public class YDOnlineTaxiWxService extends BaseController {
         }
     }
 
-    @GetMapping("/list/{driverPhoneNumber}")
-    public TableDataInfo selectAllByDriverPhoneNumber(OrderInformation orderInformation, @PathVariable String driverPhoneNumber)
-    {
-        startPage();
-        orderInformation.setDriverPhoneNumber(driverPhoneNumber);
-        List<OrderInformation> list = orderInformationService.selectOrderInformationList(orderInformation);
-        return getDataTable(list);
+
+    @PostMapping("/resetPwd/{phoneNumber}")
+    public AjaxResult resetPwd(@RequestBody Map<String, Object> password,@PathVariable("phoneNumber") String phoneNumber) {
+        String newPassword;
+        try
+        {
+            newPassword = password.get("password").toString();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return AjaxResult.error("304");
+        }
+
+        DriverAccount driverAccount = driverAccountService.selectAllByPhoneNumber(phoneNumber);
+        driverAccount.setDriverPassword(newPassword);
+        String salt = ShiroKit.getRandomSalt(5);
+        String driverPassword = ShiroKit.md5(driverAccount.getDriverPassword(), salt);
+
+        driverAccount.setDriverPassword(driverPassword);
+        driverAccount.setSalt(salt);
+
+        try
+        {
+            driverAccountService.resetPwd(driverAccount);
+            return AjaxResult.success("200");
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return AjaxResult.error("400");
+        }
+
     }
 }

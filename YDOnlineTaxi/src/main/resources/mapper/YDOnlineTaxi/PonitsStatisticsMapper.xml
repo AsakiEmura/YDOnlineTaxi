@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.YDOnlineTaxi.mapper.PonitsStatisticsMapper">
+    
+    <resultMap type="PonitsStatistics" id="PonitsStatisticsResult">
+        <result property="driverName"    column="driver_name"    />
+        <result property="driverPhoneNumber"    column="driver_phone_number"    />
+        <result property="notPaid"    column="not_paid"    />
+        <result property="paid"    column="paid"    />
+        <result property="noSettlement"    column="no_settlement"    />
+        <result property="settlemented"    column="settlemented"    />
+        <result property="monthPoints"    column="month_points"    />
+        <result property="totalPoints"    column="total_points"    />
+        <result property="rewardsPunishmentPoints"    column="rewards_punishment_points"    />
+    </resultMap>
+
+    <sql id="selectPonitsStatisticsVo">
+        select driver_name, driver_phone_number, not_paid, paid, no_settlement, settlemented, month_points, total_points, rewards_punishment_points from ponits_statistics
+    </sql>
+
+    <select id="selectPonitsStatisticsList" parameterType="PonitsStatistics" resultMap="PonitsStatisticsResult">
+        <include refid="selectPonitsStatisticsVo"/>
+        <where>  
+            <if test="driverName != null  and driverName != ''"> and driver_name like concat('%', #{driverName}, '%')</if>
+            <if test="driverPhoneNumber != null  and driverPhoneNumber != ''"> and driver_phone_number like concat('%', #{driverPhoneNumber}, '%')</if>
+            <if test="params.beginNotPaid != null and params.beginNotPaid != '' and params.endNotPaid != null and params.endNotPaid != ''"> and not_paid between #{params.beginNotPaid} and #{params.endNotPaid}</if>
+            <if test="params.beginPaid != null and params.beginPaid != '' and params.endPaid != null and params.endPaid != ''"> and paid between #{params.beginPaid} and #{params.endPaid}</if>
+            <if test="params.beginNoSettlement != null and params.beginNoSettlement != '' and params.endNoSettlement != null and params.endNoSettlement != ''"> and no_settlement between #{params.beginNoSettlement} and #{params.endNoSettlement}</if>
+            <if test="params.beginSettlemented != null and params.beginSettlemented != '' and params.endSettlemented != null and params.endSettlemented != ''"> and settlemented between #{params.beginSettlemented} and #{params.endSettlemented}</if>
+            <if test="params.beginMonthPoints != null and params.beginMonthPoints != '' and params.endMonthPoints != null and params.endMonthPoints != ''"> and month_points between #{params.beginMonthPoints} and #{params.endMonthPoints}</if>
+            <if test="params.beginTotalPoints != null and params.beginTotalPoints != '' and params.endTotalPoints != null and params.endTotalPoints != ''"> and total_points between #{params.beginTotalPoints} and #{params.endTotalPoints}</if>
+            <if test="params.beginRewardsPunishmentPoints != null and params.beginRewardsPunishmentPoints != '' and params.endRewardsPunishmentPoints != null and params.endRewardsPunishmentPoints != ''"> and rewards_punishment_points between #{params.beginRewardsPunishmentPoints} and #{params.endRewardsPunishmentPoints}</if>
+        </where>
+    </select>
+    
+    <select id="selectPonitsStatisticsByDriverPhoneNumber" parameterType="String" resultMap="PonitsStatisticsResult">
+        <include refid="selectPonitsStatisticsVo"/>
+        where driver_phone_number = #{driverPhoneNumber}
+    </select>
+        
+    <insert id="insertPonitsStatistics" parameterType="PonitsStatistics">
+        insert into ponits_statistics
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="driverName != null and driverName != ''">driver_name,</if>
+            <if test="driverPhoneNumber != null and driverPhoneNumber != ''">driver_phone_number,</if>
+            <if test="notPaid != null">not_paid,</if>
+            <if test="paid != null">paid,</if>
+            <if test="noSettlement != null">no_settlement,</if>
+            <if test="settlemented != null">settlemented,</if>
+            <if test="monthPoints != null">month_points,</if>
+            <if test="totalPoints != null">total_points,</if>
+            <if test="rewardsPunishmentPoints != null">rewards_punishment_points,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="driverName != null and driverName != ''">#{driverName},</if>
+            <if test="driverPhoneNumber != null and driverPhoneNumber != ''">#{driverPhoneNumber},</if>
+            <if test="notPaid != null">#{notPaid},</if>
+            <if test="paid != null">#{paid},</if>
+            <if test="noSettlement != null">#{noSettlement},</if>
+            <if test="settlemented != null">#{settlemented},</if>
+            <if test="monthPoints != null">#{monthPoints},</if>
+            <if test="totalPoints != null">#{totalPoints},</if>
+            <if test="rewardsPunishmentPoints != null">#{rewardsPunishmentPoints},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePonitsStatistics" parameterType="PonitsStatistics">
+        update ponits_statistics
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="driverName != null and driverName != ''">driver_name = #{driverName},</if>
+            <if test="notPaid != null">not_paid = #{notPaid},</if>
+            <if test="paid != null">paid = #{paid},</if>
+            <if test="noSettlement != null">no_settlement = #{noSettlement},</if>
+            <if test="settlemented != null">settlemented = #{settlemented},</if>
+            <if test="monthPoints != null">month_points = #{monthPoints},</if>
+            <if test="totalPoints != null">total_points = #{totalPoints},</if>
+            <if test="rewardsPunishmentPoints != null">rewards_punishment_points = #{rewardsPunishmentPoints},</if>
+        </trim>
+        where driver_phone_number = #{driverPhoneNumber}
+    </update>
+
+    <delete id="deletePonitsStatisticsByDriverPhoneNumber" parameterType="String">
+        delete from ponits_statistics where driver_phone_number = #{driverPhoneNumber}
+    </delete>
+
+    <delete id="deletePonitsStatisticsByDriverPhoneNumbers" parameterType="String">
+        delete from ponits_statistics where driver_phone_number in 
+        <foreach item="driverPhoneNumber" collection="array" open="(" separator="," close=")">
+            #{driverPhoneNumber}
+        </foreach>
+    </delete>
+</mapper>

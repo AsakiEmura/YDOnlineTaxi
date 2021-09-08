@@ -4,54 +4,51 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.YDOnlineTaxi.mapper.OrderInformationMapper">
     <sql id="Base_Column_List">
+        order_id,
         departure,
         destination,
-        passenger,
-        passenger_phone,
         transport_time,
         requirement_types,
         car_type,
-        remuneration,
+        passenger,
+        passenger_phone,
+        points,
         note,
-        order_id,
         order_status,
-        driver_phone_number,
-        order_time,
-        statement_time
+        refuse_reason
     </sql>
     <resultMap type="com.ruoyi.YDOnlineTaxi.domain.OrderInformation" id="OrderInformationResult">
+        <result property="orderId"    column="order_id"    />
         <result property="departure"    column="departure"    />
         <result property="destination"    column="destination"    />
-        <result property="passenger"    column="passenger"    />
-        <result property="passengerPhone"    column="passenger_phone"    />
         <result property="transportTime"    column="transport_time"    />
         <result property="requirementTypes"    column="requirement_types"    />
         <result property="carType"    column="car_type"    />
-        <result property="remuneration"    column="remuneration"    />
+        <result property="passenger"    column="passenger"    />
+        <result property="passengerPhone"    column="passenger_phone"    />
+        <result property="points"    column="points"    />
         <result property="note"    column="note"    />
-        <result property="orderId"    column="order_id"    />
         <result property="orderStatus"    column="order_status"    />
-        <result property="driverPhoneNumber"    column="driver_phone_number"    />
-        <result property="orderTime"    column="order_time"    />
-        <result property="statementTime"    column="statement_time"    />
+        <result property="refuseReason"    column="refuse_reason"    />
     </resultMap>
 
     <sql id="selectOrderInformationVo">
-        select departure, destination, passenger, passenger_phone, transport_time, requirement_types, car_type, remuneration, note, order_id, order_status, driver_phone_number, order_time, statement_time from YDOnlineTaxi.order_information
+        select order_id, departure, destination, transport_time, requirement_types, car_type, passenger, passenger_phone, points, note, order_status, refuse_reason from YDOnlineTaxi.order_information
     </sql>
 
     <select id="selectOrderInformationList" parameterType="com.ruoyi.YDOnlineTaxi.domain.OrderInformation" resultMap="OrderInformationResult">
         <include refid="selectOrderInformationVo"/>
         <where>  
+            <if test="orderId != null  and orderId != ''"> and order_id = #{orderId}</if>
             <if test="departure != null  and departure != ''"> and departure = #{departure}</if>
             <if test="destination != null  and destination != ''"> and destination = #{destination}</if>
+            <if test="transportTime != null "> and transport_time like concat('%', #{transportTime}, '%')</if>
+            <if test="requirementTypes != null  and requirementTypes != ''"> and requirement_types = #{requirementTypes}</if>
+            <if test="carType != null  and carType != ''"> and car_type = #{carType}</if>
             <if test="passenger != null  and passenger != ''"> and passenger = #{passenger}</if>
             <if test="passengerPhone != null  and passengerPhone != ''"> and passenger_phone = #{passengerPhone}</if>
-            <if test="transportTime != null  and transportTime != ''"> and transport_time = #{transportTime}</if>
+            <if test="points != null "> and points = #{points}</if>
             <if test="orderStatus != null  and orderStatus != ''"> and order_status = #{orderStatus}</if>
-            <if test="driverPhoneNumber != null  and driverPhoneNumber != ''"> and driver_phone_number = #{driverPhoneNumber}</if>
-            <if test="orderTime != null  and orderTime != ''"> and order_time = #{orderTime}</if>
-            <if test="statementTime != null  and statementTime != ''"> and statement_time = #{statementTime}</if>
         </where>
     </select>
     
@@ -63,36 +60,32 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <insert id="insertOrderInformation" parameterType="com.ruoyi.YDOnlineTaxi.domain.OrderInformation">
         insert into YDOnlineTaxi.order_information
         <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">order_id,</if>
             <if test="departure != null and departure != ''">departure,</if>
             <if test="destination != null and destination != ''">destination,</if>
-            <if test="passenger != null and passenger != ''">passenger,</if>
-            <if test="passengerPhone != null and passengerPhone != ''">passenger_phone,</if>
-            <if test="transportTime != null and transportTime != ''">transport_time,</if>
+            <if test="transportTime != null">transport_time,</if>
             <if test="requirementTypes != null and requirementTypes != ''">requirement_types,</if>
             <if test="carType != null and carType != ''">car_type,</if>
-            <if test="remuneration != null and remuneration != ''">remuneration,</if>
-            <if test="note != null and note != ''">note,</if>
-            <if test="orderId != null">order_id,</if>
+            <if test="passenger != null and passenger != ''">passenger,</if>
+            <if test="passengerPhone != null and passengerPhone != ''">passenger_phone,</if>
+            <if test="points != null">points,</if>
+            <if test="note != null">note,</if>
             <if test="orderStatus != null and orderStatus != ''">order_status,</if>
-            <if test="driverPhoneNumber != null and driverPhoneNumber != ''">driver_phone_number,</if>
-            <if test="orderTime != null and orderTime != ''">order_time,</if>
-            <if test="statementTime != null and statementTime != ''">statement_time,</if>
+            <if test="refuseReason != null">refuse_reason,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">#{orderId},</if>
             <if test="departure != null and departure != ''">#{departure},</if>
             <if test="destination != null and destination != ''">#{destination},</if>
-            <if test="passenger != null and passenger != ''">#{passenger},</if>
-            <if test="passengerPhone != null and passengerPhone != ''">#{passengerPhone},</if>
-            <if test="transportTime != null and transportTime != ''">#{transportTime},</if>
+            <if test="transportTime != null">#{transportTime},</if>
             <if test="requirementTypes != null and requirementTypes != ''">#{requirementTypes},</if>
             <if test="carType != null and carType != ''">#{carType},</if>
-            <if test="remuneration != null and remuneration != ''">#{remuneration},</if>
-            <if test="note != null and note != ''">#{note},</if>
-            <if test="orderId != null">#{orderId},</if>
+            <if test="passenger != null and passenger != ''">#{passenger},</if>
+            <if test="passengerPhone != null and passengerPhone != ''">#{passengerPhone},</if>
+            <if test="points != null">#{points},</if>
+            <if test="note != null">#{note},</if>
             <if test="orderStatus != null and orderStatus != ''">#{orderStatus},</if>
-            <if test="driverPhoneNumber != null and driverPhoneNumber != ''">#{driverPhoneNumber},</if>
-            <if test="orderTime != null and orderTime != ''">#{orderTime},</if>
-            <if test="statementTime != null and statementTime != ''">#{statementTime},</if>
+            <if test="refuseReason != null">#{refuseReason},</if>
          </trim>
     </insert>
 
@@ -101,17 +94,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="SET" suffixOverrides=",">
             <if test="departure != null and departure != ''">departure = #{departure},</if>
             <if test="destination != null and destination != ''">destination = #{destination},</if>
-            <if test="passenger != null and passenger != ''">passenger = #{passenger},</if>
-            <if test="passengerPhone != null and passengerPhone != ''">passenger_phone = #{passengerPhone},</if>
-            <if test="transportTime != null and transportTime != ''">transport_time = #{transportTime},</if>
+            <if test="transportTime != null">transport_time = #{transportTime},</if>
             <if test="requirementTypes != null and requirementTypes != ''">requirement_types = #{requirementTypes},</if>
             <if test="carType != null and carType != ''">car_type = #{carType},</if>
-            <if test="remuneration != null and remuneration != ''">remuneration = #{remuneration},</if>
-            <if test="note != null and note != ''">note = #{note},</if>
+            <if test="passenger != null and passenger != ''">passenger = #{passenger},</if>
+            <if test="passengerPhone != null and passengerPhone != ''">passenger_phone = #{passengerPhone},</if>
+            <if test="points != null">points = #{points},</if>
+            <if test="note != null">note = #{note},</if>
             <if test="orderStatus != null and orderStatus != ''">order_status = #{orderStatus},</if>
-            <if test="driverPhoneNumber != null and driverPhoneNumber != ''">driver_phone_number = #{driverPhoneNumber},</if>
-            <if test="orderTime != null and orderTime != ''">order_time = #{orderTime},</if>
-            <if test="statementTime != null and statementTime != ''">statement_time = #{statementTime},</if>
+            <if test="refuseReason != null">refuse_reason = #{refuseReason},</if>
         </trim>
         where order_id = #{orderId}
     </update>
@@ -126,12 +117,4 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{orderId}
         </foreach>
     </delete>
-
-<!--auto generated by MybatisCodeHelper on 2021-09-06-->
-    <select id="selectAllByDriverPhoneNumber" resultMap="OrderInformationResult">
-        select
-        <include refid="Base_Column_List"/>
-        from YDOnlineTaxi.order_information
-        where driver_phone_number=#{driverPhoneNumber}
-    </select>
 </mapper>

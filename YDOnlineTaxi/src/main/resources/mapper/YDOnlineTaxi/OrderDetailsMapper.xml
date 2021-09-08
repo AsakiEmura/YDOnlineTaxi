@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.YDOnlineTaxi.mapper.OrderDetailsMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.YDOnlineTaxi.domain.OrderDetails">
+    <!--@mbg.generated-->
+    <!--@Table order_details-->
+    <id column="order_id" jdbcType="VARCHAR" property="orderId" />
+    <result column="arrival_rime" jdbcType="TIMESTAMP" property="arrivalRime" />
+    <result column="order_took_time" jdbcType="TIMESTAMP" property="orderTookTime" />
+    <result column="arrival_location" jdbcType="VARCHAR" property="arrivalLocation" />
+    <result column="driver_license_plate_number" jdbcType="CHAR" property="driverLicensePlateNumber" />
+    <result column="driver_name" jdbcType="VARCHAR" property="driverName" />
+    <result column="order_finish_time" jdbcType="TIMESTAMP" property="orderFinishTime" />
+    <result column="departure_time" jdbcType="TIMESTAMP" property="departureTime" />
+    <result column="departure_location" jdbcType="VARCHAR" property="departureLocation" />
+    <result column="driver_phone_number" jdbcType="CHAR" property="driverPhoneNumber" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    order_id, arrival_rime, order_took_time, arrival_location, driver_license_plate_number, 
+    driver_name, order_finish_time, departure_time, departure_location, driver_phone_number
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from order_details
+    where order_id = #{orderId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    <!--@mbg.generated-->
+    delete from order_details
+    where order_id = #{orderId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.ruoyi.YDOnlineTaxi.domain.OrderDetails">
+    <!--@mbg.generated-->
+    insert into order_details (order_id, arrival_rime, order_took_time, 
+      arrival_location, driver_license_plate_number, 
+      driver_name, order_finish_time, departure_time, 
+      departure_location, driver_phone_number)
+    values (#{orderId,jdbcType=VARCHAR}, #{arrivalRime,jdbcType=TIMESTAMP}, #{orderTookTime,jdbcType=TIMESTAMP}, 
+      #{arrivalLocation,jdbcType=VARCHAR}, #{driverLicensePlateNumber,jdbcType=CHAR}, 
+      #{driverName,jdbcType=VARCHAR}, #{orderFinishTime,jdbcType=TIMESTAMP}, #{departureTime,jdbcType=TIMESTAMP}, 
+      #{departureLocation,jdbcType=VARCHAR}, #{driverPhoneNumber,jdbcType=CHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.ruoyi.YDOnlineTaxi.domain.OrderDetails">
+    <!--@mbg.generated-->
+    insert into order_details
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        order_id,
+      </if>
+      <if test="arrivalRime != null">
+        arrival_rime,
+      </if>
+      <if test="orderTookTime != null">
+        order_took_time,
+      </if>
+      <if test="arrivalLocation != null">
+        arrival_location,
+      </if>
+      <if test="driverLicensePlateNumber != null">
+        driver_license_plate_number,
+      </if>
+      <if test="driverName != null">
+        driver_name,
+      </if>
+      <if test="orderFinishTime != null">
+        order_finish_time,
+      </if>
+      <if test="departureTime != null">
+        departure_time,
+      </if>
+      <if test="departureLocation != null">
+        departure_location,
+      </if>
+      <if test="driverPhoneNumber != null">
+        driver_phone_number,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="arrivalRime != null">
+        #{arrivalRime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="orderTookTime != null">
+        #{orderTookTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="arrivalLocation != null">
+        #{arrivalLocation,jdbcType=VARCHAR},
+      </if>
+      <if test="driverLicensePlateNumber != null">
+        #{driverLicensePlateNumber,jdbcType=CHAR},
+      </if>
+      <if test="driverName != null">
+        #{driverName,jdbcType=VARCHAR},
+      </if>
+      <if test="orderFinishTime != null">
+        #{orderFinishTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="departureTime != null">
+        #{departureTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="departureLocation != null">
+        #{departureLocation,jdbcType=VARCHAR},
+      </if>
+      <if test="driverPhoneNumber != null">
+        #{driverPhoneNumber,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.ruoyi.YDOnlineTaxi.domain.OrderDetails">
+    <!--@mbg.generated-->
+    update order_details
+    <set>
+      <if test="arrivalRime != null">
+        arrival_rime = #{arrivalRime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="orderTookTime != null">
+        order_took_time = #{orderTookTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="arrivalLocation != null">
+        arrival_location = #{arrivalLocation,jdbcType=VARCHAR},
+      </if>
+      <if test="driverLicensePlateNumber != null">
+        driver_license_plate_number = #{driverLicensePlateNumber,jdbcType=CHAR},
+      </if>
+      <if test="driverName != null">
+        driver_name = #{driverName,jdbcType=VARCHAR},
+      </if>
+      <if test="orderFinishTime != null">
+        order_finish_time = #{orderFinishTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="departureTime != null">
+        departure_time = #{departureTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="departureLocation != null">
+        departure_location = #{departureLocation,jdbcType=VARCHAR},
+      </if>
+      <if test="driverPhoneNumber != null">
+        driver_phone_number = #{driverPhoneNumber,jdbcType=CHAR},
+      </if>
+    </set>
+    where order_id = #{orderId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.ruoyi.YDOnlineTaxi.domain.OrderDetails">
+    <!--@mbg.generated-->
+    update order_details
+    set arrival_rime = #{arrivalRime,jdbcType=TIMESTAMP},
+      order_took_time = #{orderTookTime,jdbcType=TIMESTAMP},
+      arrival_location = #{arrivalLocation,jdbcType=VARCHAR},
+      driver_license_plate_number = #{driverLicensePlateNumber,jdbcType=CHAR},
+      driver_name = #{driverName,jdbcType=VARCHAR},
+      order_finish_time = #{orderFinishTime,jdbcType=TIMESTAMP},
+      departure_time = #{departureTime,jdbcType=TIMESTAMP},
+      departure_location = #{departureLocation,jdbcType=VARCHAR},
+      driver_phone_number = #{driverPhoneNumber,jdbcType=CHAR}
+    where order_id = #{orderId,jdbcType=VARCHAR}
+  </update>
+</mapper>

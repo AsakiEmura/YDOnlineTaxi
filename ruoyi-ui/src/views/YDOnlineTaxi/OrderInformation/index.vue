@@ -1,6 +1,15 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
+      <el-form-item label="订单编号" prop="orderId">
+        <el-input
+          v-model="queryParams.orderId"
+          placeholder="请输入订单编号"
+          clearable
+          size="small"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
       <el-form-item label="出发地" prop="departure">
         <el-input
           v-model="queryParams.departure"
@@ -19,6 +28,28 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
+      <el-form-item label="用车时间" prop="transportTime">
+        <el-date-picker clearable size="small"
+          v-model="queryParams.transportTime"
+          type="date"
+          value-format="yyyy-MM-dd"
+          placeholder="选择用车时间">
+        </el-date-picker>
+      </el-form-item>
+      <el-form-item label="需求类型" prop="requirementTypes">
+        <el-input
+          v-model="queryParams.requirementTypes"
+          placeholder="请输入需求类型"
+          clearable
+          size="small"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="用车类型" prop="carType">
+        <el-select v-model="queryParams.carType" placeholder="请选择用车类型" clearable size="small">
+          <el-option label="请选择字典生成" value="" />
+        </el-select>
+      </el-form-item>
       <el-form-item label="乘客称呼" prop="passenger">
         <el-input
           v-model="queryParams.passenger"
@@ -31,54 +62,25 @@
       <el-form-item label="乘客手机" prop="passengerPhone">
         <el-input
           v-model="queryParams.passengerPhone"
-          placeholder="请输入乘客联系手机"
+          placeholder="请输入乘客手机"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="用车时间" prop="transportTime">
+      <el-form-item label="积分" prop="points">
         <el-input
-          v-model="queryParams.transportTime"
-          placeholder="请输入用车时间"
+          v-model="queryParams.points"
+          placeholder="请输入积分"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="订单状态" prop="orderStatus">
-        <el-select v-model="queryParams.orderStatus" placeholder="请选择订单状态" clearable size="small">
-          <el-option label="已下放" value="已下放" />
-          <el-option label="已派单" value="已派单" />
-          <el-option label="已结单" value="已结单" />
+      <el-form-item label="状态" prop="orderStatus">
+        <el-select v-model="queryParams.orderStatus" placeholder="请选择状态" clearable size="small">
+          <el-option label="请选择字典生成" value="" />
         </el-select>
-      </el-form-item>
-      <el-form-item label="司机手机" prop="driverPhoneNumber">
-        <el-input
-          v-model="queryParams.driverPhoneNumber"
-          placeholder="请输入司机手机号"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="接单时间" prop="orderTime">
-        <el-input
-          v-model="queryParams.orderTime"
-          placeholder="请输入接单时间"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="结单时间" prop="statementTime">
-        <el-input
-          v-model="queryParams.statementTime"
-          placeholder="请输入结单时间"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -172,23 +174,24 @@
       </div>
     </el-dialog>
 
-
     <el-table v-loading="loading" :data="OrderInformationList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="订单编号" align="center" prop="orderId" />
       <el-table-column label="出发地" align="center" prop="departure" />
       <el-table-column label="到达地" align="center" prop="destination" />
-      <el-table-column label="乘客称呼" align="center" prop="passenger" />
-      <el-table-column label="乘客手机" align="center" prop="passengerPhone" />
-      <el-table-column label="用车时间" align="center" prop="transportTime" />
+      <el-table-column label="用车时间" align="center" prop="transportTime" width="180">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.transportTime, '{y}-{m}-{d} {h}:{i}') }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="需求类型" align="center" prop="requirementTypes" />
       <el-table-column label="用车类型" align="center" prop="carType" />
-      <el-table-column label="订单价格" align="center" prop="remuneration" />
+      <el-table-column label="乘客称呼" align="center" prop="passenger" />
+      <el-table-column label="乘客手机" align="center" prop="passengerPhone" />
+      <el-table-column label="积分" align="center" prop="points" />
       <el-table-column label="订单备注" align="center" prop="note" />
-      <el-table-column label="订单状态" align="center" prop="orderStatus" />
-      <el-table-column label="司机手机" align="center" prop="driverPhoneNumber" />
-      <el-table-column label="接单时间" align="center" prop="orderTime" />
-      <el-table-column label="结单时间" align="center" prop="statementTime" />
+      <el-table-column label="状态" align="center" prop="orderStatus" />
+      <el-table-column label="拒绝理由" align="center" prop="refuseReason" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -220,49 +223,47 @@
     <!-- 添加或修改订单信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="订单编号" prop="orderId">
-          <el-input v-model="form.orderId" :readonly="true"/>
-        </el-form-item>
         <el-form-item label="出发地" prop="departure">
           <el-input v-model="form.departure" placeholder="请输入出发地" />
         </el-form-item>
         <el-form-item label="到达地" prop="destination">
           <el-input v-model="form.destination" placeholder="请输入到达地" />
         </el-form-item>
-        <el-form-item label="乘客称呼" prop="passenger">
-          <el-input v-model="form.passenger" placeholder="请输入乘客称呼" />
-        </el-form-item>
-        <el-form-item label="手机号" prop="passengerPhone">
-          <el-input v-model="form.passengerPhone" placeholder="请输入乘客手机号" />
-        </el-form-item>
         <el-form-item label="用车时间" prop="transportTime">
-          <el-input v-model="form.transportTime" placeholder="请输入用车时间" />
+          <el-date-picker clearable size="small"
+            v-model="form.transportTime"
+            type="date"
+            value-format="yyyy-MM-dd"
+            placeholder="选择用车时间">
+          </el-date-picker>
         </el-form-item>
         <el-form-item label="需求类型" prop="requirementTypes">
-          <el-select v-model="form.requirementTypes" placeholder="请选择需求类型">
-            <el-option label="接机" value="接机" />
-            <el-option label="送机" value="送机" />
-            <el-option label="全包" value="送机" />
-            <el-option label="半包" value="送机" />
-          </el-select>
+          <el-input v-model="form.requirementTypes" placeholder="请输入需求类型" />
         </el-form-item>
         <el-form-item label="用车类型" prop="carType">
           <el-select v-model="form.carType" placeholder="请选择用车类型">
             <el-option label="请选择字典生成" value="" />
           </el-select>
         </el-form-item>
-        <el-form-item label="订单价格" prop="remuneration">
-          <el-input v-model="form.remuneration" placeholder="请输入订单价格" />
+        <el-form-item label="乘客称呼" prop="passenger">
+          <el-input v-model="form.passenger" placeholder="请输入乘客称呼" />
+        </el-form-item>
+        <el-form-item label="乘客手机" prop="passengerPhone">
+          <el-input v-model="form.passengerPhone" placeholder="请输入乘客手机" />
+        </el-form-item>
+        <el-form-item label="积分" prop="points">
+          <el-input v-model="form.points" placeholder="请输入积分" />
         </el-form-item>
         <el-form-item label="订单备注" prop="note">
-          <el-input v-model="form.note" placeholder="请输入订单备注" />
+          <el-input v-model="form.note" type="textarea" placeholder="请输入内容" />
         </el-form-item>
-        <el-form-item label="订单状态" prop="orderStatus">
-          <el-select v-model="form.orderStatus" placeholder="请选择订单状态">
-            <el-option label="订单闲置中" value="订单闲置中" />
-            <el-option label="已派单" value="已派单" />
-            <el-option label="已结单" value="已结单" />
+        <el-form-item label="状态" prop="orderStatus">
+          <el-select v-model="form.orderStatus" placeholder="请选择状态">
+            <el-option label="请选择字典生成" value="" />
           </el-select>
+        </el-form-item>
+        <el-form-item label="拒绝理由" prop="refuseReason">
+          <el-input v-model="form.refuseReason" type="textarea" placeholder="请输入内容" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -274,7 +275,7 @@
 </template>
 
 <script>
-import { listOrderInformation, getOrderInformation, delOrderInformation, addOrderInformation, updateOrderInformation, exportOrderInformation,importTemplate } from "@/api/YDOnlineTaxi/OrderInformation";
+import { listOrderInformation, getOrderInformation, delOrderInformation, addOrderInformation, updateOrderInformation, exportOrderInformation, importTemplate} from "@/api/YDOnlineTaxi/OrderInformation";
 import { getToken } from "@/utils/auth";
 
 export default {
@@ -305,15 +306,16 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
+        orderId: null,
         departure: null,
         destination: null,
+        transportTime: null,
+        requirementTypes: null,
+        carType: null,
         passenger: null,
         passengerPhone: null,
-        transportTime: null,
+        points: null,
         orderStatus: null,
-        driverPhoneNumber: null,
-        orderTime: null,
-        statementTime: null
       },
       // 用户导入参数
       upload: {
@@ -340,12 +342,6 @@ export default {
         destination: [
           { required: true, message: "到达地不能为空", trigger: "blur" }
         ],
-        passenger: [
-          { required: true, message: "乘客称呼不能为空", trigger: "blur" }
-        ],
-        passengerPhone: [
-          { required: true, message: "乘客联系手机不能为空", trigger: "blur" }
-        ],
         transportTime: [
           { required: true, message: "用车时间不能为空", trigger: "blur" }
         ],
@@ -355,15 +351,18 @@ export default {
         carType: [
           { required: true, message: "用车类型不能为空", trigger: "change" }
         ],
-        remuneration: [
-          { required: true, message: "订单价格不能为空", trigger: "blur" }
+        passenger: [
+          { required: true, message: "乘客称呼不能为空", trigger: "blur" }
         ],
-        note: [
-          { required: false}
+        passengerPhone: [
+          { required: true, message: "乘客手机不能为空", trigger: "blur" }
+        ],
+        points: [
+          { required: true, message: "积分不能为空", trigger: "blur" }
         ],
         orderStatus: [
-          { required: false}
-        ]
+          { required: true, message: "状态不能为空", trigger: "change" }
+        ],
       }
     };
   },
@@ -388,20 +387,18 @@ export default {
     // 表单重置
     reset() {
       this.form = {
+        orderId: null,
         departure: null,
         destination: null,
-        passenger: null,
-        passengerPhone: null,
         transportTime: null,
         requirementTypes: null,
         carType: null,
-        remuneration: null,
+        passenger: null,
+        passengerPhone: null,
+        points: null,
         note: null,
-        orderId: null,
         orderStatus: null,
-        driverPhoneNumber: null,
-        orderTime: null,
-        statementTime: null
+        refuseReason: null
       };
       this.resetForm("form");
     },

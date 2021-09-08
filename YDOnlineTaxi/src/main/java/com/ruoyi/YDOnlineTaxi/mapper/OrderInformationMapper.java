@@ -1,14 +1,14 @@
 package com.ruoyi.YDOnlineTaxi.mapper;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import com.ruoyi.YDOnlineTaxi.domain.OrderInformation;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 订单信息Mapper接口
  * 
  * @author ruoyi
- * @date 2021-08-28
+ * @date 2021-09-08
  */
 public interface OrderInformationMapper 
 {
@@ -59,7 +59,4 @@ public interface OrderInformationMapper
      * @return 结果
      */
     public int deleteOrderInformationByOrderIds(String[] orderIds);
-
-    public List<OrderInformation> selectAllByDriverPhoneNumber(@Param("driverPhoneNumber")String driverPhoneNumber);
-
 }

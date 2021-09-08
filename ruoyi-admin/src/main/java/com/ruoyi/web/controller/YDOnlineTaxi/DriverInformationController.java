@@ -15,10 +15,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * 司机账户信息Controller
+ * 司机线上账户信息
+Controller
  * 
  * @author ruoyi
- * @date 2021-08-30
+ * @date 2021-09-08
  */
 @RestController
 @RequestMapping("/YDOnlineTaxi/DriverInformation")
@@ -28,7 +29,8 @@ public class DriverInformationController extends BaseController
     private IDriverInformationService driverInformationService;
 
     /**
-     * 查询司机账户信息列表
+     * 查询司机线上账户信息
+列表
      */
     @PreAuthorize("@ss.hasPermi('YDOnlineTaxi:DriverInformation:list')")
     @GetMapping("/list")
@@ -40,28 +42,35 @@ public class DriverInformationController extends BaseController
     }
 
     /**
-     * 导出司机账户信息列表
+     * 导出司机线上账户信息
+列表
      */
     @PreAuthorize("@ss.hasPermi('YDOnlineTaxi:DriverInformation:export')")
-    @Log(title = "司机账户信息", businessType = BusinessType.EXPORT)
+    @Log(title = "司机线上账户信息", businessType = BusinessType.EXPORT)
     @GetMapping("/export")
     public AjaxResult export(DriverInformation driverInformation)
     {
         List<DriverInformation> list = driverInformationService.selectDriverInformationList(driverInformation);
         ExcelUtil<DriverInformation> util = new ExcelUtil<DriverInformation>(DriverInformation.class);
-        return util.exportExcel(list, "司机账户信息数据");
+        return util.exportExcel(list, "司机线上账户信息数据");
     }
 
     /**
-     * TODO penpen
-     * 获取司机账户信息详细信息
+     * 获取司机线上账户信息详细信息
      */
+    @PreAuthorize("@ss.hasPermi('YDOnlineTaxi:DriverInformation:query')")
+    @GetMapping(value = "/{driverPhoneNumber}")
+    public AjaxResult getInfo(@PathVariable("driverPhoneNumber") String driverPhoneNumber)
+    {
+        return AjaxResult.success(driverInformationService.selectDriverInformationByDriverPhoneNumber(driverPhoneNumber));
+    }
 
     /**
-     * 新增司机账户信息
+     * 新增司机线上账户信息
+
      */
     @PreAuthorize("@ss.hasPermi('YDOnlineTaxi:DriverInformation:add')")
-    @Log(title = "司机账户信息", businessType = BusinessType.INSERT)
+    @Log(title = "司机线上账户信息", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody DriverInformation driverInformation)
     {
@@ -69,10 +78,11 @@ public class DriverInformationController extends BaseController
     }
 
     /**
-     * 修改司机账户信息
+     * 修改司机线上账户信息
+
      */
     @PreAuthorize("@ss.hasPermi('YDOnlineTaxi:DriverInformation:edit')")
-    @Log(title = "司机账户信息", businessType = BusinessType.UPDATE)
+    @Log(title = "司机线上账户信息", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody DriverInformation driverInformation)
     {
@@ -80,10 +90,11 @@ public class DriverInformationController extends BaseController
     }
 
     /**
-     * 删除司机账户信息
+     * 删除司机线上账户信息
+
      */
     @PreAuthorize("@ss.hasPermi('YDOnlineTaxi:DriverInformation:remove')")
-    @Log(title = "司机账户信息", businessType = BusinessType.DELETE)
+    @Log(title = "司机线上账户信息", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{driverPhoneNumbers}")
     public AjaxResult remove(@PathVariable String[] driverPhoneNumbers)
     {

@@ -5,14 +5,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import com.ruoyi.YDOnlineTaxi.service.OrderService;
 import com.ruoyi.YDOnlineTaxi.utils.OrderStatus;
-import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.uuid.UUID;
-import com.ruoyi.system.service.impl.SysUserServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +21,7 @@ import com.ruoyi.YDOnlineTaxi.service.IOrderInformationService;
  * 订单信息Service业务层处理
  * 
  * @author ruoyi
- * @date 2021-08-28
+ * @date 2021-09-08
  */
 @Service
 public class OrderInformationServiceImpl implements IOrderInformationService 
@@ -34,7 +30,6 @@ public class OrderInformationServiceImpl implements IOrderInformationService
 
     @Autowired(required = false)
     private OrderInformationMapper orderInformationMapper;
-
 
     /**
      * 查询订单信息
@@ -138,7 +133,7 @@ public class OrderInformationServiceImpl implements IOrderInformationService
                     if (StringUtils.isNull(o))
                     {
                         order.setCreateBy(operName);
-                        order.setTransportTime(parseTimeFormat(order.getTransportTime()));
+                        order.setTransportTime(order.getTransportTime());
                         order.setOrderStatus(OrderStatus.WAIT_DISPATCH.toString());
                         this.insertOrderInformation(order);
                         successNum++;
@@ -147,7 +142,7 @@ public class OrderInformationServiceImpl implements IOrderInformationService
                     else if (isUpdateSupport)
                     {
                         order.setUpdateBy(operName);
-                        order.setTransportTime(parseTimeFormat(order.getTransportTime()));
+                        order.setTransportTime(order.getTransportTime());
                         order.setOrderStatus(OrderStatus.WAIT_DISPATCH.toString());
                         this.insertOrderInformation(order);
                         successNum++;
@@ -164,7 +159,7 @@ public class OrderInformationServiceImpl implements IOrderInformationService
                     order.setOrderId(randomID());
                     order.setCreateBy(operName);
                     order.setOrderStatus(OrderStatus.WAIT_DISPATCH.toString());
-                    order.setTransportTime(parseTimeFormat(order.getTransportTime()));
+                    order.setTransportTime(order.getTransportTime());
                     this.insertOrderInformation(order);
                     successNum++;
                     successMsg.append("<br/>" + successNum + "、订单信息 " + order.getOrderId() + " 导入成功");
@@ -191,18 +186,6 @@ public class OrderInformationServiceImpl implements IOrderInformationService
         return successMsg.toString();
     }
 
-    @Override
-    public String parseTimeFormat(String time) {
-        SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.US);
-        Date date = new Date();
-        try{
-            date = sdf.parse(time);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        String formatStr = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(date);
-        return formatStr;
-    }
 
     @Override
     public String randomID() {
@@ -210,8 +193,4 @@ public class OrderInformationServiceImpl implements IOrderInformationService
         return id;
     }
 
-    @Override
-    public List<OrderInformation> selectAllByDriverPhoneNumber(String driverPhoneNumber) {
-        return orderInformationMapper.selectAllByDriverPhoneNumber(driverPhoneNumber);
-    }
 }

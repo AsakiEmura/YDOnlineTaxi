@@ -96,4 +96,8 @@ public interface DriverAccountMapper
      */
     List<DriverAccount> selectAllByStatus(@Param("status")String status);
 
+    DriverAccount selectAllByPhoneNumber(@Param("phoneNumber")String phoneNumber);
+
+
+
 }

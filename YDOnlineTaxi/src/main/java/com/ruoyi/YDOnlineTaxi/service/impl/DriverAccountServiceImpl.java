@@ -160,4 +160,9 @@ public class DriverAccountServiceImpl implements IDriverAccountService
     public List<DriverAccount> selectAllByStatus(String status) {
         return driverAccountMapper.selectAllByStatus(status);
     }
+
+    @Override
+    public DriverAccount selectAllByPhoneNumber(String phoneNumber) {
+        return driverAccountMapper.selectAllByPhoneNumber(phoneNumber);
+    }
 }

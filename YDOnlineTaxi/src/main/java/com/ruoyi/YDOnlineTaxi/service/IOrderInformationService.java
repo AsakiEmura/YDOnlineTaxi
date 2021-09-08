@@ -2,14 +2,13 @@ package com.ruoyi.YDOnlineTaxi.service;
 
 import java.util.List;
 import com.ruoyi.YDOnlineTaxi.domain.OrderInformation;
-import com.ruoyi.common.core.domain.entity.SysUser;
 import org.apache.ibatis.annotations.Param;
 
 /**
  * 订单信息Service接口
  * 
  * @author ruoyi
- * @date 2021-08-28
+ * @date 2021-09-08
  */
 public interface IOrderInformationService 
 {
@@ -71,9 +70,7 @@ public interface IOrderInformationService
      */
     public String importOrder(List<OrderInformation> orderList, Boolean isUpdateSupport, String operName);
 
-    public String parseTimeFormat(String time);
 
     public String randomID();
 
-    public List<OrderInformation> selectAllByDriverPhoneNumber(@Param("driverPhoneNumber")String driverPhoneNumber);
 }

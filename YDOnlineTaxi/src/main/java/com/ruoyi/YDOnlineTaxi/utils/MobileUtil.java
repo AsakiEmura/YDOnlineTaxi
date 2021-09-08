@@ -75,7 +75,7 @@ public class MobileUtil {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        return overTime;
+        return 86400-overTime;
     }
     //设置每次发送间隔60秒
     public boolean canSend(String phone) {

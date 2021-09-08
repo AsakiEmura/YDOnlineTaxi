@@ -7,18 +7,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <resultMap type="DriverInformation" id="DriverInformationResult">
         <result property="driverName"    column="driver_name"    />
         <result property="driverPhoneNumber"    column="driver_phone_number"    />
-        <result property="driverCarType"    column="driver_car_type"    />
         <result property="driverEmergencyContactPhoneNumber"    column="driver_emergency_contact_phone_number"    />
         <result property="driverCarId"    column="driver_car_id"    />
+        <result property="driverCarType"    column="driver_car_type"    />
+        <result property="carModel"    column="car_model"    />
+        <result property="carColor"    column="car_color"    />
         <result property="driverCompleteOrderNumber"    column="driver_complete_order_number"    />
         <result property="driverCompleteOrderNumberMonthly"    column="driver_complete_order_number_monthly"    />
         <result property="driverLevel"    column="driver_level"    />
-        <result property="driverRateNumber"    column="driver_rate_number"    />
-        <result property="carModel"    column="car_model"    />
     </resultMap>
 
     <sql id="selectDriverInformationVo">
-        select driver_name, driver_phone_number, driver_car_type, driver_emergency_contact_phone_number, driver_car_id, driver_complete_order_number, driver_complete_order_number_monthly, driver_level, driver_rate_number, car_model from driver_information
+        select driver_name, driver_phone_number, driver_emergency_contact_phone_number, driver_car_id, driver_car_type, car_model, car_color, driver_complete_order_number, driver_complete_order_number_monthly, driver_level from driver_information
     </sql>
 
     <select id="selectDriverInformationList" parameterType="DriverInformation" resultMap="DriverInformationResult">
@@ -28,6 +28,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="driverPhoneNumber != null  and driverPhoneNumber != ''"> and driver_phone_number like concat('%', #{driverPhoneNumber}, '%')</if>
             <if test="driverEmergencyContactPhoneNumber != null  and driverEmergencyContactPhoneNumber != ''"> and driver_emergency_contact_phone_number like concat('%', #{driverEmergencyContactPhoneNumber}, '%')</if>
             <if test="driverCarId != null  and driverCarId != ''"> and driver_car_id like concat('%', #{driverCarId}, '%')</if>
+            <if test="driverCarType != null  and driverCarType != ''"> and driver_car_type like concat('%', #{driverCarType}, '%')</if>
+            <if test="carModel != null  and carModel != ''"> and car_model = #{carModel}</if>
+            <if test="driverLevel != null  and driverLevel != ''"> and driver_level = #{driverLevel}</if>
         </where>
     </select>
     
@@ -41,26 +44,26 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="driverName != null and driverName != ''">driver_name,</if>
             <if test="driverPhoneNumber != null and driverPhoneNumber != ''">driver_phone_number,</if>
-            <if test="driverCarType != null and driverCarType != ''">driver_car_type,</if>
             <if test="driverEmergencyContactPhoneNumber != null">driver_emergency_contact_phone_number,</if>
             <if test="driverCarId != null and driverCarId != ''">driver_car_id,</if>
-            <if test="driverCompleteOrderNumber != null">driver_complete_order_number,</if>
-            <if test="driverCompleteOrderNumberMonthly != null">driver_complete_order_number_monthly,</if>
-            <if test="driverLevel != null">driver_level,</if>
-            <if test="driverRateNumber != null">driver_rate_number,</if>
+            <if test="driverCarType != null and driverCarType != ''">driver_car_type,</if>
             <if test="carModel != null and carModel != ''">car_model,</if>
+            <if test="carColor != null and carColor != ''">car_color,</if>
+            <if test="driverCompleteOrderNumber != null and driverCompleteOrderNumber != ''">driver_complete_order_number,</if>
+            <if test="driverCompleteOrderNumberMonthly != null and driverCompleteOrderNumberMonthly != ''">driver_complete_order_number_monthly,</if>
+            <if test="driverLevel != null and driverLevel != ''">driver_level,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="driverName != null and driverName != ''">#{driverName},</if>
             <if test="driverPhoneNumber != null and driverPhoneNumber != ''">#{driverPhoneNumber},</if>
-            <if test="driverCarType != null and driverCarType != ''">#{driverCarType},</if>
             <if test="driverEmergencyContactPhoneNumber != null">#{driverEmergencyContactPhoneNumber},</if>
             <if test="driverCarId != null and driverCarId != ''">#{driverCarId},</if>
-            <if test="driverCompleteOrderNumber != null">#{driverCompleteOrderNumber},</if>
-            <if test="driverCompleteOrderNumberMonthly != null">#{driverCompleteOrderNumberMonthly},</if>
-            <if test="driverLevel != null">#{driverLevel},</if>
-            <if test="driverRateNumber != null">#{driverRateNumber},</if>
+            <if test="driverCarType != null and driverCarType != ''">#{driverCarType},</if>
             <if test="carModel != null and carModel != ''">#{carModel},</if>
+            <if test="carColor != null and carColor != ''">#{carColor},</if>
+            <if test="driverCompleteOrderNumber != null and driverCompleteOrderNumber != ''">#{driverCompleteOrderNumber},</if>
+            <if test="driverCompleteOrderNumberMonthly != null and driverCompleteOrderNumberMonthly != ''">#{driverCompleteOrderNumberMonthly},</if>
+            <if test="driverLevel != null and driverLevel != ''">#{driverLevel},</if>
          </trim>
     </insert>
 
@@ -68,14 +71,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         update driver_information
         <trim prefix="SET" suffixOverrides=",">
             <if test="driverName != null and driverName != ''">driver_name = #{driverName},</if>
-            <if test="driverCarType != null and driverCarType != ''">driver_car_type = #{driverCarType},</if>
             <if test="driverEmergencyContactPhoneNumber != null">driver_emergency_contact_phone_number = #{driverEmergencyContactPhoneNumber},</if>
             <if test="driverCarId != null and driverCarId != ''">driver_car_id = #{driverCarId},</if>
-            <if test="driverCompleteOrderNumber != null">driver_complete_order_number = #{driverCompleteOrderNumber},</if>
-            <if test="driverCompleteOrderNumberMonthly != null">driver_complete_order_number_monthly = #{driverCompleteOrderNumberMonthly},</if>
-            <if test="driverLevel != null">driver_level = #{driverLevel},</if>
-            <if test="driverRateNumber != null">driver_rate_number = #{driverRateNumber},</if>
+            <if test="driverCarType != null and driverCarType != ''">driver_car_type = #{driverCarType},</if>
             <if test="carModel != null and carModel != ''">car_model = #{carModel},</if>
+            <if test="carColor != null and carColor != ''">car_color = #{carColor},</if>
+            <if test="driverCompleteOrderNumber != null and driverCompleteOrderNumber != ''">driver_complete_order_number = #{driverCompleteOrderNumber},</if>
+            <if test="driverCompleteOrderNumberMonthly != null and driverCompleteOrderNumberMonthly != ''">driver_complete_order_number_monthly = #{driverCompleteOrderNumberMonthly},</if>
+            <if test="driverLevel != null and driverLevel != ''">driver_level = #{driverLevel},</if>
         </trim>
         where driver_phone_number = #{driverPhoneNumber}
     </update>
