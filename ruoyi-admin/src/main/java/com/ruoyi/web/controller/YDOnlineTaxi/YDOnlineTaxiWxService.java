@@ -3,6 +3,7 @@ package com.ruoyi.web.controller.YDOnlineTaxi;
 import com.ruoyi.YDOnlineTaxi.domain.DriverAccount;
 import com.ruoyi.YDOnlineTaxi.domain.DriverInformation;
 import com.ruoyi.YDOnlineTaxi.domain.OrderInformation;
+import com.ruoyi.YDOnlineTaxi.service.IDriverInformationService;
 import com.ruoyi.YDOnlineTaxi.service.IOrderInformationService;
 import com.ruoyi.YDOnlineTaxi.service.impl.DriverAccountServiceImpl;
 import com.ruoyi.YDOnlineTaxi.service.impl.DriverInformationServiceImpl;
@@ -34,7 +35,7 @@ public class YDOnlineTaxiWxService extends BaseController {
     private ServerConfig serverConfig;
 
     @Autowired
-    private DriverInformationServiceImpl driverInformationService;
+    private IDriverInformationService driverInformationService;
 
     @Autowired
     private IOrderInformationService orderInformationService;
@@ -45,6 +46,7 @@ public class YDOnlineTaxiWxService extends BaseController {
         if (UserConstants.NOT_UNIQUE.equals(driverAccountService.checkIdNumberUnique(driverAccount.getIdNumber()))) {
             return AjaxResult.error("10000");
         }
+
 
         DriverInformation driverInformation = new DriverInformation();
         driverInformation.setDriverName(driverAccount.getDriverName());
