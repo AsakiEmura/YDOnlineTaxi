@@ -1,9 +1,9 @@
 package com.ruoyi.YDOnlineTaxi.service;
 
-import java.util.List;
 import com.ruoyi.YDOnlineTaxi.domain.DriverAccount;
-import com.ruoyi.common.core.domain.entity.SysUser;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * 司机详细信息Service接口
@@ -13,7 +13,7 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface IDriverAccountService 
 {
-    //TODO penpen
+
     /**
      * 验证密码是否正确
      *
@@ -24,7 +24,6 @@ public interface IDriverAccountService
 
     /**
      * 查询司机手机号是否存在
-     * TODO penpen
      * @param phoneNumber 司机详细信息主键
      * @return 司机详细信息
      */
@@ -105,4 +104,6 @@ public interface IDriverAccountService
     public List<DriverAccount> selectAllByStatus(@Param("status")String status);
 
     public DriverAccount selectAllByPhoneNumber(@Param("phoneNumber")String phoneNumber);
+
+    public String countByPhoneNumber(@Param("phoneNumber")String phoneNumber);
 }

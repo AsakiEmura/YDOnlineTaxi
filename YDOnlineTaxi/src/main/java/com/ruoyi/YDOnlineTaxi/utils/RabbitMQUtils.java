@@ -38,4 +38,5 @@ public final class RabbitMQUtils {
             logger.error("RabbitMQ，IO异常，异常原因为：{}", e.getMessage());
         }
     }
+
 }

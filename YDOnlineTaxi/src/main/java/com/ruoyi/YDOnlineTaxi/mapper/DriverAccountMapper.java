@@ -1,8 +1,9 @@
 package com.ruoyi.YDOnlineTaxi.mapper;
+
+import com.ruoyi.YDOnlineTaxi.domain.DriverAccount;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-import com.ruoyi.YDOnlineTaxi.domain.DriverAccount;
 
 /**
  * 司机详细信息Mapper接口
@@ -96,7 +97,9 @@ public interface DriverAccountMapper
      */
     List<DriverAccount> selectAllByStatus(@Param("status")String status);
 
-    DriverAccount selectAllByPhoneNumber(@Param("phoneNumber")String phoneNumber);
+    public DriverAccount selectAllByPhoneNumber(@Param("phoneNumber")String phoneNumber);
+
+    public Integer countByPhoneNumber(@Param("phoneNumber")String phoneNumber);
 
 
 

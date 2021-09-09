@@ -2,32 +2,21 @@ package com.ruoyi.web.controller.YDOnlineTaxi;
 
 import com.ruoyi.YDOnlineTaxi.domain.DriverAccount;
 import com.ruoyi.YDOnlineTaxi.domain.DriverInformation;
+import com.ruoyi.YDOnlineTaxi.service.IDriverInformationService;
 import com.ruoyi.YDOnlineTaxi.service.impl.DriverAccountServiceImpl;
-import com.ruoyi.YDOnlineTaxi.service.impl.DriverInformationServiceImpl;
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.ShiroKit;
-import com.ruoyi.common.utils.file.FileUploadUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.framework.config.ServerConfig;
-import org.apache.shiro.authc.SimpleAuthenticationInfo;
-import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
-import org.apache.shiro.crypto.hash.Md5Hash;
-import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 司机详细信息Controller
@@ -41,6 +30,8 @@ public class DriverAccountController extends BaseController {
     @Autowired
     private DriverAccountServiceImpl driverAccountService;
 
+    @Autowired
+    private IDriverInformationService driverInformationService;
     /**
      * 查询司机详细信息列表
      */
@@ -99,7 +90,17 @@ public class DriverAccountController extends BaseController {
     @Log(title = "司机详细信息", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody DriverAccount driverAccount) {
+        if(driverAccount.getStatus().equals("审核通过"))
+        {
+            DriverInformation driverInformation = new DriverInformation();
+            driverInformation.setDriverName(driverAccount.getDriverName());
+            driverInformation.setDriverPhoneNumber(driverAccount.getPhoneNumber());
+            driverInformation.setDriverCarType(driverAccount.getMotorcycleType());
+            driverInformation.setDriverCarId(driverAccount.getLicensePlateNumber());
+            driverInformation.setDriverEmergencyContactPhoneNumber(driverAccount.getEmergencyContactNumber());
 
+            driverInformationService.insertDriverInformation(driverInformation);
+        }
         return toAjax(driverAccountService.updateDriverAccount(driverAccount));
     }
 

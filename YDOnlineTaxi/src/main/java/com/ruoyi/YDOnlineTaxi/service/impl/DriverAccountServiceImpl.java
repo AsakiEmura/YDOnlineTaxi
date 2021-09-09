@@ -1,14 +1,14 @@
 package com.ruoyi.YDOnlineTaxi.service.impl;
 
-import java.util.List;
-
+import com.ruoyi.YDOnlineTaxi.domain.DriverAccount;
+import com.ruoyi.YDOnlineTaxi.mapper.DriverAccountMapper;
+import com.ruoyi.YDOnlineTaxi.service.IDriverAccountService;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.utils.ShiroKit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ruoyi.YDOnlineTaxi.mapper.DriverAccountMapper;
-import com.ruoyi.YDOnlineTaxi.domain.DriverAccount;
-import com.ruoyi.YDOnlineTaxi.service.IDriverAccountService;
+
+import java.util.List;
 
 /**
  * 司机详细信息Service业务层处理
@@ -164,5 +164,15 @@ public class DriverAccountServiceImpl implements IDriverAccountService
     @Override
     public DriverAccount selectAllByPhoneNumber(String phoneNumber) {
         return driverAccountMapper.selectAllByPhoneNumber(phoneNumber);
+    }
+
+    @Override
+    public String countByPhoneNumber(String phoneNumber) {
+        int count = driverAccountMapper.countByPhoneNumber(phoneNumber);
+        if (count > 0)
+        {
+            return UserConstants.NOT_UNIQUE;
+        }
+        return UserConstants.UNIQUE;
     }
 }
