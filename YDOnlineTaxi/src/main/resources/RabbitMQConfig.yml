@@ -16,6 +16,6 @@ spring:
         size: 50
 ### 自定义配置
 mq:
-  defaultExchange: amqpExchange # 默认交换器
-  queue: queue # 队列名
+  defaultExchange: amp.topic # 默认交换器
+  queue: YDOnlineTaxi # 队列名
   routeKey: queue_key # 路由key

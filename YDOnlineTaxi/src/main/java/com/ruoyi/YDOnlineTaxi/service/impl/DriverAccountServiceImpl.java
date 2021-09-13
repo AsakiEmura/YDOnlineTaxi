@@ -79,12 +79,6 @@ public class DriverAccountServiceImpl implements IDriverAccountService
     @Override
     public int insertDriverAccount(DriverAccount driverAccount)
     {
-
-        String salt = ShiroKit.getRandomSalt(5);
-        String driverPassword = ShiroKit.md5(driverAccount.getDriverPassword(), salt);
-
-        driverAccount.setDriverPassword(driverPassword);
-        driverAccount.setSalt(salt);
         return driverAccountMapper.insertDriverAccount(driverAccount);
     }
 

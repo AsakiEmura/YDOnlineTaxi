@@ -1,4 +1,4 @@
-package com.ruoyi.YDOnlineTaxi.service;
+package com.ruoyi.YDOnlineTaxi.service.impl;
 
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
