@@ -1,7 +1,7 @@
 package com.ruoyi.YDOnlineTaxi.service;
 
 import java.util.List;
-import com.ruoyi.YDOnlineTaxi.domain.OrderInformation;
+import com.ruoyi.YDOnlineTaxi.domain.VO.OrderInformation;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -72,5 +72,7 @@ public interface IOrderInformationService
 
 
     public String randomID();
+
+    public String selectOrderStatusByOrderId(@Param("orderId")String orderId);
 
 }

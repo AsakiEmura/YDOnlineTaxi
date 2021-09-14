@@ -1,6 +1,6 @@
 package com.ruoyi.web.controller.YDOnlineTaxi;
 
-import com.ruoyi.YDOnlineTaxi.domain.FinancialStatistics;
+import com.ruoyi.YDOnlineTaxi.domain.VO.FinancialStatistics;
 import com.ruoyi.YDOnlineTaxi.service.IFinancialStatisticsService;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;

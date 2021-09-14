@@ -1,9 +1,10 @@
 package com.ruoyi.web.controller.YDOnlineTaxi;
 
-import com.ruoyi.YDOnlineTaxi.domain.DriverAccount;
-import com.ruoyi.YDOnlineTaxi.domain.DriverInformation;
+import com.ruoyi.YDOnlineTaxi.domain.VO.DriverAccount;
+import com.ruoyi.YDOnlineTaxi.domain.VO.DriverInformation;
+import com.ruoyi.YDOnlineTaxi.domain.VO.WxWithDrivers;
+import com.ruoyi.YDOnlineTaxi.service.IDriverAccountService;
 import com.ruoyi.YDOnlineTaxi.service.IDriverInformationService;
-import com.ruoyi.YDOnlineTaxi.service.impl.DriverAccountServiceImpl;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
@@ -28,7 +29,7 @@ import java.util.List;
 @RequestMapping("/YDOnlineTaxi/DriverAccount")
 public class DriverAccountController extends BaseController {
     @Autowired
-    private DriverAccountServiceImpl driverAccountService;
+    private IDriverAccountService driverAccountService;
 
     @Autowired
     private IDriverInformationService driverInformationService;
@@ -90,17 +91,6 @@ public class DriverAccountController extends BaseController {
     @Log(title = "司机详细信息", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody DriverAccount driverAccount) {
-        if(driverAccount.getStatus().equals("审核通过"))
-        {
-            DriverInformation driverInformation = new DriverInformation();
-            driverInformation.setDriverName(driverAccount.getDriverName());
-            driverInformation.setDriverPhoneNumber(driverAccount.getPhoneNumber());
-            driverInformation.setDriverCarType(driverAccount.getMotorcycleType());
-            driverInformation.setDriverCarId(driverAccount.getLicensePlateNumber());
-            driverInformation.setDriverEmergencyContactPhoneNumber(driverAccount.getEmergencyContactNumber());
-
-            driverInformationService.insertDriverInformation(driverInformation);
-        }
         return toAjax(driverAccountService.updateDriverAccount(driverAccount));
     }
 
@@ -127,6 +117,31 @@ public class DriverAccountController extends BaseController {
         driverAccount.setDriverPassword(driverPassword);
         driverAccount.setSalt(salt);
         driverAccount.setUpdateBy(getUsername());
+        return toAjax(driverAccountService.resetPwd(driverAccount));
+    }
+
+    @Log(title = "司机密码修改", businessType = BusinessType.UPDATE)
+    @PutMapping("/audit")
+    public AjaxResult audit(@RequestBody DriverAccount driverAccount) {
+        if(driverAccount.getStatus().equals("审核通过"))
+        {
+            DriverInformation driverInformation = new DriverInformation();
+            driverInformation.setDriverName(driverAccount.getDriverName());
+            driverInformation.setDriverPhoneNumber(driverAccount.getPhoneNumber());
+            driverInformation.setDriverCarType(driverAccount.getMotorcycleType());
+            driverInformation.setDriverCarId(driverAccount.getLicensePlateNumber());
+            driverInformation.setDriverEmergencyContactPhoneNumber(driverAccount.getEmergencyContactNumber());
+
+            WxWithDrivers wxWithDrivers = new WxWithDrivers();
+            wxWithDrivers.setDriverName(driverAccount.getDriverName());
+            wxWithDrivers.setOpenId(driverAccount.getOpenId());
+            wxWithDrivers.setPhoneNumber(driverAccount.getDriverPassword());
+            wxWithDrivers.setPushTimes(5);
+
+
+
+            driverInformationService.insertDriverInformation(driverInformation);
+        }
         return toAjax(driverAccountService.resetPwd(driverAccount));
     }
 }

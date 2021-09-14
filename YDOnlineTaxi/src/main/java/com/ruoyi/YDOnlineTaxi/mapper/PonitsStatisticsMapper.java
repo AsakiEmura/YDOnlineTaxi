@@ -1,7 +1,7 @@
 package com.ruoyi.YDOnlineTaxi.mapper;
 
 import java.util.List;
-import com.ruoyi.YDOnlineTaxi.domain.PonitsStatistics;
+import com.ruoyi.YDOnlineTaxi.domain.VO.PonitsStatistics;
 
 /**
  * 积分统计Mapper接口

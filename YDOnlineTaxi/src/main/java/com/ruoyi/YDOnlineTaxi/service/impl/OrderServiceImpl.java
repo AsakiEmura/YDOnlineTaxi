@@ -1,9 +1,9 @@
 package com.ruoyi.YDOnlineTaxi.service.impl;
 
-import com.ruoyi.YDOnlineTaxi.domain.OrderInformation;
+import com.ruoyi.YDOnlineTaxi.domain.VO.OrderInformation;
 import com.ruoyi.YDOnlineTaxi.service.OrderService;
-import com.ruoyi.YDOnlineTaxi.utils.OrderStatus;
-import com.ruoyi.YDOnlineTaxi.utils.OrderStatusChangeEvent;
+import com.ruoyi.YDOnlineTaxi.constant.enums.OrderStatus;
+import com.ruoyi.YDOnlineTaxi.constant.enums.OrderStatusChangeEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
@@ -30,7 +30,7 @@ public class OrderServiceImpl implements OrderService {
 
     public OrderInformation create() {
         OrderInformation order = new OrderInformation();
-        order.setOrderStatus(OrderStatus.WAIT_DISPATCH.toString());
+        order.setOrderStatus(OrderStatus.WAIT_DISPATCHED.toString());
         order.setOrderId(orderInformationService.randomID());
         orders.put(order.getOrderId(), order);
         return order;

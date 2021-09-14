@@ -1,6 +1,6 @@
 package com.ruoyi.YDOnlineTaxi.service;
 
-import com.ruoyi.YDOnlineTaxi.domain.DriverAccount;
+import com.ruoyi.YDOnlineTaxi.domain.VO.DriverAccount;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -104,6 +104,7 @@ public interface IDriverAccountService
     public List<DriverAccount> selectAllByStatus(@Param("status")String status);
 
     public DriverAccount selectAllByPhoneNumber(@Param("phoneNumber")String phoneNumber);
+
 
     public String countByPhoneNumber(@Param("phoneNumber")String phoneNumber);
 }

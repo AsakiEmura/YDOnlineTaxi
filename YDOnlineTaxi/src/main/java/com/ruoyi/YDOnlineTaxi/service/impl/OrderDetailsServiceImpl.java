@@ -2,7 +2,7 @@ package com.ruoyi.YDOnlineTaxi.service.impl;
 
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
-import com.ruoyi.YDOnlineTaxi.domain.OrderDetails;
+import com.ruoyi.YDOnlineTaxi.domain.VO.OrderDetails;
 import com.ruoyi.YDOnlineTaxi.mapper.OrderDetailsMapper;
 import com.ruoyi.YDOnlineTaxi.service.OrderDetailsService;
 

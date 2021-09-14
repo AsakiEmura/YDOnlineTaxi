@@ -1,7 +1,7 @@
 package com.ruoyi.YDOnlineTaxi.service;
 
 import java.util.List;
-import com.ruoyi.YDOnlineTaxi.domain.FinancialStatistics;
+import com.ruoyi.YDOnlineTaxi.domain.VO.FinancialStatistics;
 
 /**
  * 财务统计Service接口

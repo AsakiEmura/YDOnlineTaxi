@@ -1,4 +1,4 @@
-package com.ruoyi.YDOnlineTaxi.domain;
+package com.ruoyi.YDOnlineTaxi.domain.VO;
 
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;

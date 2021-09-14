@@ -1,11 +1,8 @@
 package com.ruoyi.YDOnlineTaxi.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
-import com.ruoyi.YDOnlineTaxi.utils.OrderStatus;
+import com.ruoyi.YDOnlineTaxi.constant.enums.OrderStatus;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.uuid.UUID;
@@ -14,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.YDOnlineTaxi.mapper.OrderInformationMapper;
-import com.ruoyi.YDOnlineTaxi.domain.OrderInformation;
+import com.ruoyi.YDOnlineTaxi.domain.VO.OrderInformation;
 import com.ruoyi.YDOnlineTaxi.service.IOrderInformationService;
 
 /**
@@ -134,7 +131,7 @@ public class OrderInformationServiceImpl implements IOrderInformationService
                     {
                         order.setCreateBy(operName);
                         order.setTransportTime(order.getTransportTime());
-                        order.setOrderStatus(OrderStatus.WAIT_DISPATCH.toString());
+                        order.setOrderStatus(OrderStatus.WAIT_DISPATCHED.toString());
                         this.insertOrderInformation(order);
                         successNum++;
                         successMsg.append("<br/>" + successNum + "、订单信息 " + order.getOrderId() + " 导入成功");
@@ -143,7 +140,7 @@ public class OrderInformationServiceImpl implements IOrderInformationService
                     {
                         order.setUpdateBy(operName);
                         order.setTransportTime(order.getTransportTime());
-                        order.setOrderStatus(OrderStatus.WAIT_DISPATCH.toString());
+                        order.setOrderStatus(OrderStatus.WAIT_DISPATCHED.toString());
                         this.insertOrderInformation(order);
                         successNum++;
                         successMsg.append("<br/>" + successNum + "、订单信息 " + order.getOrderId() + " 更新成功");
@@ -158,7 +155,7 @@ public class OrderInformationServiceImpl implements IOrderInformationService
                 {
                     order.setOrderId(randomID());
                     order.setCreateBy(operName);
-                    order.setOrderStatus(OrderStatus.WAIT_DISPATCH.toString());
+                    order.setOrderStatus(OrderStatus.WAIT_DISPATCHED.toString());
                     order.setTransportTime(order.getTransportTime());
                     this.insertOrderInformation(order);
                     successNum++;
@@ -193,4 +190,8 @@ public class OrderInformationServiceImpl implements IOrderInformationService
         return id;
     }
 
+    @Override
+    public String selectOrderStatusByOrderId(String orderId) {
+        return orderInformationMapper.selectOrderStatusByOrderId(orderId);
+    }
 }

@@ -19,6 +19,8 @@ import java.util.Map;
 @ServerEndpoint(value = "/websocket/{userId}")
 @Component
 public class WebSocketEndPoint {
+
+
     //与某个客户端的连接会话，需要他来给客户端发送数据
     private Session session;
 

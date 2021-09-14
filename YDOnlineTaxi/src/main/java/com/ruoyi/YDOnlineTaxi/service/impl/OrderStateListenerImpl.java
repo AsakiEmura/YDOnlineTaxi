@@ -1,6 +1,8 @@
-package com.ruoyi.YDOnlineTaxi.utils;
+package com.ruoyi.YDOnlineTaxi.service.impl;
 
-import com.ruoyi.YDOnlineTaxi.domain.OrderInformation;
+import com.ruoyi.YDOnlineTaxi.constant.enums.OrderStatus;
+import com.ruoyi.YDOnlineTaxi.constant.enums.OrderStatusChangeEvent;
+import com.ruoyi.YDOnlineTaxi.domain.VO.OrderInformation;
 import org.springframework.messaging.Message;
 import org.springframework.statemachine.annotation.OnTransition;
 import org.springframework.statemachine.annotation.WithStateMachine;

@@ -22,7 +22,6 @@ public class UserGuide {
     private RedisCache redisUtils;
 
     /**
-     * TODO penpen
      * 用户须知
      * @return 用户须知
      */
@@ -46,7 +45,7 @@ public class UserGuide {
         return "";
     }
 
-    @GetMapping("/updataUserGuide")
+    @GetMapping("/updateUserGuide")
     public Map<String, Object> updataUserGuide(String data) {
         Map<String, Object> res = new HashMap<>();
         String guide;

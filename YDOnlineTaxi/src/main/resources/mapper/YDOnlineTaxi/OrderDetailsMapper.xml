@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.YDOnlineTaxi.mapper.OrderDetailsMapper">
-  <resultMap id="BaseResultMap" type="com.ruoyi.YDOnlineTaxi.domain.OrderDetails">
+  <resultMap id="BaseResultMap" type="com.ruoyi.YDOnlineTaxi.domain.VO.OrderDetails">
     <!--@mbg.generated-->
     <!--@Table order_details-->
     <id column="order_id" jdbcType="VARCHAR" property="orderId" />
@@ -32,7 +32,7 @@
     delete from order_details
     where order_id = #{orderId,jdbcType=VARCHAR}
   </delete>
-  <insert id="insert" parameterType="com.ruoyi.YDOnlineTaxi.domain.OrderDetails">
+  <insert id="insert" parameterType="com.ruoyi.YDOnlineTaxi.domain.VO.OrderDetails">
     <!--@mbg.generated-->
     insert into order_details (order_id, arrival_rime, order_took_time, 
       arrival_location, driver_license_plate_number, 
@@ -43,7 +43,7 @@
       #{driverName,jdbcType=VARCHAR}, #{orderFinishTime,jdbcType=TIMESTAMP}, #{departureTime,jdbcType=TIMESTAMP}, 
       #{departureLocation,jdbcType=VARCHAR}, #{driverPhoneNumber,jdbcType=CHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.ruoyi.YDOnlineTaxi.domain.OrderDetails">
+  <insert id="insertSelective" parameterType="com.ruoyi.YDOnlineTaxi.domain.VO.OrderDetails">
     <!--@mbg.generated-->
     insert into order_details
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -111,7 +111,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.ruoyi.YDOnlineTaxi.domain.OrderDetails">
+  <update id="updateByPrimaryKeySelective" parameterType="com.ruoyi.YDOnlineTaxi.domain.VO.OrderDetails">
     <!--@mbg.generated-->
     update order_details
     <set>
@@ -145,7 +145,7 @@
     </set>
     where order_id = #{orderId,jdbcType=VARCHAR}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.ruoyi.YDOnlineTaxi.domain.OrderDetails">
+  <update id="updateByPrimaryKey" parameterType="com.ruoyi.YDOnlineTaxi.domain.VO.OrderDetails">
     <!--@mbg.generated-->
     update order_details
     set arrival_rime = #{arrivalRime,jdbcType=TIMESTAMP},

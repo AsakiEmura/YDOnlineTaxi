@@ -1,6 +1,6 @@
 package com.ruoyi.web.controller.YDOnlineTaxi;
 
-import com.ruoyi.YDOnlineTaxi.domain.DriverInformation;
+import com.ruoyi.YDOnlineTaxi.domain.VO.DriverInformation;
 import com.ruoyi.YDOnlineTaxi.service.IDriverInformationService;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
@@ -29,8 +29,7 @@ public class DriverInformationController extends BaseController
     private IDriverInformationService driverInformationService;
 
     /**
-     * 查询司机线上账户信息
-列表
+     * 查询司机线上账户信息列表
      */
     @PreAuthorize("@ss.hasPermi('YDOnlineTaxi:DriverInformation:list')")
     @GetMapping("/list")
@@ -42,8 +41,7 @@ public class DriverInformationController extends BaseController
     }
 
     /**
-     * 导出司机线上账户信息
-列表
+     * 导出司机线上账户信息列表
      */
     @PreAuthorize("@ss.hasPermi('YDOnlineTaxi:DriverInformation:export')")
     @Log(title = "司机线上账户信息", businessType = BusinessType.EXPORT)
@@ -67,7 +65,6 @@ public class DriverInformationController extends BaseController
 
     /**
      * 新增司机线上账户信息
-
      */
     @PreAuthorize("@ss.hasPermi('YDOnlineTaxi:DriverInformation:add')")
     @Log(title = "司机线上账户信息", businessType = BusinessType.INSERT)
@@ -79,7 +76,6 @@ public class DriverInformationController extends BaseController
 
     /**
      * 修改司机线上账户信息
-
      */
     @PreAuthorize("@ss.hasPermi('YDOnlineTaxi:DriverInformation:edit')")
     @Log(title = "司机线上账户信息", businessType = BusinessType.UPDATE)
@@ -91,7 +87,6 @@ public class DriverInformationController extends BaseController
 
     /**
      * 删除司机线上账户信息
-
      */
     @PreAuthorize("@ss.hasPermi('YDOnlineTaxi:DriverInformation:remove')")
     @Log(title = "司机线上账户信息", businessType = BusinessType.DELETE)

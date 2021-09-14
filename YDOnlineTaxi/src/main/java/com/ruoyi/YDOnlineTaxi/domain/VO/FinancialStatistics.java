@@ -1,4 +1,4 @@
-package com.ruoyi.YDOnlineTaxi.domain;
+package com.ruoyi.YDOnlineTaxi.domain.VO;
 
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.TreeEntity;

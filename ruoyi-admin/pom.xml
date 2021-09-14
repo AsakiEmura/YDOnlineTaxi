@@ -66,6 +66,10 @@
             <groupId>com.ruoyi</groupId>
             <artifactId>YDOnlineTaxi</artifactId>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
 
     </dependencies>
 

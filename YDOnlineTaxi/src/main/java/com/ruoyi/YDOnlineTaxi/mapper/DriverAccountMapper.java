@@ -1,6 +1,6 @@
 package com.ruoyi.YDOnlineTaxi.mapper;
 
-import com.ruoyi.YDOnlineTaxi.domain.DriverAccount;
+import com.ruoyi.YDOnlineTaxi.domain.VO.DriverAccount;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -61,7 +61,8 @@ public interface DriverAccountMapper
      * @param driverAccount 司机详细信息
      * @return 结果
      */
-    public int updateDriverAccount(DriverAccount driverAccount);
+    public int
+    updateDriverAccount(DriverAccount driverAccount);
 
     /**
      * 删除司机详细信息
@@ -100,7 +101,6 @@ public interface DriverAccountMapper
     public DriverAccount selectAllByPhoneNumber(@Param("phoneNumber")String phoneNumber);
 
     public Integer countByPhoneNumber(@Param("phoneNumber")String phoneNumber);
-
 
 
 }

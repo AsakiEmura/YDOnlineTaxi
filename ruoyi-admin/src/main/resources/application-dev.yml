@@ -77,3 +77,23 @@ spring:
         max-active: 8
         # #连接池最大阻塞等待时间（使用负值表示没有限制）
         max-wait: -1ms
+  rabbitmq:
+    host: 106.14.126.147
+    port: 5672
+    username: admin
+    password: supor229
+    virtual-host: /
+    listener:
+      simple:
+        acknowledge-mode: manual # 手动应答
+        concurrency: 5 # 消费端最小并发数
+        max-concurrency: 10 # 消费端最大并发数
+        prefetch: 5 # 一次请求中预处理的消息数量
+    cache:
+      channel:
+        size: 50
+### 自定义配置
+mq:
+  defaultExchange: topic # 默认交换器
+  queue: YDOnlineTaxi # 队列名
+  routeKey: queue_key # 路由key

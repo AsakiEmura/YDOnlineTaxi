@@ -1,6 +1,6 @@
 package com.ruoyi.YDOnlineTaxi.mapper;
 
-import com.ruoyi.YDOnlineTaxi.domain.OrderDetails;
+import com.ruoyi.YDOnlineTaxi.domain.VO.OrderDetails;
 
 public interface OrderDetailsMapper {
     /**

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = "mq")
-@PropertySource(value = {"classpath:RabbitMQConfig.yml"})
+//@PropertySource(value = { "classpath:RabbitMQConfig.yml" })
 public class MQProperties {
     private String defaultExchange;
     private String routeKey;
@@ -17,7 +17,7 @@ public class MQProperties {
         return defaultExchange;
     }
 
-    @Value("${defaultExchange}")
+//    @Value("${defaultExchange}")
     public void setDefaultExchange(String defaultExchange) {
         this.defaultExchange = defaultExchange;
     }
@@ -26,7 +26,7 @@ public class MQProperties {
         return routeKey;
     }
 
-    @Value("${routeKey}")
+//    @Value("${routeKey}")
     public void setRouteKey(String routeKey) {
         this.routeKey = routeKey;
     }
@@ -35,7 +35,7 @@ public class MQProperties {
         return queue;
     }
 
-    @Value("${queue}")
+//    @Value("${queue}")
     public void setQueue(String queue) {
         this.queue = queue;
     }

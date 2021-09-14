@@ -1,4 +1,4 @@
-package com.ruoyi.YDOnlineTaxi.domain;
+package com.ruoyi.YDOnlineTaxi.domain.VO;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -64,6 +64,9 @@ public class DriverAccount extends BaseEntity
 
     /** md5密码盐 */
     private String salt;
+
+    /** 用户微信openid*/
+    private String openId;
 
 
     public void setDriverName(String driverName) 
@@ -193,6 +196,13 @@ public class DriverAccount extends BaseEntity
         return salt;
     }
 
+    public String getOpenId() {
+        return openId;
+    }
+
+    public void setOpenId(String openId) {
+        this.openId = openId;
+    }
 
     @Override
     public String toString() {
@@ -211,6 +221,7 @@ public class DriverAccount extends BaseEntity
             .append("status", getStatus())
             .append("driverPassword", getDriverPassword())
             .append("salt", getSalt())
+            .append("openId",getOpenId())
             .toString();
     }
 }

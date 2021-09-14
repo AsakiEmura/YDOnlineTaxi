@@ -1,6 +1,6 @@
 package com.ruoyi.YDOnlineTaxi.service;
 
-import com.ruoyi.YDOnlineTaxi.domain.OrderInformation;
+import com.ruoyi.YDOnlineTaxi.domain.VO.OrderInformation;
 import java.util.Map;
 
 public interface OrderService {

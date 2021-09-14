@@ -95,5 +95,5 @@ spring:
 ### 自定义配置
 mq:
     defaultExchange: amq.topic # 默认交换器
-    queue: queue # 队列名
+    queue: YDOnlineTaxi # 队列名
     routeKey: queue_key # 路由key

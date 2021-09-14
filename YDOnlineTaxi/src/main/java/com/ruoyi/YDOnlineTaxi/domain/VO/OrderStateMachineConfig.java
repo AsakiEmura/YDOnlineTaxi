@@ -1,7 +1,7 @@
-package com.ruoyi.YDOnlineTaxi.domain;
+package com.ruoyi.YDOnlineTaxi.domain.VO;
 
-import com.ruoyi.YDOnlineTaxi.utils.OrderStatus;
-import com.ruoyi.YDOnlineTaxi.utils.OrderStatusChangeEvent;
+import com.ruoyi.YDOnlineTaxi.constant.enums.OrderStatus;
+import com.ruoyi.YDOnlineTaxi.constant.enums.OrderStatusChangeEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.statemachine.StateMachineContext;
@@ -30,7 +30,7 @@ public class OrderStateMachineConfig extends StateMachineConfigurerAdapter<Order
     public void configure(StateMachineStateConfigurer<OrderStatus, OrderStatusChangeEvent> states) throws Exception {
         states
                 .withStates()
-                .initial(OrderStatus.WAIT_DISPATCH)
+                .initial(OrderStatus.WAIT_DISPATCHED)
                 .states(EnumSet.allOf(OrderStatus.class));
     }
 
@@ -42,7 +42,7 @@ public class OrderStateMachineConfig extends StateMachineConfigurerAdapter<Order
      */
     public void configure(StateMachineTransitionConfigurer<OrderStatus, OrderStatusChangeEvent> transitions) throws Exception {
         transitions
-                .withExternal().source(OrderStatus.WAIT_DISPATCH).target(OrderStatus.WAIT_AUDIT).event(OrderStatusChangeEvent.DISPATCHED)
+                .withExternal().source(OrderStatus.WAIT_DISPATCHED).target(OrderStatus.WAIT_AUDIT).event(OrderStatusChangeEvent.DISPATCHED)
                 .and()
                 .withExternal().source(OrderStatus.WAIT_AUDIT).target(OrderStatus.WAIT_PAYMENT).event(OrderStatusChangeEvent.AUDITED)
                 .and()

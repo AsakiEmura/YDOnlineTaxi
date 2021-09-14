@@ -1,10 +1,9 @@
 package com.ruoyi.YDOnlineTaxi.service.impl;
 
-import com.ruoyi.YDOnlineTaxi.domain.DriverAccount;
+import com.ruoyi.YDOnlineTaxi.domain.VO.DriverAccount;
 import com.ruoyi.YDOnlineTaxi.mapper.DriverAccountMapper;
 import com.ruoyi.YDOnlineTaxi.service.IDriverAccountService;
 import com.ruoyi.common.constant.UserConstants;
-import com.ruoyi.common.utils.ShiroKit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

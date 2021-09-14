@@ -1,6 +1,6 @@
 package com.ruoyi.YDOnlineTaxi.service;
 
-import com.ruoyi.YDOnlineTaxi.domain.OrderDetails;
+import com.ruoyi.YDOnlineTaxi.domain.VO.OrderDetails;
 
 public interface OrderDetailsService {
 
