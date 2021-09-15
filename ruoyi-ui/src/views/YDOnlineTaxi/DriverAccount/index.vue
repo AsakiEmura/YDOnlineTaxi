@@ -197,6 +197,7 @@ import {
   exportDriverAccount,
   getDriverAccount,
   listDriverAccount,
+  refuseDriver,
   resetUserPwd,
   updateDriverAccount
 } from '@/api/YDOnlineTaxi/DriverAccount'
@@ -247,6 +248,7 @@ export default {
       // 表单参数
       form: {},
       //拒绝理由
+      rePhone: '',
       refuseDate: '',
       // 表单校验
       rules: {
@@ -385,6 +387,7 @@ export default {
         this.open = true
         this.rules.driverPassword[0].required = false
         this.title = '修改司机详细信息'
+        this.rePhone = this.form.phoneNumber;
       })
     },
     /** 提交按钮 */
@@ -402,9 +405,10 @@ export default {
     /** 提交按钮 */
     reSubmitForm() {
       const reData = {
-        'phoneNumber': this.form.phoneNumber,
+        'phoneNumber': this.rePhone,
         'refuseReason': this.refuseDate
       };
+      console.log(reData)
       refuseDriver(reData).then(response => {
         this.open = false;
         this.refuseOpen = false;
