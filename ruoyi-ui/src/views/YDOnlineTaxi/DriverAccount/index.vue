@@ -413,7 +413,7 @@ export default {
         this.open = false;
         this.refuseOpen = false;
         this.refuseDate = '';
-        this.getList();
+        this.getList()
       })
     },
     /** 删除按钮操作 */
