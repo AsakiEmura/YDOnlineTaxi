@@ -125,28 +125,25 @@
     <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="司机姓名" prop="driverName">
-          <el-input v-model="form.driverName" placeholder="请输入司机姓名"/>
+          <span>{{ form.driverName }}</span>
         </el-form-item>
         <el-form-item label="身份证号" prop="idNumber">
-          <el-input v-model="form.idNumber" placeholder="请输入身份证号"/>
+          <span>{{ form.idNumber }}</span>
         </el-form-item>
         <el-form-item label="手机号" prop="phoneNumber">
-          <el-input v-model="form.phoneNumber" placeholder="请输入手机号"/>
+          <span>{{ form.phoneNumber }}</span>
         </el-form-item>
         <el-form-item label="紧急电话" prop="emergencyContactNumber">
-          <el-input v-model="form.emergencyContactNumber" placeholder="请输入紧急联系电话"/>
+          <span>{{ form.emergencyContactNumber }}</span>
         </el-form-item>
         <el-form-item label="地址" prop="address">
-          <el-input v-model="form.address" placeholder="请输入地址"/>
+          <span>{{ form.address }}</span>
         </el-form-item>
         <el-form-item label="车型" prop="motorcycleType">
-          <el-select v-model="form.motorcycleType" placeholder="请输入车型">
-            <el-option label="豪华型" value="豪华型" />
-            <el-option label="普通型" value="普通型" />
-          </el-select>
+          <span>{{ form.motorcycleType }}</span>
         </el-form-item>
         <el-form-item label="车牌号" prop="licensePlateNumber">
-          <el-input v-model="form.licensePlateNumber" placeholder="请输入车牌号"/>
+          <span>{{ form.licensePlateNumber }}</span>
         </el-form-item>
         <el-form-item label="身份证人像面">
           <imageUpload
@@ -164,7 +161,6 @@
           <imageUpload
             v-model="form.vehicleLicensePhoto"
             :limit="1"
-
           />
         </el-form-item>
         <el-form-item label="行驶证">
@@ -173,38 +169,48 @@
             :limit="1"
           />
         </el-form-item>
-        <el-form-item label="用户状态" prop="status">
-          <el-select v-model="form.status" placeholder="请选择订单状态">
-            <el-option label="待审核" value="待审核" />
-            <el-option label="审核通过" value="审核通过" />
-          </el-select>
-        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
+        <el-button type="primary" @click="submitForm">审核通过</el-button>
+        <el-button @click="cancel">拒绝通过</el-button>
       </div>
     </el-dialog>
 
-
+    <el-dialog :title="refuseTitle" :visible.sync="refuseOpen" width="600px" append-to-body>
+      <el-input
+        type="textarea"
+        :autosize="{ minRows: 4, maxRows: 6}"
+        placeholder="请输入内容"
+        v-model="refuseDate">
+      </el-input>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="reSubmitForm">确 定</el-button>
+        <el-button @click="reCancel">取消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import {
-  listDriverAccount,
-  getDriverAccount,
   delDriverAccount,
-  addDriverAccount,
-  updateDriverAccount,
   exportDriverAccount,
-  resetUserPwd
+  getDriverAccount,
+  listDriverAccount,
+  resetUserPwd,
+  updateDriverAccount
 } from '@/api/YDOnlineTaxi/DriverAccount'
 
 export default {
   name: 'DriverAccount',
   data() {
     return {
+      //socket数据
+      webSocket: null,
+      socketStatus: 'closed', //记录websocket连接状态
+      lockReconnect: false,//重连锁，防止重复连接
+      wsCreateHandler: null,//重连时间句柄
+
       // 遮罩层
       loading: true,
       // 导出遮罩层
@@ -216,7 +222,7 @@ export default {
       // 非多个禁用
       multiple: true,
       // 显示搜索条件
-      showSearch: true,
+      showSearch: false,
       // 总条数
       total: 0,
       // 司机详细信息表格数据
@@ -225,8 +231,10 @@ export default {
       update: true,
       // 弹出层标题
       title: '',
+      refuseTitle: '拒绝理由',
       // 是否显示弹出层
       open: false,
+      refuseOpen: false,
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -238,60 +246,74 @@ export default {
       },
       // 表单参数
       form: {},
+      //拒绝理由
+      refuseDate: '',
       // 表单校验
       rules: {
         driverName: [
-          { required: true, message: '司机姓名不能为空', trigger: 'blur,change' },
-          {pattern: /^[\u4E00-\u9FA5]{2,6}$/,message: "请输入正确的姓名!"}
+          {required: true, message: '司机姓名不能为空', trigger: 'blur,change'},
+          {pattern: /^[\u4E00-\u9FA5]{2,6}$/, message: "请输入正确的姓名!"}
         ],
         idNumber: [
-          { required: true, message: '身份证号不能为空', trigger: 'blur' },
-          { min: 18, max: 18, message: "请输入18位身份证号码!", trigger: "blur" },
-          {pattern: /^(([1-9][0-9]{5}(19|20)[0-9]{2}((0[1-9])|(1[0-2]))([0-2][1-9]|10|20|30|31)[0-9]{3}([0-9]|X|x))|([1-9][0-9]{5}[0-9]{2}((0[1-9])|(1[0-2]))([0-2][1-9]|10|20|30|31)[0-9]{3}))$/,message:"请输入正确的身份证号码"}
+          {required: true, message: '身份证号不能为空', trigger: 'blur'},
+          {min: 18, max: 18, message: "请输入18位身份证号码!", trigger: "blur"},
+          {
+            pattern: /^(([1-9][0-9]{5}(19|20)[0-9]{2}((0[1-9])|(1[0-2]))([0-2][1-9]|10|20|30|31)[0-9]{3}([0-9]|X|x))|([1-9][0-9]{5}[0-9]{2}((0[1-9])|(1[0-2]))([0-2][1-9]|10|20|30|31)[0-9]{3}))$/,
+            message: "请输入正确的身份证号码"
+          }
         ],
         phoneNumber: [
-          { required: true, message: '手机号不能为空', trigger: 'blur' },
-          { min: 11, max: 11, message: "请输入11位电话号码", trigger: "blur" },
-          {pattern: /^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/,message: "请输入正确的电话号码",}
+          {required: true, message: '手机号不能为空', trigger: 'blur'},
+          {min: 11, max: 11, message: "请输入11位电话号码", trigger: "blur"},
+          {pattern: /^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/, message: "请输入正确的电话号码",}
         ],
         emergencyContactNumber: [
-          { required: false, message: '选填', trigger: 'blur' },
-          { min: 11, max: 11, message: "请输入11位电话号码", trigger: "blur" },
-          {pattern: /^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/,message: "请输入正确的电话号码",}
+          {required: false, message: '选填', trigger: 'blur'},
+          {min: 11, max: 11, message: "请输入11位电话号码", trigger: "blur"},
+          {pattern: /^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/, message: "请输入正确的电话号码",}
         ],
         address: [
-          { required: true, message: '地址不能为空', trigger: 'blur' }
+          {required: true, message: '地址不能为空', trigger: 'blur'}
         ],
         motorcycleType: [
-          { required: true, message: '车型不能为空', trigger: 'blur' }
+          {required: true, message: '车型不能为空', trigger: 'blur'}
         ],
         licensePlateNumber: [
-          { required: true, message: '车牌号不能为空', trigger: 'blur' },
-          { pattern: /^([京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z]{1}[a-zA-Z](([DF]((?![IO])[a-zA-Z0-9](?![IO]))[0-9]{4})|([0-9]{5}[DF]))|[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z]{1}[A-Z]{1}[A-Z0-9]{4}[A-Z0-9挂学警港澳]{1})$/ ,message: "请输入正确的车牌号!"}
+          {required: true, message: '车牌号不能为空', trigger: 'blur'},
+          {
+            pattern: /^([京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z]{1}[a-zA-Z](([DF]((?![IO])[a-zA-Z0-9](?![IO]))[0-9]{4})|([0-9]{5}[DF]))|[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z]{1}[A-Z]{1}[A-Z0-9]{4}[A-Z0-9挂学警港澳]{1})$/,
+            message: "请输入正确的车牌号!"
+          }
         ],
         idPhotoFront: [
-          { required: true, message: '身份证照片人像面不能为空', trigger: 'blur' }
+          {required: true, message: '身份证照片人像面不能为空', trigger: 'blur'}
         ],
         idPhotoBack: [
-          { required: true, message: '身份证照片国旗面不能为空', trigger: 'blur' }
+          {required: true, message: '身份证照片国旗面不能为空', trigger: 'blur'}
         ],
         vehicleLicensePhoto: [
-          { required: true, message: '驾驶证照片不能为空', trigger: 'blur' }
+          {required: true, message: '驾驶证照片不能为空', trigger: 'blur'}
         ],
         driverLicencePhoto: [
-          { required: true, message: '行驶证照片不能为空', trigger: 'blur' }
+          {required: true, message: '行驶证照片不能为空', trigger: 'blur'}
         ],
         status: [
-          { required: true, message: '司机审核状态不能为空', trigger: 'blur' }
+          {required: true, message: '司机审核状态不能为空', trigger: 'blur'}
         ],
         driverPassword: [
-          { required: true, message: '司机账户密码不能为空,长度必须介于 8 和 20 之间,且必须包含一个大写字母,一个小写字母,一个数字和一个特殊字符', pattern: /(?=^.{8,20}$)(?=(?:.*?\d){1})(?=.*[a-z])(?=(?:.*?[A-Z]){1})(?=(?:.*?[`·~!@#$%^&*()_+}{|:;'",<.>/?\=\[\]\-\\]){1})(?!.*\s)[0-9a-zA-Z`·~!@#$%^&*()_+}{|:;'",<.>/?\=\[\]\-\\]*$/,trigger: 'blur' }
+          {
+            required: true,
+            message: '司机账户密码不能为空,长度必须介于 8 和 20 之间,且必须包含一个大写字母,一个小写字母,一个数字和一个特殊字符',
+            pattern: /(?=^.{8,20}$)(?=(?:.*?\d){1})(?=.*[a-z])(?=(?:.*?[A-Z]){1})(?=(?:.*?[`·~!@#$%^&*()_+}{|:;'",<.>/?\=\[\]\-\\]){1})(?!.*\s)[0-9a-zA-Z`·~!@#$%^&*()_+}{|:;'",<.>/?\=\[\]\-\\]*$/,
+            trigger: 'blur'
+          }
         ]
       }
     }
   },
   created() {
     this.getList()
+
   },
   methods: {
     /** 查询司机详细信息列表 */
@@ -305,8 +327,12 @@ export default {
     },
     // 取消按钮
     cancel() {
-      this.open = false
+      this.refuseOpen = true
       this.reset()
+    },
+    // 取消拒绝
+    reCancel() {
+      this.refuseOpen = false
     },
     // 表单重置
     reset() {
@@ -357,19 +383,32 @@ export default {
         this.form = response.data
         this.update = false
         this.open = true
-        this.rules.driverPassword[0].required=false
+        this.rules.driverPassword[0].required = false
         this.title = '修改司机详细信息'
       })
     },
     /** 提交按钮 */
     submitForm() {
+      this.form.status = "审核通过"
       this.$refs['form'].validate(valid => {
-      updateDriverAccount(this.form).then(response => {
-        this.msgSuccess('审核成功')
-        this.form.driverPassword = null
-        this.open = false
-        this.getList()
+        updateDriverAccount(this.form).then(response => {
+          this.msgSuccess('审核成功')
+          this.form.driverPassword = null
+          this.open = false
+          this.getList()
+        })
       })
+    },
+    /** 提交按钮 */
+    reSubmitForm() {
+      const reData = {
+        'phoneNumber': this.form.phoneNumber,
+        'refuseReason': this.refuseDate
+      };
+      refuseDriver(reData).then(response => {
+        this.open = false;
+        this.refuseOpen = false;
+        this.refuseDate = '';
       })
     },
     /** 删除按钮操作 */
@@ -379,7 +418,7 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(function() {
+      }).then(function () {
         return delDriverAccount(idNumbers)
       }).then(() => {
         this.getList()
@@ -411,11 +450,12 @@ export default {
         closeOnClickModal: false,
         inputPattern: /(?=^.{8,20}$)(?=(?:.*?\d){1})(?=.*[a-z])(?=(?:.*?[A-Z]){1})(?=(?:.*?[`·~!@#$%^&*()_+}{|:;'",<.>/?\=\[\]\-\\]){1})(?!.*\s)[0-9a-zA-Z`·~!@#$%^&*()_+}{|:;'",<.>/?\=\[\]\-\\]*$/,
         inputErrorMessage: "用户密码长度必须介于 8 和 20 之间,且必须包含一个大写字母,一个小写字母,一个数字和一个特殊字符",
-      }).then(({ value }) => {
+      }).then(({value}) => {
         resetUserPwd(row.idNumber, value).then(response => {
           this.msgSuccess("修改成功，新密码是：" + value);
         });
-      }).catch(() => {});
+      }).catch(() => {
+      });
     },
   }
 }
