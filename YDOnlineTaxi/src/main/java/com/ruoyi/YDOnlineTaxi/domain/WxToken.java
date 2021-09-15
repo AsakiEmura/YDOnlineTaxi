@@ -1,4 +1,4 @@
-package com.ruoyi.YDOnlineTaxi.domain.VO;
+package com.ruoyi.YDOnlineTaxi.domain;
 
 public class WxToken {
     private String accessToken;

@@ -1,13 +1,15 @@
 package com.ruoyi.web.controller.YDOnlineTaxi;
 
-import com.ruoyi.YDOnlineTaxi.domain.VO.DriverInformation;
-import com.ruoyi.YDOnlineTaxi.domain.VO.OrderInformation;
+import com.ruoyi.YDOnlineTaxi.domain.DriverInformation;
+import com.ruoyi.YDOnlineTaxi.domain.OrderInformation;
+import com.ruoyi.YDOnlineTaxi.service.IDriverInformationService;
 import com.ruoyi.YDOnlineTaxi.service.IOrderInformationService;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,36 +22,48 @@ public class YDOnlineTaxiDispatchOrder extends BaseController {
         @Autowired
         private IOrderInformationService orderInformationService;
 
+        @Autowired
+        private IDriverInformationService driverInformationService;
+
         @GetMapping("/getOrder")
         public TableDataInfo list(DriverInformation driverInformation,OrderInformation orderInformation)
         {
-                startPage();
                 orderInformation.setOrderStatus("待派单");
                 switch (driverInformation.getDriverCarType()){
                         case "舒适型":
                                 orderInformation.setCarType("舒适型");
+                                startPage();
                                 return getDataTable(orderInformationService.selectOrderInformationList(orderInformation));
                         case "商务型":
-                                orderInformation.setCarType("商务型");
-                                List<OrderInformation> list1 = orderInformationService.selectOrderInformationList(orderInformation);
-                                orderInformation.setCarType("舒适型");
-                                List<OrderInformation> list2 = orderInformationService.selectOrderInformationList(orderInformation);
-                                List<OrderInformation> list3 = new ArrayList<>();
-                                list3.addAll(list1);
-                                list3.addAll(list2);
-                                return getDataTable(list3);
+                                if(orderInformation.getCarType().equals("商务型") || orderInformation.getCarType().equals("舒适型")){
+                                        startPage();
+                                        return getDataTable(orderInformationService.selectOrderInformationList(orderInformation));
+                                }
+                                else
+                                {
+                                        startPage();
+                                        return getDataTable(orderInformationService.selectAllByCarTypeLikeOrCarTypeLikeAndOrderStatusLike("舒适型","商务型","待派单"));
+                                }
                         case "豪华型":
-                                orderInformation.setCarType("豪华型");
-                                List<OrderInformation> list4 = orderInformationService.selectOrderInformationList(orderInformation);
-                                orderInformation.setCarType("舒适型");
-                                List<OrderInformation> list5 = orderInformationService.selectOrderInformationList(orderInformation);
-                                List<OrderInformation> list6 = new ArrayList<>();
-                                list6.addAll(list4);
-                                list6.addAll(list5);
-                                return getDataTable(list6);
+                                if(orderInformation.getCarType().equals("豪华型") || orderInformation.getCarType().equals("舒适型")){
+                                        startPage();
+                                        return getDataTable(orderInformationService.selectOrderInformationList(orderInformation));
+                                }
+                                else
+                                {
+                                        startPage();
+                                        return getDataTable(orderInformationService.selectAllByCarTypeLikeOrCarTypeLikeAndOrderStatusLike("舒适型","豪华型","待派单"));
+                                }
                         case "豪华商务型":
-                                return getDataTable(orderInformationService.selectOrderInformationList(orderInformation));
+                                if (!orderInformation.getCarType().equals("商务型") && !orderInformation.getCarType().equals("豪华型") && !orderInformation.getCarType().equals("舒适型")) {
+                                        startPage();
+                                        return getDataTable(orderInformationService.selectOrderInformationList(orderInformation));
+                                } else {
+                                        startPage();
+                                        return getDataTable(orderInformationService.selectOrderInformationList(orderInformation));
+                                }
                         default:
+                                startPage();
                                 return getDataTable(null);
                 }
         }

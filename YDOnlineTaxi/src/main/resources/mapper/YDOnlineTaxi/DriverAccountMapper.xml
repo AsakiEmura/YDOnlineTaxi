@@ -20,7 +20,7 @@
         salt,
         openid
     </sql>
-    <resultMap type="com.ruoyi.YDOnlineTaxi.domain.VO.DriverAccount" id="DriverAccountResult">
+    <resultMap type="com.ruoyi.YDOnlineTaxi.domain.DriverAccount" id="DriverAccountResult">
         <result property="driverName"    column="driver_name"    />
         <result property="idNumber"    column="id_number"    />
         <result property="phoneNumber"    column="phone_number"    />
@@ -42,7 +42,7 @@
         select driver_name, id_number, phone_number, emergency_contact_number, address, motorcycle_type, license_plate_number, id_photo_front, id_photo_back, vehicle_license_photo, driver_licence_photo, status, driver_password, salt from YDOnlineTaxi.driver_account
     </sql>
 
-    <select id="selectDriverAccountList" parameterType="com.ruoyi.YDOnlineTaxi.domain.VO.DriverAccount" resultMap="DriverAccountResult">
+    <select id="selectDriverAccountList" parameterType="com.ruoyi.YDOnlineTaxi.domain.DriverAccount" resultMap="DriverAccountResult">
         <include refid="selectDriverAccountVo"/>
         <where>
             <if test="driverName != null  and driverName != ''"> and driver_name like concat('%', #{driverName}, '%')</if>
@@ -66,7 +66,7 @@
         select count(*) from YDOnlineTaxi.driver_account where phone_number = #{phoneNumber}
     </select>
 
-    <insert id="insertDriverAccount" parameterType="com.ruoyi.YDOnlineTaxi.domain.VO.DriverAccount">
+    <insert id="insertDriverAccount" parameterType="com.ruoyi.YDOnlineTaxi.domain.DriverAccount">
         insert into YDOnlineTaxi.driver_account
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="driverName != null and driverName != ''">driver_name,</if>
@@ -104,7 +104,7 @@
         </trim>
     </insert>
 
-    <update id="updateDriverAccount" parameterType="com.ruoyi.YDOnlineTaxi.domain.VO.DriverAccount">
+    <update id="updateDriverAccount" parameterType="com.ruoyi.YDOnlineTaxi.domain.DriverAccount">
         update YDOnlineTaxi.driver_account
         <trim prefix="SET" suffixOverrides=",">
             <if test="driverName != null and driverName != ''">driver_name = #{driverName},</if>
@@ -139,7 +139,7 @@
         select count(1) from YDOnlineTaxi.driver_account where id_number = #{idNumber} limit 1
     </select>
 
-    <update id="resetUserPwd" parameterType="com.ruoyi.YDOnlineTaxi.domain.VO.DriverAccount">
+    <update id="resetUserPwd" parameterType="com.ruoyi.YDOnlineTaxi.domain.DriverAccount">
         update YDOnlineTaxi.driver_account set driver_password = #{driverPassword} where id_number = #{idNumber}
     </update>
 

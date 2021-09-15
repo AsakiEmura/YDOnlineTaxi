@@ -1,6 +1,6 @@
 package com.ruoyi.YDOnlineTaxi.service;
 
-import com.ruoyi.YDOnlineTaxi.domain.VO.WxWithDrivers;
+import com.ruoyi.YDOnlineTaxi.domain.WxWithDrivers;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

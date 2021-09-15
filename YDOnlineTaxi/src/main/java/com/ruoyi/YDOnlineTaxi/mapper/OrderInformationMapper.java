@@ -1,7 +1,7 @@
 package com.ruoyi.YDOnlineTaxi.mapper;
 
 import java.util.List;
-import com.ruoyi.YDOnlineTaxi.domain.VO.OrderInformation;
+import com.ruoyi.YDOnlineTaxi.domain.OrderInformation;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -61,6 +61,8 @@ public interface OrderInformationMapper
     public int deleteOrderInformationByOrderIds(String[] orderIds);
 
     public String selectOrderStatusByOrderId(@Param("orderId")String orderId);
+
+    List<OrderInformation> selectAllByCarTypeLikeOrCarTypeLikeAndOrderStatusLike(@Param("likeCarType1")String likeCarType1,@Param("likeCarType2")String likeCarType2,@Param("likeOrderStatus")String likeOrderStatus);
 
 
 }

@@ -1,6 +1,6 @@
 package com.ruoyi.web.controller.YDOnlineTaxi;
 
-import com.ruoyi.YDOnlineTaxi.domain.VO.DriverInformation;
+import com.ruoyi.YDOnlineTaxi.domain.DriverInformation;
 import com.ruoyi.YDOnlineTaxi.service.IDriverInformationService;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
@@ -85,14 +85,4 @@ public class DriverInformationController extends BaseController
         return toAjax(driverInformationService.updateDriverInformation(driverInformation));
     }
 
-    /**
-     * 删除司机线上账户信息
-     */
-    @PreAuthorize("@ss.hasPermi('YDOnlineTaxi:DriverInformation:remove')")
-    @Log(title = "司机线上账户信息", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{driverPhoneNumbers}")
-    public AjaxResult remove(@PathVariable String[] driverPhoneNumbers)
-    {
-        return toAjax(driverInformationService.deleteDriverInformationByDriverPhoneNumbers(driverPhoneNumbers));
-    }
 }

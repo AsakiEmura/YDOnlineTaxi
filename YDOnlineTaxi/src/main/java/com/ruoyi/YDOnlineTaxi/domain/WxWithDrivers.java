@@ -1,4 +1,4 @@
-package com.ruoyi.YDOnlineTaxi.domain.VO;
+package com.ruoyi.YDOnlineTaxi.domain;
 
 /**
     * 微信司机连接表

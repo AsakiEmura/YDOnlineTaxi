@@ -4,7 +4,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.YDOnlineTaxi.mapper.PonitsStatisticsMapper;
-import com.ruoyi.YDOnlineTaxi.domain.VO.PonitsStatistics;
+import com.ruoyi.YDOnlineTaxi.domain.PonitsStatistics;
 import com.ruoyi.YDOnlineTaxi.service.IPonitsStatisticsService;
 
 /**

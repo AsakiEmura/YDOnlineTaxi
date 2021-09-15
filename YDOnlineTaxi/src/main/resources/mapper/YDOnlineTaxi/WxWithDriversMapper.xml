@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.YDOnlineTaxi.mapper.WxWithDriversMapper">
-  <resultMap id="BaseResultMap" type="com.ruoyi.YDOnlineTaxi.domain.VO.WxWithDrivers">
+  <resultMap id="BaseResultMap" type="com.ruoyi.YDOnlineTaxi.domain.WxWithDrivers">
     <!--@mbg.generated-->
     <!--@Table YDOnlineTaxi.wx_with_drivers-->
     <result column="driver_name" jdbcType="CHAR" property="driverName" />
@@ -13,14 +13,14 @@
     <!--@mbg.generated-->
     driver_name, phone_number, open_Id, push_times
   </sql>
-  <insert id="insert" parameterType="com.ruoyi.YDOnlineTaxi.domain.VO.WxWithDrivers">
+  <insert id="insert" parameterType="com.ruoyi.YDOnlineTaxi.domain.WxWithDrivers">
     <!--@mbg.generated-->
     insert into YDOnlineTaxi.wx_with_drivers (driver_name, phone_number, open_Id,
       push_times)
     values (#{driverName,jdbcType=CHAR}, #{phoneNumber,jdbcType=CHAR}, #{openId,jdbcType=CHAR}, 
       #{pushTimes,jdbcType=INTEGER})
   </insert>
-  <insert id="insertSelective" parameterType="com.ruoyi.YDOnlineTaxi.domain.VO.WxWithDrivers">
+  <insert id="insertSelective" parameterType="com.ruoyi.YDOnlineTaxi.domain.WxWithDrivers">
     <!--@mbg.generated-->
     insert into YDOnlineTaxi.wx_with_drivers
     <trim prefix="(" suffix=")" suffixOverrides=",">

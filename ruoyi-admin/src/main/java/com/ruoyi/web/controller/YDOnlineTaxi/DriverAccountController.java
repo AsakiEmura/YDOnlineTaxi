@@ -1,10 +1,13 @@
 package com.ruoyi.web.controller.YDOnlineTaxi;
 
-import com.ruoyi.YDOnlineTaxi.domain.VO.DriverAccount;
-import com.ruoyi.YDOnlineTaxi.domain.VO.DriverInformation;
-import com.ruoyi.YDOnlineTaxi.domain.VO.WxWithDrivers;
+import com.ruoyi.YDOnlineTaxi.domain.DriverAccount;
+import com.ruoyi.YDOnlineTaxi.domain.DriverInformation;
+import com.ruoyi.YDOnlineTaxi.domain.PonitsStatistics;
+import com.ruoyi.YDOnlineTaxi.domain.WxWithDrivers;
 import com.ruoyi.YDOnlineTaxi.service.IDriverAccountService;
 import com.ruoyi.YDOnlineTaxi.service.IDriverInformationService;
+import com.ruoyi.YDOnlineTaxi.service.IPonitsStatisticsService;
+import com.ruoyi.YDOnlineTaxi.service.WxWithDriversService;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
@@ -33,6 +36,12 @@ public class DriverAccountController extends BaseController {
 
     @Autowired
     private IDriverInformationService driverInformationService;
+
+    @Autowired
+    private WxWithDriversService wxWithDriversService;
+
+    @Autowired
+    private IPonitsStatisticsService ponitsStatisticsService;
     /**
      * 查询司机详细信息列表
      */
@@ -125,6 +134,9 @@ public class DriverAccountController extends BaseController {
     public AjaxResult audit(@RequestBody DriverAccount driverAccount) {
         if(driverAccount.getStatus().equals("审核通过"))
         {
+            String driverName = driverAccount.getDriverName();
+            String phoneNumber =driverAccount.getPhoneNumber();
+
             DriverInformation driverInformation = new DriverInformation();
             driverInformation.setDriverName(driverAccount.getDriverName());
             driverInformation.setDriverPhoneNumber(driverAccount.getPhoneNumber());
@@ -138,10 +150,19 @@ public class DriverAccountController extends BaseController {
             wxWithDrivers.setPhoneNumber(driverAccount.getDriverPassword());
             wxWithDrivers.setPushTimes(5);
 
-
+            PonitsStatistics ponitsStatistics = new PonitsStatistics();
+            ponitsStatistics.setDriverName(driverName);
+            ponitsStatistics.setDriverPhoneNumber(phoneNumber);
 
             driverInformationService.insertDriverInformation(driverInformation);
+            wxWithDriversService.insert(wxWithDrivers);
+            ponitsStatisticsService.insertPonitsStatistics(ponitsStatistics);
         }
-        return toAjax(driverAccountService.resetPwd(driverAccount));
+        else if(driverAccount.getStatus().equals("审核不通过"))
+        {
+
+            driverAccountService.deleteDriverAccountByIdNumber(driverAccount.getIdNumber());
+        }
+        return AjaxResult.success("审核操作成功");
     }
 }

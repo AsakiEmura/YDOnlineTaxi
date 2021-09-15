@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.YDOnlineTaxi.mapper.OrderInformationMapper;
-import com.ruoyi.YDOnlineTaxi.domain.VO.OrderInformation;
+import com.ruoyi.YDOnlineTaxi.domain.OrderInformation;
 import com.ruoyi.YDOnlineTaxi.service.IOrderInformationService;
 
 /**
@@ -193,5 +193,10 @@ public class OrderInformationServiceImpl implements IOrderInformationService
     @Override
     public String selectOrderStatusByOrderId(String orderId) {
         return orderInformationMapper.selectOrderStatusByOrderId(orderId);
+    }
+
+    @Override
+    public List<OrderInformation> selectAllByCarTypeLikeOrCarTypeLikeAndOrderStatusLike(String likeCarType1, String likeCarType2, String likeOrderStatus) {
+        return orderInformationMapper.selectAllByCarTypeLikeOrCarTypeLikeAndOrderStatusLike(likeCarType1,likeCarType2,likeOrderStatus);
     }
 }

@@ -4,7 +4,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.YDOnlineTaxi.mapper.FinancialStatisticsMapper;
-import com.ruoyi.YDOnlineTaxi.domain.VO.FinancialStatistics;
+import com.ruoyi.YDOnlineTaxi.domain.FinancialStatistics;
 import com.ruoyi.YDOnlineTaxi.service.IFinancialStatisticsService;
 
 /**

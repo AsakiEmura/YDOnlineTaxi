@@ -1,8 +1,8 @@
 package com.ruoyi.web.controller.YDOnlineTaxi;
 
 import com.ruoyi.YDOnlineTaxi.Properties.MQProperties;
-import com.ruoyi.YDOnlineTaxi.domain.VO.OrderDetails;
-import com.ruoyi.YDOnlineTaxi.domain.VO.OrderInformation;
+import com.ruoyi.YDOnlineTaxi.domain.OrderDetails;
+import com.ruoyi.YDOnlineTaxi.domain.OrderInformation;
 import com.ruoyi.YDOnlineTaxi.service.IOrderInformationService;
 import com.ruoyi.YDOnlineTaxi.service.OrderDetailsService;
 import com.ruoyi.YDOnlineTaxi.utils.WxService;

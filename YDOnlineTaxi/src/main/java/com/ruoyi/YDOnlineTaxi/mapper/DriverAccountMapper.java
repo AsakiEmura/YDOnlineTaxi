@@ -1,6 +1,6 @@
 package com.ruoyi.YDOnlineTaxi.mapper;
 
-import com.ruoyi.YDOnlineTaxi.domain.VO.DriverAccount;
+import com.ruoyi.YDOnlineTaxi.domain.DriverAccount;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

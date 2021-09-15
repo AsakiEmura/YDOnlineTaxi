@@ -4,7 +4,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import com.ruoyi.YDOnlineTaxi.mapper.WxWithDriversMapper;
-import com.ruoyi.YDOnlineTaxi.domain.VO.WxWithDrivers;
+import com.ruoyi.YDOnlineTaxi.domain.WxWithDrivers;
 import com.ruoyi.YDOnlineTaxi.service.WxWithDriversService;
 
 import java.util.List;

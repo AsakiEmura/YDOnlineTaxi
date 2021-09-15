@@ -1,7 +1,7 @@
 package com.ruoyi.YDOnlineTaxi.mapper;
 
 import java.util.List;
-import com.ruoyi.YDOnlineTaxi.domain.VO.FinancialStatistics;
+import com.ruoyi.YDOnlineTaxi.domain.FinancialStatistics;
 
 /**
  * 财务统计Mapper接口

@@ -1,6 +1,6 @@
 package com.ruoyi.YDOnlineTaxi.service;
 
-import com.ruoyi.YDOnlineTaxi.domain.VO.OrderDetails;
+import com.ruoyi.YDOnlineTaxi.domain.OrderDetails;
 
 public interface OrderDetailsService {
 
@@ -18,4 +18,5 @@ public interface OrderDetailsService {
     int updateByPrimaryKey(OrderDetails record);
 
 }
+
 

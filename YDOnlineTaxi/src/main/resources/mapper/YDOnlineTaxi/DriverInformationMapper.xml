@@ -4,7 +4,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.YDOnlineTaxi.mapper.DriverInformationMapper">
     
-    <resultMap type="DriverInformation" id="DriverInformationResult">
+    <resultMap type="com.ruoyi.YDOnlineTaxi.domain.DriverInformation" id="DriverInformationResult">
         <result property="driverName"    column="driver_name"    />
         <result property="driverPhoneNumber"    column="driver_phone_number"    />
         <result property="driverEmergencyContactPhoneNumber"    column="driver_emergency_contact_phone_number"    />
@@ -18,12 +18,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectDriverInformationVo">
-        select driver_name, driver_phone_number, driver_emergency_contact_phone_number, driver_car_id, driver_car_type, car_model, car_color, driver_complete_order_number, driver_complete_order_number_monthly, driver_level from driver_information
+        select driver_name, driver_phone_number, driver_emergency_contact_phone_number, driver_car_id, driver_car_type, car_model, car_color, driver_complete_order_number, driver_complete_order_number_monthly, driver_level from YDOnlineTaxi.driver_information
     </sql>
 
-    <select id="selectDriverInformationList" parameterType="DriverInformation" resultMap="DriverInformationResult">
+    <select id="selectDriverInformationList" parameterType="com.ruoyi.YDOnlineTaxi.domain.DriverInformation" resultMap="DriverInformationResult">
         <include refid="selectDriverInformationVo"/>
-        <where>  
+        <where>
             <if test="driverName != null  and driverName != ''"> and driver_name like concat('%', #{driverName}, '%')</if>
             <if test="driverPhoneNumber != null  and driverPhoneNumber != ''"> and driver_phone_number like concat('%', #{driverPhoneNumber}, '%')</if>
             <if test="driverEmergencyContactPhoneNumber != null  and driverEmergencyContactPhoneNumber != ''"> and driver_emergency_contact_phone_number like concat('%', #{driverEmergencyContactPhoneNumber}, '%')</if>
@@ -33,14 +33,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="driverLevel != null  and driverLevel != ''"> and driver_level = #{driverLevel}</if>
         </where>
     </select>
-    
+
     <select id="selectDriverInformationByDriverPhoneNumber" parameterType="String" resultMap="DriverInformationResult">
         <include refid="selectDriverInformationVo"/>
         where driver_phone_number = #{driverPhoneNumber}
     </select>
-        
-    <insert id="insertDriverInformation" parameterType="DriverInformation">
-        insert into driver_information
+
+    <insert id="insertDriverInformation" parameterType="com.ruoyi.YDOnlineTaxi.domain.DriverInformation">
+        insert into YDOnlineTaxi.driver_information
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="driverName != null and driverName != ''">driver_name,</if>
             <if test="driverPhoneNumber != null and driverPhoneNumber != ''">driver_phone_number,</if>
@@ -67,8 +67,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          </trim>
     </insert>
 
-    <update id="updateDriverInformation" parameterType="DriverInformation">
-        update driver_information
+    <update id="updateDriverInformation" parameterType="com.ruoyi.YDOnlineTaxi.domain.DriverInformation">
+        update YDOnlineTaxi.driver_information
         <trim prefix="SET" suffixOverrides=",">
             <if test="driverName != null and driverName != ''">driver_name = #{driverName},</if>
             <if test="driverEmergencyContactPhoneNumber != null">driver_emergency_contact_phone_number = #{driverEmergencyContactPhoneNumber},</if>
@@ -84,11 +84,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </update>
 
     <delete id="deleteDriverInformationByDriverPhoneNumber" parameterType="String">
-        delete from driver_information where driver_phone_number = #{driverPhoneNumber}
+        delete from YDOnlineTaxi.driver_information where driver_phone_number = #{driverPhoneNumber}
     </delete>
 
     <delete id="deleteDriverInformationByDriverPhoneNumbers" parameterType="String">
-        delete from driver_information where driver_phone_number in 
+        delete from YDOnlineTaxi.driver_information where driver_phone_number in
         <foreach item="driverPhoneNumber" collection="array" open="(" separator="," close=")">
             #{driverPhoneNumber}
         </foreach>

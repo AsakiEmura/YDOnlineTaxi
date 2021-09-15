@@ -1,4 +1,4 @@
-package com.ruoyi.YDOnlineTaxi.domain.VO;
+package com.ruoyi.YDOnlineTaxi.domain;
 
 import com.ruoyi.YDOnlineTaxi.constant.enums.OrderStatus;
 import com.ruoyi.YDOnlineTaxi.constant.enums.OrderStatusChangeEvent;

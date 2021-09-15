@@ -1,6 +1,6 @@
 package com.ruoyi.web.controller.YDOnlineTaxi;
 
-import com.ruoyi.YDOnlineTaxi.domain.VO.PonitsStatistics;
+import com.ruoyi.YDOnlineTaxi.domain.PonitsStatistics;
 import com.ruoyi.YDOnlineTaxi.service.IPonitsStatisticsService;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;

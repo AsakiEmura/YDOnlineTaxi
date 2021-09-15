@@ -1,7 +1,7 @@
 package com.ruoyi.YDOnlineTaxi.service;
 
 import java.util.List;
-import com.ruoyi.YDOnlineTaxi.domain.VO.OrderInformation;
+import com.ruoyi.YDOnlineTaxi.domain.OrderInformation;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -75,4 +75,5 @@ public interface IOrderInformationService
 
     public String selectOrderStatusByOrderId(@Param("orderId")String orderId);
 
+    List<OrderInformation> selectAllByCarTypeLikeOrCarTypeLikeAndOrderStatusLike(@Param("likeCarType1")String likeCarType1,@Param("likeCarType2")String likeCarType2,@Param("likeOrderStatus")String likeOrderStatus);
 }

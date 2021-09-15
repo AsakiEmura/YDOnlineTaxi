@@ -1,4 +1,4 @@
-package com.ruoyi.YDOnlineTaxi.domain.VO;
+package com.ruoyi.YDOnlineTaxi.domain;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;

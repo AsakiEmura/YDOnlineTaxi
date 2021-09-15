@@ -2,7 +2,7 @@ package com.ruoyi.YDOnlineTaxi.mapper;
 import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
-import com.ruoyi.YDOnlineTaxi.domain.VO.WxWithDrivers;
+import com.ruoyi.YDOnlineTaxi.domain.WxWithDrivers;
 
 public interface WxWithDriversMapper {
     /**
