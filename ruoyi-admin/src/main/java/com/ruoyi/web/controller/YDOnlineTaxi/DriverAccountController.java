@@ -129,7 +129,7 @@ public class DriverAccountController extends BaseController {
         return toAjax(driverAccountService.resetPwd(driverAccount));
     }
 
-    @Log(title = "司机密码修改", businessType = BusinessType.UPDATE)
+    @Log(title = "审核司机", businessType = BusinessType.UPDATE)
     @PutMapping("/audit")
     public AjaxResult audit(@RequestBody DriverAccount driverAccount) {
         if(driverAccount.getStatus().equals("审核通过"))

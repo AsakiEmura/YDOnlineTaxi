@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @RestController
 @RequestMapping("/YDOnlineTaxi/WxService/Order")
@@ -25,45 +27,73 @@ public class YDOnlineTaxiDispatchOrder extends BaseController {
         @Autowired
         private IDriverInformationService driverInformationService;
 
+        public static String getStartOfDay(Date time) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(time);
+                calendar.set(Calendar.HOUR_OF_DAY, 0);
+                calendar.set(Calendar.MINUTE, 0);
+                calendar.set(Calendar.SECOND, 0);
+                calendar.set(Calendar.MILLISECOND, 0);
+                return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendar.getTime());
+        }
+        // 返回时间格式如：2020-02-19 23:59:59
+        public static String getEndOfDay(Date time) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(time);
+                calendar.set(Calendar.HOUR_OF_DAY, 23);
+                calendar.set(Calendar.MINUTE, 59);
+                calendar.set(Calendar.SECOND, 59);
+                calendar.set(Calendar.MILLISECOND, 999);
+                return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendar.getTime());
+        }
+
         @GetMapping("/getOrder")
-        public TableDataInfo list(DriverInformation driverInformation,OrderInformation orderInformation)
+        public TableDataInfo list (DriverInformation driverInformation,OrderInformation orderInformation) throws ParseException
         {
                 orderInformation.setOrderStatus("待派单");
+                String minTransportTime = null;
+                String maxTransportTime = null;
+                if(orderInformation.getTransportTime() != null)
+                {
+                        minTransportTime = getStartOfDay(orderInformation.getTransportTime());
+                        maxTransportTime = getEndOfDay(orderInformation.getTransportTime());
+                }
+
+
                 switch (driverInformation.getDriverCarType()){
                         case "舒适型":
                                 orderInformation.setCarType("舒适型");
                                 startPage();
                                 return getDataTable(orderInformationService.selectOrderInformationList(orderInformation));
                         case "商务型":
-                                if(orderInformation.getCarType().equals("商务型") || orderInformation.getCarType().equals("舒适型")){
+                                if(orderInformation.getCarType() != null){
                                         startPage();
-                                        return getDataTable(orderInformationService.selectOrderInformationList(orderInformation));
+                                        return getDataTable(orderInformationService.getOrderInformationListByConditions("舒适型",null,null,"待派单",minTransportTime,maxTransportTime,orderInformation.getRequirementTypes()));
                                 }
                                 else
                                 {
                                         startPage();
-                                        return getDataTable(orderInformationService.selectAllByCarTypeLikeOrCarTypeLikeAndOrderStatusLike("舒适型","商务型","待派单"));
+                                        return getDataTable(orderInformationService.getOrderInformationListByConditions("舒适型","商务型",null,"待派单",minTransportTime,maxTransportTime,orderInformation.getRequirementTypes()));
                                 }
                         case "豪华型":
-                                if(orderInformation.getCarType().equals("豪华型") || orderInformation.getCarType().equals("舒适型")){
+                                if(orderInformation.getCarType() != null){
                                         startPage();
-                                        return getDataTable(orderInformationService.selectOrderInformationList(orderInformation));
+                                        return getDataTable(orderInformationService.getOrderInformationListByConditions(orderInformation.getCarType(),null,null,"待派单",minTransportTime,maxTransportTime,orderInformation.getRequirementTypes()));
                                 }
                                 else
                                 {
                                         startPage();
-                                        return getDataTable(orderInformationService.selectAllByCarTypeLikeOrCarTypeLikeAndOrderStatusLike("舒适型","豪华型","待派单"));
+                                        return getDataTable(orderInformationService.getOrderInformationListByConditions("舒适型","豪华型",null,"待派单",minTransportTime,maxTransportTime,orderInformation.getRequirementTypes()));
                                 }
                         case "豪华商务型":
-                                if (!orderInformation.getCarType().equals("商务型") && !orderInformation.getCarType().equals("豪华型") && !orderInformation.getCarType().equals("舒适型")) {
+                                if (orderInformation.getCarType() != null) {
                                         startPage();
-                                        return getDataTable(orderInformationService.selectOrderInformationList(orderInformation));
+                                        return getDataTable(orderInformationService.getOrderInformationListByConditions(orderInformation.getCarType(),null,null,"待派单",minTransportTime,maxTransportTime,orderInformation.getRequirementTypes()));
                                 } else {
                                         startPage();
-                                        return getDataTable(orderInformationService.selectOrderInformationList(orderInformation));
+                                        return getDataTable(orderInformationService.getOrderInformationListByConditions("舒适型","豪华型","商务型","待派单",minTransportTime,maxTransportTime,orderInformation.getRequirementTypes()));
                                 }
                         default:
-                                startPage();
                                 return getDataTable(null);
                 }
         }

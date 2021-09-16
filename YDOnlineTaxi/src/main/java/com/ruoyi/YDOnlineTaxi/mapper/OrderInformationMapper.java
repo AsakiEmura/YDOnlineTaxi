@@ -1,4 +1,5 @@
 package com.ruoyi.YDOnlineTaxi.mapper;
+import java.util.Date;
 
 import java.util.List;
 import com.ruoyi.YDOnlineTaxi.domain.OrderInformation;
@@ -62,7 +63,8 @@ public interface OrderInformationMapper
 
     public String selectOrderStatusByOrderId(@Param("orderId")String orderId);
 
-    List<OrderInformation> selectAllByCarTypeLikeOrCarTypeLikeAndOrderStatusLike(@Param("likeCarType1")String likeCarType1,@Param("likeCarType2")String likeCarType2,@Param("likeOrderStatus")String likeOrderStatus);
+
+    public List<OrderInformation> getOrderInformationListByConditions(@Param("likeCarType1")String likeCarType1,@Param("likeCarType2")String likeCarType2,@Param("likeCarType3")String likeCarType3,@Param("likeOrderStatus")String likeOrderStatus,@Param("minTransportTime")String minTransportTime,@Param("maxTransportTime")String maxTransportTime,@Param("requirementTypes")String requirementTypes);
 
 
 }

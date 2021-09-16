@@ -1,5 +1,6 @@
 package com.ruoyi.YDOnlineTaxi.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import com.ruoyi.YDOnlineTaxi.constant.enums.OrderStatus;
@@ -196,7 +197,7 @@ public class OrderInformationServiceImpl implements IOrderInformationService
     }
 
     @Override
-    public List<OrderInformation> selectAllByCarTypeLikeOrCarTypeLikeAndOrderStatusLike(String likeCarType1, String likeCarType2, String likeOrderStatus) {
-        return orderInformationMapper.selectAllByCarTypeLikeOrCarTypeLikeAndOrderStatusLike(likeCarType1,likeCarType2,likeOrderStatus);
+    public List<OrderInformation> getOrderInformationListByConditions(String likeCarType1, String likeCarType2, String likeCarType3,String likeOrderStatus, String minTransportTime, String maxTransportTime, String requirementTypes) {
+        return orderInformationMapper.getOrderInformationListByConditions(likeCarType1,likeCarType2,likeCarType3,likeOrderStatus,minTransportTime,maxTransportTime,requirementTypes);
     }
 }
