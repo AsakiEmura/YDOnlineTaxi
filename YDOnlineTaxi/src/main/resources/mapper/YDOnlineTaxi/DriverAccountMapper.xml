@@ -39,7 +39,7 @@
     </resultMap>
 
     <sql id="selectDriverAccountVo">
-        select driver_name, id_number, phone_number, emergency_contact_number, address, motorcycle_type, license_plate_number, id_photo_front, id_photo_back, vehicle_license_photo, driver_licence_photo, status, driver_password, salt from YDOnlineTaxi.driver_account
+        select driver_name, id_number, phone_number, emergency_contact_number, address, motorcycle_type, license_plate_number, id_photo_front, id_photo_back, vehicle_license_photo, driver_licence_photo, status, driver_password, salt, openid from YDOnlineTaxi.driver_account
     </sql>
 
     <select id="selectDriverAccountList" parameterType="com.ruoyi.YDOnlineTaxi.domain.DriverAccount" resultMap="DriverAccountResult">

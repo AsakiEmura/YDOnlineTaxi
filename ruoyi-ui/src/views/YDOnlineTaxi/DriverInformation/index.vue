@@ -65,27 +65,6 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['YDOnlineTaxi:DriverInformation:add']"
-        >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['YDOnlineTaxi:DriverInformation:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
           type="danger"
           plain
           icon="el-icon-delete"
@@ -93,18 +72,8 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['YDOnlineTaxi:DriverInformation:remove']"
-        >删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          :loading="exportLoading"
-          @click="handleExport"
-          v-hasPermi="['YDOnlineTaxi:DriverInformation:export']"
-        >导出</el-button>
+        >移入黑名单
+        </el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
@@ -126,17 +95,11 @@
           <el-button
             size="mini"
             type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['YDOnlineTaxi:DriverInformation:edit']"
-          >修改</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['YDOnlineTaxi:DriverInformation:remove']"
-          >删除</el-button>
+            icon="el-icon-key"
+            @click="handleResetPwd(scope.row)"
+            v-hasPermi="['YDOnlineTaxi:DriverAccount:edit']"
+          >重置密码
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -148,53 +111,12 @@
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
-
-    <!-- 添加或修改司机线上账户信息
-对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="姓名" prop="driverName">
-          <el-input v-model="form.driverName" placeholder="请输入姓名" />
-        </el-form-item>
-        <el-form-item label="紧急电话" prop="driverEmergencyContactPhoneNumber">
-          <el-input v-model="form.driverEmergencyContactPhoneNumber" placeholder="请输入紧急电话" />
-        </el-form-item>
-        <el-form-item label="车牌号" prop="driverCarId">
-          <el-input v-model="form.driverCarId" placeholder="请输入车牌号" />
-        </el-form-item>
-        <el-form-item label="车型" prop="driverCarType">
-          <el-select v-model="form.driverCarType" placeholder="请选择车型">
-            <el-option label="请选择字典生成" value="" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="汽车型号" prop="carModel">
-          <el-input v-model="form.carModel" placeholder="请输入汽车型号" />
-        </el-form-item>
-        <el-form-item label="车辆颜色" prop="carColor">
-          <el-input v-model="form.carColor" placeholder="请输入车辆颜色" />
-        </el-form-item>
-        <el-form-item label="已完成单数" prop="driverCompleteOrderNumber">
-          <el-input v-model="form.driverCompleteOrderNumber" placeholder="请输入已完成单数" />
-        </el-form-item>
-        <el-form-item label="本月完成单数" prop="driverCompleteOrderNumberMonthly">
-          <el-input v-model="form.driverCompleteOrderNumberMonthly" placeholder="请输入本月完成单数" />
-        </el-form-item>
-        <el-form-item label="等级" prop="driverLevel">
-          <el-select v-model="form.driverLevel" placeholder="请选择等级">
-            <el-option label="请选择字典生成" value="" />
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
 <script>
-import { listDriverInformation, getDriverInformation, delDriverInformation, addDriverInformation, updateDriverInformation, exportDriverInformation } from "@/api/YDOnlineTaxi/DriverInformation";
+import {delDriverInformation, listDriverInformation} from "@/api/YDOnlineTaxi/DriverInformation";
+import {resetUserPwd} from "@/api/YDOnlineTaxi/DriverAccount";
 
 export default {
   name: "DriverInformation",
@@ -258,20 +180,26 @@ export default {
           { required: true, message: "已完成单数不能为空", trigger: "blur" }
         ],
         driverCompleteOrderNumberMonthly: [
-          { required: true, message: "本月完成单数不能为空", trigger: "blur" }
+          {required: true, message: "本月完成单数不能为空", trigger: "blur"}
         ],
         driverLevel: [
-          { required: true, message: "等级不能为空", trigger: "change" }
+          {required: true, message: "等级不能为空", trigger: "change"}
         ]
       }
     };
   },
-  created() {
+  mounted() {
     this.getList();
+    // this.$emit("queryTable");
+  },
+  watch: {
+    $route() {
+      this.getList()
+    }
   },
   methods: {
     /** 查询司机线上账户信息
-列表 */
+     列表 */
     getList() {
       this.loading = true;
       listDriverInformation(this.queryParams).then(response => {
@@ -314,74 +242,38 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.driverPhoneNumber)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加司机线上账户信息";
-    },
-    /** 修改按钮操作 */
-    handleUpdate(row) {
-      this.reset();
-      const driverPhoneNumber = row.driverPhoneNumber || this.ids
-      getDriverInformation(driverPhoneNumber).then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改司机线上账户信息";
+    /** 重置密码按钮操作 */
+    handleResetPwd(row) {
+      this.$prompt('请输入用户:' + row.driverName + ' 的新密码', "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        closeOnClickModal: false,
+        inputPattern: /(?=^.{8,20}$)(?=(?:.*?\d){1})(?=.*[a-z])(?=(?:.*?[A-Z]){1})(?=(?:.*?[`·~!@#$%^&*()_+}{|:;'",<.>/?\=\[\]\-\\]){1})(?!.*\s)[0-9a-zA-Z`·~!@#$%^&*()_+}{|:;'",<.>/?\=\[\]\-\\]*$/,
+        inputErrorMessage: "用户密码长度必须介于 8 和 20 之间,且必须包含一个大写字母,一个小写字母,一个数字和一个特殊字符",
+      }).then(({value}) => {
+        resetUserPwd(row.idNumber, value).then(response => {
+          this.msgSuccess("修改成功，新密码是：" + value);
+        });
+      }).catch(() => {
       });
     },
-    /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.driverPhoneNumber != null) {
-            updateDriverInformation(this.form).then(response => {
-              this.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addDriverInformation(this.form).then(response => {
-              this.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
-          }
-        }
-      });
-    },
-    /** 删除按钮操作 */
+    /** 黑名单按钮操作 */
     handleDelete(row) {
       const driverPhoneNumbers = row.driverPhoneNumber || this.ids;
       this.$confirm('是否确认删除司机线上账户信息编号为"' + driverPhoneNumbers + '"的数据项?', "警告", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }).then(function() {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(function () {
           return delDriverInformation(driverPhoneNumbers);
         }).then(() => {
           this.getList();
           this.msgSuccess("删除成功");
         }).catch(() => {});
     },
-    /** 导出按钮操作 */
-    handleExport() {
-      const queryParams = this.queryParams;
-      this.$confirm('是否确认导出所有司机线上账户信息数据项?', "警告", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }).then(() => {
-          this.exportLoading = true;
-          return exportDriverInformation(queryParams);
-        }).then(response => {
-          this.download(response.msg);
-          this.exportLoading = false;
-        }).catch(() => {});
-    }
   }
 };
 </script>

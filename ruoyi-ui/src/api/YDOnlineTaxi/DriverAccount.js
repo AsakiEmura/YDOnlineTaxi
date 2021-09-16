@@ -9,6 +9,24 @@ export function listDriverAccount(query) {
   })
 }
 
+// 查询黑名单司机详细信息列表
+export function blacklistDriverAccount(query) {
+  return request({
+    url: '/YDOnlineTaxi/DriverAccount/Blacklist',
+    method: 'get',
+    params: query
+  })
+}
+
+// 移出黑名单司机
+export function pushOut(query) {
+  return request({
+    url: '/YDOnlineTaxi/DriverAccount/pushOut',
+    method: 'put',
+    data: query
+  })
+}
+
 // 查询司机详细信息详细
 export function getDriverAccount(idNumber) {
   return request({
@@ -30,6 +48,15 @@ export function addDriverAccount(data) {
 export function updateDriverAccount(data) {
   return request({
     url: '/YDOnlineTaxi/DriverAccount',
+    method: 'put',
+    data: data
+  })
+}
+
+// 修改司机详细信息
+export function audit(data) {
+  return request({
+    url: '/YDOnlineTaxi/DriverAccount/audit',
     method: 'put',
     data: data
   })

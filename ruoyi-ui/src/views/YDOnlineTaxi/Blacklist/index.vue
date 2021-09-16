@@ -56,16 +56,15 @@
       <el-table-column label="地址" align="center" prop="address"/>
       <el-table-column label="车型" align="center" prop="motorcycleType"/>
       <el-table-column label="车牌号" align="center" prop="licensePlateNumber"/>
-      <el-table-column label="审核状态" align="center" prop="status"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             size="mini"
             type="text"
             icon="el-icon-edit"
-            @click="Audit(scope.row)"
+            @click="PushOut(scope.row)"
             v-hasPermi="['YDOnlineTaxi:DriverAccount:edit']"
-          >审核
+          >移出
           </el-button>
         </template>
       </el-table-column>
@@ -79,78 +78,11 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改司机详细信息对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="司机姓名" prop="driverName">
-          <span>{{ form.driverName }}</span>
-        </el-form-item>
-        <el-form-item label="身份证号" prop="idNumber">
-          <span>{{ form.idNumber }}</span>
-        </el-form-item>
-        <el-form-item label="手机号" prop="phoneNumber">
-          <span>{{ form.phoneNumber }}</span>
-        </el-form-item>
-        <el-form-item label="紧急电话" prop="emergencyContactNumber">
-          <span>{{ form.emergencyContactNumber }}</span>
-        </el-form-item>
-        <el-form-item label="地址" prop="address">
-          <span>{{ form.address }}</span>
-        </el-form-item>
-        <el-form-item label="车型" prop="motorcycleType">
-          <span>{{ form.motorcycleType }}</span>
-        </el-form-item>
-        <el-form-item label="车牌号" prop="licensePlateNumber">
-          <span>{{ form.licensePlateNumber }}</span>
-        </el-form-item>
-        <el-form-item label="身份证人像面">
-          <imageUpload
-            v-model="form.idPhotoFront"
-            :limit="1"
-          />
-        </el-form-item>
-        <el-form-item label="身份证国旗面">
-          <imageUpload
-            v-model="form.idPhotoBack"
-            :limit="1"
-          />
-        </el-form-item>
-        <el-form-item label="驾驶证">
-          <imageUpload
-            v-model="form.vehicleLicensePhoto"
-            :limit="1"
-          />
-        </el-form-item>
-        <el-form-item label="行驶证">
-          <imageUpload
-            v-model="form.driverLicencePhoto"
-            :limit="1"
-          />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="Pass">审核通过</el-button>
-        <el-button @click="cancel">拒绝通过</el-button>
-      </div>
-    </el-dialog>
-
-    <el-dialog :title="refuseTitle" :visible.sync="refuseOpen" width="600px" append-to-body>
-      <el-input
-        type="textarea"
-        :autosize="{ minRows: 4, maxRows: 6}"
-        placeholder="请输入内容"
-        v-model="refuseDate">
-      </el-input>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="Refuse">确 定</el-button>
-        <el-button @click="reCancel">取消</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
 <script>
-import {audit, getDriverAccount, listDriverAccount, refuseDriver,} from '@/api/YDOnlineTaxi/DriverAccount'
+import {blacklistDriverAccount, getDriverAccount, pushOut,} from '@/api/YDOnlineTaxi/DriverAccount'
 
 export default {
   name: 'DriverAccount',
@@ -263,16 +195,16 @@ export default {
       }
     }
   },
-  created() {
+
+  mounted() {
     this.getList()
-    console.log(111111)
+    // this.$emit("queryTable");
   },
   methods: {
     /** 查询司机详细信息列表 */
     getList() {
       this.loading = true
-      listDriverAccount(this.queryParams).then(response => {
-        console.log(response)
+      blacklistDriverAccount(this.queryParams).then(response => {
         this.DriverAccountList = response.rows
         this.total = response.total
         this.loading = false
@@ -322,44 +254,22 @@ export default {
       this.single = selection.length !== 1
       this.multiple = !selection.length
     },
-    /** 审核按钮操作 */
-    Audit(row) {
-      this.reset()
+
+    /** 移出黑名单 */
+    PushOut(row) {
+      let _this = this
       const idNumber = row.idNumber || this.ids
-      getDriverAccount(idNumber).then(response => {
-        this.form = response.data
-        this.update = false
-        this.open = true
-        this.rules.driverPassword[0].required = false
-        this.title = '修改司机详细信息'
-        this.rePhone = this.form.phoneNumber;
-      })
-    },
-    /** 通过按钮 */
-    Pass() {
-      this.form.status = "审核通过"
-      this.$refs['form'].validate(valid => {
-        console.log(this.form)
-        audit(this.form).then(response => {
-          this.msgSuccess('审核成功')
-          this.form.driverPassword = null
-          this.open = false
-          this.getList()
-        })
-      })
-    },
-    /** 拒绝按钮 */
-    Refuse() {
-      const reData = {
-        'phoneNumber': this.rePhone,
-        'refuseReason': this.refuseDate
-      };
-      refuseDriver(reData).then(response => {
-        this.open = false;
-        this.refuseOpen = false;
-        this.refuseDate = '';
-        this.getList()
-      })
+      this.$confirm('是否确认移出司机"' + idNumber + '"的数据项?', "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(async function () {
+        const tempDriver = await getDriverAccount(idNumber);
+        pushOut(tempDriver.data);
+      }).then(() => {
+        _this.getList();
+      }).catch(() => {
+      });
     },
   }
 }
