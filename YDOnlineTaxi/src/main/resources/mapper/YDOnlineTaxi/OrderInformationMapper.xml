@@ -150,5 +150,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="requirementTypes != null and requirementTypes != ''">and requirement_types=#{requirementTypes}</if>
             )
         </where>
+        order by transport_time,points desc
     </select>
 </mapper>

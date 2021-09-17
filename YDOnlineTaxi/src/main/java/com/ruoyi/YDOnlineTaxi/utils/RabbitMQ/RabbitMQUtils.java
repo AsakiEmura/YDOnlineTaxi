@@ -1,4 +1,4 @@
-package com.ruoyi.YDOnlineTaxi.utils;
+package com.ruoyi.YDOnlineTaxi.utils.RabbitMQ;
 
 import com.rabbitmq.client.Channel;
 import org.slf4j.Logger;

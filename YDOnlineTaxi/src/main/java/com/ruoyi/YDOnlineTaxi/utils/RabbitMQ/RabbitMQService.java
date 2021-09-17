@@ -1,7 +1,7 @@
-package com.ruoyi.YDOnlineTaxi.utils;
+package com.ruoyi.YDOnlineTaxi.utils.RabbitMQ;
 
 import com.rabbitmq.client.Channel;
-import com.ruoyi.YDOnlineTaxi.Properties.MQProperties;
+import com.ruoyi.YDOnlineTaxi.utils.SessionPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -22,8 +22,6 @@ public class RabbitMQService {
     @Autowired(required = false)
     private MQProperties mqProperties;
 
-//    @Autowired(required = false)
-//    private SessionPool sessionPool;
 
     public void waitAudit(String driverPhoneNumber) {
         rabbitTemplate.convertAndSend(mqProperties.getDefaultExchange(), mqProperties.getRouteKey(), driverPhoneNumber + ",不用审核");
@@ -36,5 +34,4 @@ public class RabbitMQService {
         SessionPool.sendMessage(payload);
     }
 
-//    public String returnMessage(){}
 }
