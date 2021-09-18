@@ -100,6 +100,14 @@
             v-hasPermi="['YDOnlineTaxi:DriverAccount:edit']"
           >重置密码
           </el-button>
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-edit"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['YDOnlineTaxi:PointsStatistics:edit']"
+          >修改等级
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -111,11 +119,32 @@
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
+
+    <!-- 添加或修改积分统计对话框 -->
+    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body style="text-align: center">
+      <el-select v-model="rank" placeholder="请选择司机等级">
+        <el-option
+          v-for="item in options"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value">
+        </el-option>
+      </el-select>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import {delDriverInformation, listDriverInformation} from "@/api/YDOnlineTaxi/DriverInformation";
+import {
+  delDriverInformation,
+  getDriverInformation,
+  listDriverInformation,
+  updateDriverInformation
+} from "@/api/YDOnlineTaxi/DriverInformation";
 import {resetUserPwd} from "@/api/YDOnlineTaxi/DriverAccount";
 
 export default {
@@ -133,7 +162,7 @@ export default {
       // 非多个禁用
       multiple: true,
       // 显示搜索条件
-      showSearch: true,
+      showSearch: false,
       // 总条数
       total: 0,
       // 司机线上账户信息表格数据
@@ -177,7 +206,7 @@ export default {
           { required: true, message: "车辆颜色不能为空", trigger: "blur" }
         ],
         driverCompleteOrderNumber: [
-          { required: true, message: "已完成单数不能为空", trigger: "blur" }
+          {required: true, message: "已完成单数不能为空", trigger: "blur"}
         ],
         driverCompleteOrderNumberMonthly: [
           {required: true, message: "本月完成单数不能为空", trigger: "blur"}
@@ -185,7 +214,19 @@ export default {
         driverLevel: [
           {required: true, message: "等级不能为空", trigger: "change"}
         ]
-      }
+      },
+      // 司机等级
+      options: [{
+        value: '黄金司机',
+        label: '黄金司机'
+      }, {
+        value: '钻石司机',
+        label: '钻石司机'
+      }, {
+        value: '王者司机',
+        label: '王者司机'
+      }],
+      rank: '',
     };
   },
   mounted() {
@@ -245,6 +286,26 @@ export default {
       this.single = selection.length !== 1
       this.multiple = !selection.length
     },
+    /** 修改司机等级操作 */
+    handleUpdate(row) {
+      this.reset();
+      const driverPhoneNumber = row.driverPhoneNumber || this.ids
+      getDriverInformation(driverPhoneNumber).then(response => {
+        this.form = response.data;
+        this.open = true;
+        this.title = "修改司机等级";
+        this.rank = this.form.driverLevel;
+      });
+    },
+    /** 提交新的司机等级按钮 */
+    submitForm() {
+      this.form.driverLevel = this.rank;
+      updateDriverInformation(this.form).then(response => {
+        this.msgSuccess("修改成功");
+        this.open = false;
+        this.getList();
+      });
+    },
     /** 重置密码按钮操作 */
     handleResetPwd(row) {
       this.$prompt('请输入用户:' + row.driverName + ' 的新密码', "提示", {
@@ -268,8 +329,8 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       }).then(function () {
-          return delDriverInformation(driverPhoneNumbers);
-        }).then(() => {
+        return delDriverInformation(driverPhoneNumbers);
+      }).then(() => {
           this.getList();
           this.msgSuccess("删除成功");
         }).catch(() => {});

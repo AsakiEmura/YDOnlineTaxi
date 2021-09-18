@@ -1,9 +1,8 @@
 package com.ruoyi.YDOnlineTaxi.service;
 
-import java.util.Date;
-import java.util.List;
 import com.ruoyi.YDOnlineTaxi.domain.OrderInformation;
-import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * 订单信息Service接口
@@ -80,4 +79,5 @@ public interface IOrderInformationService
 
     public OrderInformation selectAllByOrderIdAndTransportTimeBetween(String orderId,String minTransportTime,String maxTransportTime);
 
+    List<OrderInformation> selectOrderByStatus(String status);
 }

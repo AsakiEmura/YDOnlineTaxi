@@ -9,6 +9,15 @@ export function listOrderInformation(query) {
   })
 }
 
+// 查询订单信息列表
+export function timeOutList(query) {
+  return request({
+    url: '/YDOnlineTaxi/OrderInformation/timeOutList',
+    method: 'get',
+    params: query
+  })
+}
+
 // 查询订单信息详细
 export function getOrderInformation(orderId) {
   return request({

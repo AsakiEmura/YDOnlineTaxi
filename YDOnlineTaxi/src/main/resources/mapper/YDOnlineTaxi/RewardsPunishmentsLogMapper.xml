@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.YDOnlineTaxi.mapper.RewardsPunishmentsLogMapper">
+    
+    <resultMap type="com.ruoyi.YDOnlineTaxi.domain.RewardsPunishmentsLog" id="RewardsPunishmentsLogResult">
+        <result property="phoneNumber"    column="phone_number"    />
+        <result property="driverName"    column="driver_name"    />
+        <result property="rpReason"    column="rp_reason"    />
+        <result property="operatingTime"    column="operating_time"    />
+        <result property="operatingPeople"    column="operating_people"    />
+    </resultMap>
+
+    <sql id="selectRewardsPunishmentsLogVo">
+        select phone_number, driver_name, rp_reason, operating_time, operating_people from YDOnlineTaxi.rewards_punishments_log
+    </sql>
+
+    <select id="selectRewardsPunishmentsLogList" parameterType="com.ruoyi.YDOnlineTaxi.domain.RewardsPunishmentsLog" resultMap="RewardsPunishmentsLogResult">
+        <include refid="selectRewardsPunishmentsLogVo"/>
+        <where>  
+            <if test="driverName != null  and driverName != ''"> and driver_name like concat('%', #{driverName}, '%')</if>
+            <if test="rpReason != null  and rpReason != ''"> and rp_reason = #{rpReason}</if>
+            <if test="operatingTime != null "> and operating_time = #{operatingTime}</if>
+            <if test="operatingPeople != null  and operatingPeople != ''"> and operating_people = #{operatingPeople}</if>
+        </where>
+    </select>
+    
+    <select id="selectRewardsPunishmentsLogByPhoneNumber" parameterType="String" resultMap="RewardsPunishmentsLogResult">
+        <include refid="selectRewardsPunishmentsLogVo"/>
+        where phone_number = #{phoneNumber}
+    </select>
+        
+    <insert id="insertRewardsPunishmentsLog" parameterType="com.ruoyi.YDOnlineTaxi.domain.RewardsPunishmentsLog">
+        insert into YDOnlineTaxi.rewards_punishments_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="phoneNumber != null">phone_number,</if>
+            <if test="driverName != null">driver_name,</if>
+            <if test="rpReason != null and rpReason != ''">rp_reason,</if>
+            <if test="operatingTime != null">operating_time,</if>
+            <if test="operatingPeople != null and operatingPeople != ''">operating_people,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="phoneNumber != null">#{phoneNumber},</if>
+            <if test="driverName != null">#{driverName},</if>
+            <if test="rpReason != null and rpReason != ''">#{rpReason},</if>
+            <if test="operatingTime != null">#{operatingTime},</if>
+            <if test="operatingPeople != null and operatingPeople != ''">#{operatingPeople},</if>
+         </trim>
+    </insert>
+
+    <update id="updateRewardsPunishmentsLog" parameterType="com.ruoyi.YDOnlineTaxi.domain.RewardsPunishmentsLog">
+        update YDOnlineTaxi.rewards_punishments_log
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="driverName != null">driver_name = #{driverName},</if>
+            <if test="rpReason != null and rpReason != ''">rp_reason = #{rpReason},</if>
+            <if test="operatingTime != null">operating_time = #{operatingTime},</if>
+            <if test="operatingPeople != null and operatingPeople != ''">operating_people = #{operatingPeople},</if>
+        </trim>
+        where phone_number = #{phoneNumber}
+    </update>
+
+    <delete id="deleteRewardsPunishmentsLogByPhoneNumber" parameterType="String">
+        delete from YDOnlineTaxi.rewards_punishments_log where phone_number = #{phoneNumber}
+    </delete>
+
+    <delete id="deleteRewardsPunishmentsLogByPhoneNumbers" parameterType="String">
+        delete from YDOnlineTaxi.rewards_punishments_log where phone_number in
+        <foreach item="phoneNumber" collection="array" open="(" separator="," close=")">
+            #{phoneNumber}
+        </foreach>
+    </delete>
+</mapper>

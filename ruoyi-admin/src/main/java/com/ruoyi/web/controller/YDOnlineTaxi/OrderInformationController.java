@@ -47,11 +47,20 @@ public class OrderInformationController extends BaseController {
     /**
      * 查询订单信息列表
      */
-
     @GetMapping("/list")
     public TableDataInfo list(OrderInformation orderInformation) {
         startPage();
         List<OrderInformation> list = orderInformationService.selectOrderInformationList(orderInformation);
+        return getDataTable(list);
+    }
+
+    /**
+     * 查询超时订单信息列表
+     */
+    @GetMapping("/timeOutList")
+    public TableDataInfo timeOutList(String status) {
+        startPage();
+        List<OrderInformation> list = orderInformationService.selectOrderByStatus(status);
         return getDataTable(list);
     }
 

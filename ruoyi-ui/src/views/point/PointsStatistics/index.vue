@@ -91,38 +91,6 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['YDOnlineTaxi:PointsStatistics:add']"
-        >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['YDOnlineTaxi:PointsStatistics:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['YDOnlineTaxi:PointsStatistics:remove']"
-        >删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
           type="warning"
           plain
           icon="el-icon-download"
@@ -154,18 +122,12 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['YDOnlineTaxi:PointsStatistics:edit']"
-          >修改</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['YDOnlineTaxi:PointsStatistics:remove']"
-          >删除</el-button>
+          >奖惩
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -177,31 +139,16 @@
     <!-- 添加或修改积分统计对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="姓名" prop="driverName">
-          <el-input v-model="form.driverName" placeholder="请输入姓名" />
-        </el-form-item>
-        <el-form-item label="未支付" prop="notPaid">
-          <el-input v-model="form.notPaid" placeholder="请输入未支付" />
-        </el-form-item>
-        <el-form-item label="已支付" prop="paid">
-          <el-input v-model="form.paid" placeholder="请输入已支付" />
-        </el-form-item>
-        <el-form-item label="未结算" prop="noSettlement">
-          <el-input v-model="form.noSettlement" placeholder="请输入未结算" />
-        </el-form-item>
-        <el-form-item label="已结算" prop="settlemented">
-          <el-input v-model="form.settlemented" placeholder="请输入已结算" />
-        </el-form-item>
-        <el-form-item label="月积分" prop="monthPoints">
-          <el-input v-model="form.monthPoints" placeholder="请输入月积分" />
-        </el-form-item>
-        <el-form-item label="总积分" prop="totalPoints">
-          <el-input v-model="form.totalPoints" placeholder="请输入总积分" />
-        </el-form-item>
-        <el-form-item label="奖惩积分" prop="rewardsPunishmentPoints">
-          <el-input v-model="form.rewardsPunishmentPoints" placeholder="请输入奖惩积分" />
+        <el-form-item label="奖惩积分" prop="rewardsPunishmentPoints" style="text-align: center">
+          <el-input-number v-model="rpPoint" :min="-10000" :max="10000" label="请输入奖惩积分(如-30)"></el-input-number>
         </el-form-item>
       </el-form>
+      <el-input
+        type="textarea"
+        :autosize="{ minRows: 4, maxRows: 6}"
+        placeholder="请输入奖惩原因"
+        v-model="rpReason">
+      </el-input>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
@@ -211,12 +158,22 @@
 </template>
 
 <script>
-import { listPointsStatistics, getPointsStatistics, delPointsStatistics, addPointsStatistics, updatePointsStatistics, exportPointsStatistics } from "@/api/YDOnlineTaxi/PointsStatistics";
+import {
+  exportPointsStatistics,
+  getPointsStatistics,
+  listPointsStatistics,
+  reLog,
+  updatePointsStatistics
+} from "@/api/YDOnlineTaxi/PointsStatistics";
 
 export default {
   name: "PointsStatistics",
   data() {
     return {
+      //奖惩积分
+      rpPoint: null,
+      //奖惩理由
+      rpReason: '',
       // 遮罩层
       loading: true,
       // 导出遮罩层
@@ -326,42 +283,25 @@ export default {
       getPointsStatistics(driverPhoneNumber).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改积分统计";
+        this.title = "奖惩设置";
       });
     },
     /** 提交按钮 */
     submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.driverPhoneNumber != null) {
-            updatePointsStatistics(this.form).then(response => {
-              this.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addPointsStatistics(this.form).then(response => {
-              this.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
-          }
-        }
+      this.form.rewardsPunishmentPoints = Number(this.form.totalPoints) + Number(this.rpPoint);
+      updatePointsStatistics(this.form).then(response => {
+        this.msgSuccess("修改成功");
+        this.open = false;
+        this.getList();
       });
-    },
-    /** 删除按钮操作 */
-    handleDelete(row) {
-      const driverPhoneNumbers = row.driverPhoneNumber || this.ids;
-      this.$confirm('是否确认删除积分统计编号为"' + driverPhoneNumbers + '"的数据项?', "警告", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }).then(function() {
-          return delPointsStatistics(driverPhoneNumbers);
-        }).then(() => {
-          this.getList();
-          this.msgSuccess("删除成功");
-        }).catch(() => {});
+      const reTempLog = {
+        phoneNumber: this.form.phoneNumber,
+        driverName: this.form.driverName,
+        rpReason: this.rpReason,
+        operatingTime: '',
+        operatingPeople: '',
+      }
+      reLog(reTempLog);
     },
     /** 导出按钮操作 */
     handleExport() {

@@ -1,18 +1,17 @@
 package com.ruoyi.YDOnlineTaxi.mapper;
-import java.util.Date;
 
-import java.util.List;
 import com.ruoyi.YDOnlineTaxi.domain.OrderInformation;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * 订单信息Mapper接口
- * 
+ *
  * @author ruoyi
  * @date 2021-09-08
  */
-public interface OrderInformationMapper 
-{
+public interface OrderInformationMapper {
     /**
      * 查询订单信息
      * 
@@ -67,4 +66,6 @@ public interface OrderInformationMapper
     public List<OrderInformation> getOrderInformationListByConditions(@Param("likeCarType1")String likeCarType1,@Param("likeCarType2")String likeCarType2,@Param("likeCarType3")String likeCarType3,@Param("likeOrderStatus")String likeOrderStatus,@Param("minTransportTime")String minTransportTime,@Param("maxTransportTime")String maxTransportTime,@Param("requirementTypes")String requirementTypes);
 
     public OrderInformation selectAllByOrderIdAndTransportTimeBetween(@Param("orderId") String orderId, @Param("minTransportTime") String minTransportTime, @Param("maxTransportTime") String maxTransportTime);
+
+    List<OrderInformation> selectOrderByStatus(@Param("orderStatus") String orderStatus);
 }

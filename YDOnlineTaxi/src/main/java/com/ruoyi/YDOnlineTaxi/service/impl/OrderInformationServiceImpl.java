@@ -1,9 +1,9 @@
 package com.ruoyi.YDOnlineTaxi.service.impl;
 
-import java.util.Date;
-import java.util.List;
-
 import com.ruoyi.YDOnlineTaxi.constant.enums.OrderStatus;
+import com.ruoyi.YDOnlineTaxi.domain.OrderInformation;
+import com.ruoyi.YDOnlineTaxi.mapper.OrderInformationMapper;
+import com.ruoyi.YDOnlineTaxi.service.IOrderInformationService;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.uuid.UUID;
@@ -11,9 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ruoyi.YDOnlineTaxi.mapper.OrderInformationMapper;
-import com.ruoyi.YDOnlineTaxi.domain.OrderInformation;
-import com.ruoyi.YDOnlineTaxi.service.IOrderInformationService;
+
+import java.util.List;
 
 /**
  * 订单信息Service业务层处理
@@ -187,7 +186,7 @@ public class OrderInformationServiceImpl implements IOrderInformationService
 
     @Override
     public String randomID() {
-        String id = UUID.fastUUID().toString().trim().replace("-","");
+        String id = UUID.fastUUID().toString().trim().replace("-", "");
         return id;
     }
 
@@ -197,12 +196,17 @@ public class OrderInformationServiceImpl implements IOrderInformationService
     }
 
     @Override
-    public List<OrderInformation> getOrderInformationListByConditions(String likeCarType1, String likeCarType2, String likeCarType3,String likeOrderStatus, String minTransportTime, String maxTransportTime, String requirementTypes) {
-        return orderInformationMapper.getOrderInformationListByConditions(likeCarType1,likeCarType2,likeCarType3,likeOrderStatus,minTransportTime,maxTransportTime,requirementTypes);
+    public List<OrderInformation> selectOrderByStatus(String status) {
+        return orderInformationMapper.selectOrderByStatus(status);
+    }
+
+    @Override
+    public List<OrderInformation> getOrderInformationListByConditions(String likeCarType1, String likeCarType2, String likeCarType3, String likeOrderStatus, String minTransportTime, String maxTransportTime, String requirementTypes) {
+        return orderInformationMapper.getOrderInformationListByConditions(likeCarType1, likeCarType2, likeCarType3, likeOrderStatus, minTransportTime, maxTransportTime, requirementTypes);
     }
 
     @Override
     public OrderInformation selectAllByOrderIdAndTransportTimeBetween(String orderId, String minTransportTime, String maxTransportTime) {
-        return orderInformationMapper.selectAllByOrderIdAndTransportTimeBetween(orderId,minTransportTime,maxTransportTime);
+        return orderInformationMapper.selectAllByOrderIdAndTransportTimeBetween(orderId, minTransportTime, maxTransportTime);
     }
 }

@@ -35,6 +35,15 @@ export function updatePointsStatistics(data) {
   })
 }
 
+// 奖惩日志
+export function reLog(data) {
+  return request({
+    url: '/YDOnlineTaxi/log/add',
+    method: 'post',
+    data: data
+  })
+}
+
 // 删除积分统计
 export function delPointsStatistics(driverPhoneNumber) {
   return request({

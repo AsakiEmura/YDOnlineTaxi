@@ -168,4 +168,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <![CDATA[and DATE_FORMAT(transport_time,'%Y-%m-%d %H:%i:%s') >= DATE_FORMAT(#{minTransportTime},'%Y-%m-%d %H:%i:%s')]]>
         <![CDATA[and DATE_FORMAT(transport_time,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{maxTransportTime},'%Y-%m-%d %H:%i:%s')]]>
     </select>
+
+    <select id="selectOrderByStatus" parameterType="java.lang.String" resultMap="OrderInformationResult">
+        select *
+        from YDOnlineTaxi.order_information
+        <where>
+            <if test="orderStatus != null">
+                and order_status=#{orderStatus}
+            </if>
+        </where>
+    </select>
 </mapper>

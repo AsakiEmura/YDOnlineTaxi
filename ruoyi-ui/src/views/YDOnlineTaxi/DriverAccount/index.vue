@@ -265,14 +265,12 @@ export default {
   },
   created() {
     this.getList()
-    console.log(111111)
   },
   methods: {
     /** 查询司机详细信息列表 */
     getList() {
       this.loading = true
       listDriverAccount(this.queryParams).then(response => {
-        console.log(response)
         this.DriverAccountList = response.rows
         this.total = response.total
         this.loading = false
@@ -339,7 +337,6 @@ export default {
     Pass() {
       this.form.status = "审核通过"
       this.$refs['form'].validate(valid => {
-        console.log(this.form)
         audit(this.form).then(response => {
           this.msgSuccess('审核成功')
           this.form.driverPassword = null
