@@ -15,9 +15,9 @@ public interface WxWithDriversService{
 
     public List<String> selectOpenIdByPushTimesGreaterThan(@Param("minPushTimes")Integer minPushTimes);
 
-    public List<WxWithDrivers> selectAllByPhoneNumberLikeAndDriverNameLikeAndOpenIdAndPushTimesGreaterThan(WxWithDrivers wxWithDrivers);
-
     public WxWithDrivers selectAllByOpenId(@Param("openId")String openId);
 
     public int updateByOpenId(WxWithDrivers updated);
+
+    public List<String> selectOpenIdByDriverLevel(String driverLevel);
 }

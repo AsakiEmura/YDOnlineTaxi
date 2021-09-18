@@ -36,11 +36,6 @@ public class WxWithDriversServiceImpl implements WxWithDriversService{
     }
 
     @Override
-    public List<WxWithDrivers> selectAllByPhoneNumberLikeAndDriverNameLikeAndOpenIdAndPushTimesGreaterThan(WxWithDrivers wxWithDrivers) {
-        return wxWithDriversMapper.selectAllByPhoneNumberLikeAndDriverNameLikeAndOpenIdAndPushTimesGreaterThan(wxWithDrivers);
-    }
-
-    @Override
     public WxWithDrivers selectAllByOpenId(String openId) {
         return wxWithDriversMapper.selectAllByOpenId(openId);
     }
@@ -48,5 +43,10 @@ public class WxWithDriversServiceImpl implements WxWithDriversService{
     @Override
     public int updateByOpenId(WxWithDrivers updated) {
         return wxWithDriversMapper.updateByOpenId(updated);
+    }
+
+    @Override
+    public List<String> selectOpenIdByDriverLevel(String driverLevel) {
+        return wxWithDriversMapper.selectOpenIdByDriverLevel(driverLevel);
     }
 }

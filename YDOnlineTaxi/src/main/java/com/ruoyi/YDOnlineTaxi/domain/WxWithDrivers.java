@@ -24,6 +24,11 @@ public class WxWithDrivers {
     */
     private Integer pushTimes;
 
+    /**
+     * 司机等级
+     */
+    private String driverLevel;
+
     public String getDriverName() {
         return driverName;
     }
@@ -54,6 +59,14 @@ public class WxWithDrivers {
 
     public void setPushTimes(Integer pushTimes) {
         this.pushTimes = pushTimes;
+    }
+
+    public String getDriverLevel() {
+        return driverLevel;
+    }
+
+    public void setDriverLevel(String driverLevel) {
+        this.driverLevel = driverLevel;
     }
 
     @Override
