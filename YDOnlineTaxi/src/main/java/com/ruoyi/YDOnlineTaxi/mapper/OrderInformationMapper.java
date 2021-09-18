@@ -14,7 +14,7 @@ import java.util.List;
 public interface OrderInformationMapper {
     /**
      * 查询订单信息
-     * 
+     *
      * @param orderId 订单信息主键
      * @return 订单信息
      */
@@ -22,7 +22,7 @@ public interface OrderInformationMapper {
 
     /**
      * 查询订单信息列表
-     * 
+     *
      * @param orderInformation 订单信息
      * @return 订单信息集合
      */
@@ -30,7 +30,7 @@ public interface OrderInformationMapper {
 
     /**
      * 新增订单信息
-     * 
+     *
      * @param orderInformation 订单信息
      * @return 结果
      */
@@ -38,7 +38,7 @@ public interface OrderInformationMapper {
 
     /**
      * 修改订单信息
-     * 
+     *
      * @param orderInformation 订单信息
      * @return 结果
      */
@@ -46,7 +46,7 @@ public interface OrderInformationMapper {
 
     /**
      * 删除订单信息
-     * 
+     *
      * @param orderId 订单信息主键
      * @return 结果
      */
@@ -54,18 +54,21 @@ public interface OrderInformationMapper {
 
     /**
      * 批量删除订单信息
-     * 
+     *
      * @param orderIds 需要删除的数据主键集合
      * @return 结果
      */
     public int deleteOrderInformationByOrderIds(String[] orderIds);
 
-    public String selectOrderStatusByOrderId(@Param("orderId")String orderId);
+    public String selectOrderStatusByOrderId(@Param("orderId") String orderId);
 
 
-    public List<OrderInformation> getOrderInformationListByConditions(@Param("likeCarType1")String likeCarType1,@Param("likeCarType2")String likeCarType2,@Param("likeCarType3")String likeCarType3,@Param("likeOrderStatus")String likeOrderStatus,@Param("minTransportTime")String minTransportTime,@Param("maxTransportTime")String maxTransportTime,@Param("requirementTypes")String requirementTypes);
+    public List<OrderInformation> getOrderInformationListByConditions(@Param("likeCarType1") String likeCarType1, @Param("likeCarType2") String likeCarType2, @Param("likeCarType3") String likeCarType3, @Param("likeOrderStatus") String likeOrderStatus, @Param("minTransportTime") String minTransportTime, @Param("maxTransportTime") String maxTransportTime, @Param("requirementTypes") String requirementTypes);
 
     public OrderInformation selectAllByOrderIdAndTransportTimeBetween(@Param("orderId") String orderId, @Param("minTransportTime") String minTransportTime, @Param("maxTransportTime") String maxTransportTime);
 
     List<OrderInformation> selectOrderByStatus(@Param("orderStatus") String orderStatus);
+
+
+    List<OrderInformation> selectOrderByReceived(String[] status);
 }

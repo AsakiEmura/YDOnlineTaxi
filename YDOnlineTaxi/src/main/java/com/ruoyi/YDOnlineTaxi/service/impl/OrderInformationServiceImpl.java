@@ -209,4 +209,9 @@ public class OrderInformationServiceImpl implements IOrderInformationService
     public OrderInformation selectAllByOrderIdAndTransportTimeBetween(String orderId, String minTransportTime, String maxTransportTime) {
         return orderInformationMapper.selectAllByOrderIdAndTransportTimeBetween(orderId, minTransportTime, maxTransportTime);
     }
+
+    @Override
+    public List<OrderInformation> selectOrderByReceived(String[] status) {
+        return orderInformationMapper.selectOrderByReceived(status);
+    }
 }

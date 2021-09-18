@@ -37,17 +37,23 @@
         </el-date-picker>
       </el-form-item>
       <el-form-item label="需求类型" prop="requirementTypes">
-        <el-input
-          v-model="queryParams.requirementTypes"
-          placeholder="请输入需求类型"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
+        <el-select v-model="queryParams.requirementTypes" placeholder="请输入需求类型" clearable size="small">
+          <el-option label="接站" value="接站"/>
+          <el-option label="送站" value="送站"/>
+          <el-option label="全包" value="全包"/>
+          <el-option label="半包" value="半包"/>
+          <el-option label="市内单程" value="市内单程"/>
+          <el-option label="市内往返" value="市内往返"/>
+          <el-option label="外地单程" value="外地单程"/>
+          <el-option label="外地往返" value="外地往返"/>
+        </el-select>
       </el-form-item>
       <el-form-item label="用车类型" prop="carType">
         <el-select v-model="queryParams.carType" placeholder="请选择用车类型" clearable size="small">
-          <el-option label="请选择字典生成" value=""/>
+          <el-option label="舒适型" value="舒适型"/>
+          <el-option label="豪华型" value="豪华型"/>
+          <el-option label="商务型" value="商务型"/>
+          <el-option label="豪华商务型" value="豪华商务型"/>
         </el-select>
       </el-form-item>
       <el-form-item label="乘客称呼" prop="passenger">
@@ -106,6 +112,17 @@
           @click="handleDelete"
           v-hasPermi="['YDOnlineTaxi:OrderInformation:remove']"
         >删除
+        </el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="info"
+          plain
+          icon="el-icon-upload2"
+          size="mini"
+          @click="handleImport"
+          v-hasPermi="['system:user:import']"
+        >导入
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -205,6 +222,12 @@
     <!-- 添加或修改订单信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="出发地" prop="departure">
+          <el-input v-model="form.departure" placeholder="请输入出发地"/>
+        </el-form-item>
+        <el-form-item label="到达地" prop="destination">
+          <el-input v-model="form.destination" placeholder="请输入到达地"/>
+        </el-form-item>
         <el-form-item label="用车时间" prop="transportTime">
           <el-date-picker clearable size="small"
                           v-model="form.transportTime"
@@ -214,12 +237,30 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item label="需求类型" prop="requirementTypes">
-          <el-input v-model="form.requirementTypes" placeholder="请输入需求类型"/>
+          <el-select v-model="queryParams.requirementTypes" placeholder="请输入需求类型" clearable size="small">
+            <el-option label="接站" value="接站"/>
+            <el-option label="送站" value="送站"/>
+            <el-option label="全包" value="全包"/>
+            <el-option label="半包" value="半包"/>
+            <el-option label="市内单程" value="市内单程"/>
+            <el-option label="市内往返" value="市内往返"/>
+            <el-option label="外地单程" value="外地单程"/>
+            <el-option label="外地往返" value="外地往返"/>
+          </el-select>
         </el-form-item>
         <el-form-item label="用车类型" prop="carType">
-          <el-select v-model="form.carType" placeholder="请选择用车类型">
-            <el-option label="请选择字典生成" value=""/>
+          <el-select v-model="queryParams.carType" placeholder="请选择用车类型" clearable size="small">
+            <el-option label="舒适型" value="舒适型"/>
+            <el-option label="豪华型" value="豪华型"/>
+            <el-option label="商务型" value="商务型"/>
+            <el-option label="豪华商务型" value="豪华商务型"/>
           </el-select>
+        </el-form-item>
+        <el-form-item label="乘客称呼" prop="passenger">
+          <el-input v-model="form.passenger" placeholder="请输入乘客称呼"/>
+        </el-form-item>
+        <el-form-item label="乘客手机" prop="passengerPhone">
+          <el-input v-model="form.passengerPhone" placeholder="请输入乘客手机"/>
         </el-form-item>
         <el-form-item label="积分" prop="points">
           <el-input v-model="form.points" placeholder="请输入积分"/>
@@ -243,7 +284,7 @@ import {
   exportOrderInformation,
   getOrderInformation,
   importTemplate,
-  timeOutList,
+  receivedListList,
   updateOrderInformation
 } from "@/api/YDOnlineTaxi/OrderInformation";
 import {getToken} from "@/utils/auth";
@@ -343,7 +384,7 @@ export default {
     /** 查询订单信息列表 */
     getList() {
       this.loading = true;
-      timeOutList("超时").then(response => {
+      receivedListList().then(response => {
         this.OrderInformationList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -406,6 +447,7 @@ export default {
     },
     /** 提交按钮 */
     submitForm() {
+      this.form.orderStatus = "待派单";
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.orderId != null) {

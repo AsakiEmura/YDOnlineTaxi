@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 订单信息Controller
@@ -55,12 +56,27 @@ public class OrderInformationController extends BaseController {
     }
 
     /**
-     * 查询超时订单信息列表
+     * 查询单个订单信息列表
      */
-    @GetMapping("/timeOutList")
-    public TableDataInfo timeOutList(String status) {
+    @PostMapping("/singleStatusList")
+    public TableDataInfo timeOutList(@RequestBody Map<String, Object> data) {
         startPage();
-        List<OrderInformation> list = orderInformationService.selectOrderByStatus(status);
+        List<OrderInformation> list = orderInformationService.selectOrderByStatus(data.get("status").toString());
+        return getDataTable(list);
+    }
+
+    /**
+     * 查询多个订单信息列表
+     */
+    @GetMapping("/receivedList")
+    public TableDataInfo receivedList() {
+        startPage();
+        String[] status = {
+                "已派单",
+                "司机已出发",
+                "司机已到达"
+        };
+        List<OrderInformation> list = orderInformationService.selectOrderByReceived(status);
         return getDataTable(list);
     }
 

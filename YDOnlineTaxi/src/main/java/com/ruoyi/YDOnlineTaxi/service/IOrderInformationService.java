@@ -77,7 +77,9 @@ public interface IOrderInformationService
 
     public List<OrderInformation> getOrderInformationListByConditions(String likeCarType1, String likeCarType2, String likeCarType3, String likeOrderStatus, String minTransportTime, String maxTransportTime, String requirementTypes);
 
-    public OrderInformation selectAllByOrderIdAndTransportTimeBetween(String orderId,String minTransportTime,String maxTransportTime);
+    public OrderInformation selectAllByOrderIdAndTransportTimeBetween(String orderId, String minTransportTime, String maxTransportTime);
 
     List<OrderInformation> selectOrderByStatus(String status);
+
+    List<OrderInformation> selectOrderByReceived(String[] status);
 }

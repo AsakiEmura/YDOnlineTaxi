@@ -37,17 +37,23 @@
         </el-date-picker>
       </el-form-item>
       <el-form-item label="需求类型" prop="requirementTypes">
-        <el-input
-          v-model="queryParams.requirementTypes"
-          placeholder="请输入需求类型"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
+        <el-select v-model="queryParams.requirementTypes" placeholder="请输入需求类型" clearable size="small">
+          <el-option label="接站" value="接站"/>
+          <el-option label="送站" value="送站"/>
+          <el-option label="全包" value="全包"/>
+          <el-option label="半包" value="半包"/>
+          <el-option label="市内单程" value="市内单程"/>
+          <el-option label="市内往返" value="市内往返"/>
+          <el-option label="外地单程" value="外地单程"/>
+          <el-option label="外地往返" value="外地往返"/>
+        </el-select>
       </el-form-item>
       <el-form-item label="用车类型" prop="carType">
         <el-select v-model="queryParams.carType" placeholder="请选择用车类型" clearable size="small">
-          <el-option label="请选择字典生成" value=""/>
+          <el-option label="舒适型" value="舒适型"/>
+          <el-option label="豪华型" value="豪华型"/>
+          <el-option label="商务型" value="商务型"/>
+          <el-option label="豪华商务型" value="豪华商务型"/>
         </el-select>
       </el-form-item>
       <el-form-item label="乘客称呼" prop="passenger">
@@ -84,18 +90,6 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['YDOnlineTaxi:OrderInformation:edit']"
-        >重新发布
-        </el-button>
-      </el-col>
       <el-col :span="1.5">
         <el-button
           type="danger"
@@ -180,7 +174,7 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['YDOnlineTaxi:OrderInformation:edit']"
-          >重新发布
+          >审核
           </el-button>
           <el-button
             size="mini"
@@ -243,7 +237,7 @@ import {
   exportOrderInformation,
   getOrderInformation,
   importTemplate,
-  timeOutList,
+  singleStatusList,
   updateOrderInformation
 } from "@/api/YDOnlineTaxi/OrderInformation";
 import {getToken} from "@/utils/auth";
@@ -343,7 +337,10 @@ export default {
     /** 查询订单信息列表 */
     getList() {
       this.loading = true;
-      timeOutList("超时").then(response => {
+      let temp = {
+        status: "待审核"
+      }
+      singleStatusList(temp).then(response => {
         this.OrderInformationList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -406,6 +403,7 @@ export default {
     },
     /** 提交按钮 */
     submitForm() {
+      this.form.orderStatus = "完成";
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.orderId != null) {

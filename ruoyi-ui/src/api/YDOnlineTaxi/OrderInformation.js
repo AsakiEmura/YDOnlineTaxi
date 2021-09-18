@@ -9,12 +9,20 @@ export function listOrderInformation(query) {
   })
 }
 
-// 查询订单信息列表
-export function timeOutList(query) {
+// 查询制定状态订单信息列表
+export function singleStatusList(data) {
   return request({
-    url: '/YDOnlineTaxi/OrderInformation/timeOutList',
+    url: '/YDOnlineTaxi/OrderInformation/singleStatusList',
+    method: 'post',
+    data: data
+  })
+}
+
+// 查询制定状态订单信息列表
+export function receivedListList() {
+  return request({
+    url: '/YDOnlineTaxi/OrderInformation/receivedList',
     method: 'get',
-    params: query
   })
 }
 

@@ -178,4 +178,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             </if>
         </where>
     </select>
+
+    <select id="selectOrderByReceived" parameterType="java.util.List" resultMap="OrderInformationResult">
+        select *
+        from YDOnlineTaxi.order_information
+        <where>
+            order_status in
+            <foreach collection="array" open="(" separator="," close=")" item="status" index="index">
+                #{status}
+            </foreach>
+        </where>
+    </select>
 </mapper>
