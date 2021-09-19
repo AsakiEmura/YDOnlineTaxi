@@ -66,5 +66,5 @@ public interface OrderInformationMapper
 
     public List<OrderInformation> getOrderInformationListByConditions(@Param("likeCarType1")String likeCarType1,@Param("likeCarType2")String likeCarType2,@Param("likeCarType3")String likeCarType3,@Param("likeOrderStatus")String likeOrderStatus,@Param("minTransportTime")String minTransportTime,@Param("maxTransportTime")String maxTransportTime,@Param("requirementTypes")String requirementTypes);
 
-
+    public OrderInformation selectAllByOrderIdAndTransportTimeBetween(@Param("orderId") String orderId, @Param("minTransportTime") String minTransportTime, @Param("maxTransportTime") String maxTransportTime);
 }

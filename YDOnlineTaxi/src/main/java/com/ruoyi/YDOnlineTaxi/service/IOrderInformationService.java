@@ -74,7 +74,10 @@ public interface IOrderInformationService
 
     public String randomID();
 
-    public String selectOrderStatusByOrderId(@Param("orderId")String orderId);
+    public String selectOrderStatusByOrderId(String orderId);
 
-    public List<OrderInformation> getOrderInformationListByConditions(@Param("likeCarType1")String likeCarType1,@Param("likeCarType2")String likeCarType2,@Param("likeCarType3")String likeCarType3,@Param("likeOrderStatus")String likeOrderStatus,@Param("minTransportTime")String minTransportTime,@Param("maxTransportTime")String maxTransportTime,@Param("requirementTypes")String requirementTypes);
+    public List<OrderInformation> getOrderInformationListByConditions(String likeCarType1, String likeCarType2, String likeCarType3, String likeOrderStatus, String minTransportTime, String maxTransportTime, String requirementTypes);
+
+    public OrderInformation selectAllByOrderIdAndTransportTimeBetween(String orderId,String minTransportTime,String maxTransportTime);
+
 }

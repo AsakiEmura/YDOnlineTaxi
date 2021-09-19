@@ -66,6 +66,10 @@ public class OrderInformation extends BaseEntity
     @Excel(name = "拒绝理由")
     private String refuseReason;
 
+    /** 超时时间 */
+    @Excel(name = "超时时间")
+    private Integer expireTime;
+
     public void setOrderId(String orderId) 
     {
         this.orderId = orderId;
@@ -173,6 +177,14 @@ public class OrderInformation extends BaseEntity
     public String getRefuseReason() 
     {
         return refuseReason;
+    }
+
+    public Integer getExpireTime() {
+        return expireTime;
+    }
+
+    public void setExpireTime(Integer expireTime) {
+        this.expireTime = expireTime;
     }
 
     @Override

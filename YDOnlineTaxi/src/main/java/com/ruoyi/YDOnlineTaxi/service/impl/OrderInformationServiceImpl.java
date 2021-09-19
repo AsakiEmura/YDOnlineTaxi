@@ -200,4 +200,9 @@ public class OrderInformationServiceImpl implements IOrderInformationService
     public List<OrderInformation> getOrderInformationListByConditions(String likeCarType1, String likeCarType2, String likeCarType3,String likeOrderStatus, String minTransportTime, String maxTransportTime, String requirementTypes) {
         return orderInformationMapper.getOrderInformationListByConditions(likeCarType1,likeCarType2,likeCarType3,likeOrderStatus,minTransportTime,maxTransportTime,requirementTypes);
     }
+
+    @Override
+    public OrderInformation selectAllByOrderIdAndTransportTimeBetween(String orderId, String minTransportTime, String maxTransportTime) {
+        return orderInformationMapper.selectAllByOrderIdAndTransportTimeBetween(orderId,minTransportTime,maxTransportTime);
+    }
 }
