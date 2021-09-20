@@ -199,6 +199,12 @@
     <!-- 添加或修改订单信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="出发地" prop="departure">
+          <el-input v-model="form.departure" placeholder="请输入出发地"/>
+        </el-form-item>
+        <el-form-item label="到达地" prop="destination">
+          <el-input v-model="form.destination" placeholder="请输入到达地"/>
+        </el-form-item>
         <el-form-item label="用车时间" prop="transportTime">
           <el-date-picker clearable size="small"
                           v-model="form.transportTime"
@@ -214,6 +220,12 @@
           <el-select v-model="form.carType" placeholder="请选择用车类型">
             <el-option label="请选择字典生成" value=""/>
           </el-select>
+        </el-form-item>
+        <el-form-item label="乘客称呼" prop="passenger">
+          <el-input v-model="form.passenger" placeholder="请输入乘客称呼"/>
+        </el-form-item>
+        <el-form-item label="乘客手机" prop="passengerPhone">
+          <el-input v-model="form.passengerPhone" placeholder="请输入乘客手机"/>
         </el-form-item>
         <el-form-item label="积分" prop="points">
           <el-input v-model="form.points" placeholder="请输入积分"/>

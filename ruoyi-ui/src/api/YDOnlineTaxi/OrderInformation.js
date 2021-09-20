@@ -9,7 +9,7 @@ export function listOrderInformation(query) {
   })
 }
 
-// 查询制定状态订单信息列表
+// 查询一种状态订单信息列表
 export function singleStatusList(data) {
   return request({
     url: '/YDOnlineTaxi/OrderInformation/singleStatusList',
@@ -18,11 +18,28 @@ export function singleStatusList(data) {
   })
 }
 
-// 查询制定状态订单信息列表
+// 查询多种状态订单信息列表
 export function receivedListList() {
   return request({
     url: '/YDOnlineTaxi/OrderInformation/receivedList',
     method: 'get',
+  })
+}
+
+// 查询到达审核信息列表
+export function listAudit_information(query) {
+  return request({
+    url: '/YDOnlineTaxi/audit_information/list',
+    method: 'get',
+    params: query
+  })
+}
+
+// 查询到达审核信息详细
+export function getAudit_information(orderid) {
+  return request({
+    url: '/YDOnlineTaxi/audit_information/' + orderid,
+    method: 'get'
   })
 }
 
