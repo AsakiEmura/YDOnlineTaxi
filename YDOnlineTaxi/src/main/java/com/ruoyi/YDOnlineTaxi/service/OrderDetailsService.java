@@ -2,6 +2,8 @@ package com.ruoyi.YDOnlineTaxi.service;
 
 import com.ruoyi.YDOnlineTaxi.domain.OrderDetails;
 
+import java.util.List;
+
 public interface OrderDetailsService {
 
 
@@ -17,6 +19,11 @@ public interface OrderDetailsService {
 
     int updateByPrimaryKey(OrderDetails record);
 
+    List<OrderDetails> selectAllByOrderId(String orderId);
+
+    List<OrderDetails> selectAllByDriverPhoneNumber(String driverPhoneNumber);
+
+    List<String> selectOrderIdByDriverPhoneNumber(String driverPhoneNumber);
 }
 
 

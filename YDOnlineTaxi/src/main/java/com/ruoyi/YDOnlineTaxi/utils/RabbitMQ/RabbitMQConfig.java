@@ -10,12 +10,15 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.api.ChannelAwareMessageListener;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -46,19 +49,28 @@ public class RabbitMQConfig {
     @Value("${spring.rabbitmq.password}")
     private String password;
 
+    //管理员专用
+    public static final String DIRECT_EXCHANGE_NAME = "direct.exchange";
+    public static final String DIRECT_QUEUE_NAME = "direct.queue.admin";
+    public static final String DIRECT_ROUTINGKEY_NAME = "direct.routingkey";
 
-    public static final String EXCHANGE_A = "my-mq-exchange_A";
-    public static final String EXCHANGE_B = "my-mq-exchange_B";
-    public static final String EXCHANGE_C = "my-mq-exchange_C";
+    //超时订单专用
+    public static final String DELAY_EXCHANGE_NAME_EXPIRED = "delayed.exchange.expired";
+    public static final String DELAY_ROUTINGKEY_NAME_EXPIRED = "delayed.routingkey.expired";
+
+    //微信小程序推送订单转用
+    public static final String DELAY_EXCHANGE_NAME = "delayed.exchange";
+
+    public static final String DELAY_QUEUE_NAME_GOLD = "delayed.queue.gold";
+    public static final String DELAY_QUEUE_NAME_DIAMOND = "delayed.queue.diamond";
+    public static final String DELAY_QUEUE_NAME_KING = "delayed.queue.king";
+    public static final String DELAY_QUEUE_NAME_DEAD = "delayed.queue.dead";
 
 
-    public static final String QUEUE_A = "QUEUE_A";
-    public static final String QUEUE_B = "QUEUE_B";
-    public static final String QUEUE_C = "QUEUE_C";
-
-    public static final String ROUTINGKEY_A = "spring-boot-routingKey_A";
-    public static final String ROUTINGKEY_B = "spring-boot-routingKey_B";
-    public static final String ROUTINGKEY_C = "spring-boot-routingKey_C";
+    public static final String DELAY_ROUTINGKEY_NAME_G = "delayed.routingkey.gold";
+    public static final String DELAY_ROUTINGKEY_NAME_D = "delayed.routingkey.diamond";
+    public static final String DELAY_ROUTINGKEY_NAME_K = "delayed.routingkey.king";
+    public static final String DELAY_ROUTINGKEY_NAME_DEAD = "delayed.routingkey.dead";
 
     @Bean
     public ConnectionFactory connectionFactory() {
@@ -74,8 +86,32 @@ public class RabbitMQConfig {
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     //必须是prototype类型
     public RabbitTemplate rabbitTemplate() {
-        RabbitTemplate template = new RabbitTemplate(connectionFactory());
+        RabbitTemplate template;
+        template = new RabbitTemplate(connectionFactory());
         return template;
+    }
+
+    @Bean
+    public CustomExchange expiredExchange() {
+        Map<String, Object> args = new HashMap<>();
+        args.put("x-delayed-type", "topic");
+        /**
+         * 1.交换机名称
+         * 2.交换机类型
+         * 3.是否需要持久化
+         * 4.是否需要自动删除
+         * 5.其他参数
+         */
+        return new CustomExchange(DELAY_EXCHANGE_NAME_EXPIRED, "x-delayed-message", true, false, args);
+    }
+
+    @Bean
+    public Binding bindingExpired(@Qualifier("queue_Dead") Queue queue_Dead, @Qualifier("expiredExchange") CustomExchange expiredExchange) {
+        return BindingBuilder
+                .bind(queue_Dead)
+                .to(expiredExchange)
+                .with(RabbitMQConfig.DELAY_ROUTINGKEY_NAME_EXPIRED)
+                .noargs();
     }
 
     /**
@@ -88,39 +124,92 @@ public class RabbitMQConfig {
      * TopicExchange:多关键字匹配
      */
     @Bean
-    public DirectExchange defaultExchange() {
-        return new DirectExchange(EXCHANGE_A);
-    }
-
-    /**
-     * 获取队列A
-     *
-     * @return
-     */
-    @Bean
-    public Queue queueA() {
-        return new Queue(QUEUE_A, true); //队列持久
-    }
-
-    /**
-     * 获取队列A
-     *
-     * @return
-     */
-    @Bean
-    public Queue queueB() {
-        return new Queue(QUEUE_B, true); //队列持久
+    public CustomExchange delayedExchange() {
+        Map<String, Object> args = new HashMap<>();
+        args.put("x-delayed-type", "topic");
+        /**
+         * 1.交换机名称
+         * 2.交换机类型
+         * 3.是否需要持久化
+         * 4.是否需要自动删除
+         * 5.其他参数
+         */
+        return new CustomExchange(DELAY_EXCHANGE_NAME, "x-delayed-message", true, false, args);
     }
 
     @Bean
-    public Binding binding() {
-
-        return BindingBuilder.bind(queueA()).to(defaultExchange()).with(RabbitMQConfig.ROUTINGKEY_A);
+    public Queue queue_G() {
+        return new Queue(DELAY_QUEUE_NAME_GOLD, true); //队列持久
     }
 
     @Bean
-    public Binding bindingB() {
-        return BindingBuilder.bind(queueB()).to(defaultExchange()).with(RabbitMQConfig.ROUTINGKEY_B);
+    public Queue queue_D() {
+        return new Queue(DELAY_QUEUE_NAME_DIAMOND, true); //队列持久
+    }
+
+    @Bean
+    public Queue queue_K() {
+        return new Queue(DELAY_QUEUE_NAME_KING, true); //队列持久
+    }
+
+    @Bean
+    public Queue queue_Dead() {
+        return new Queue(DELAY_QUEUE_NAME_DEAD, true); //队列持久
+    }
+
+
+    @Bean
+    public Binding bindingG(@Qualifier("queue_G") Queue queue_G, @Qualifier("delayedExchange") CustomExchange delayedExchange) {
+        return BindingBuilder
+                .bind(queue_G)
+                .to(delayedExchange)
+                .with(RabbitMQConfig.DELAY_ROUTINGKEY_NAME_G)
+                .noargs();
+    }
+
+    @Bean
+    public Binding bindingD(@Qualifier("queue_D") Queue queue_D, @Qualifier("delayedExchange") CustomExchange delayedExchange) {
+        return BindingBuilder
+                .bind(queue_D)
+                .to(delayedExchange)
+                .with(RabbitMQConfig.DELAY_ROUTINGKEY_NAME_D)
+                .noargs();
+    }
+
+    @Bean
+    public Binding bindingK(@Qualifier("queue_K") Queue queue_K, @Qualifier("delayedExchange") CustomExchange delayedExchange) {
+        return BindingBuilder
+                .bind(queue_K)
+                .to(delayedExchange)
+                .with(RabbitMQConfig.DELAY_ROUTINGKEY_NAME_K)
+                .noargs();
+    }
+
+    @Bean
+    public Binding bindingDead(@Qualifier("queue_Dead") Queue queue_Dead, @Qualifier("delayedExchange") CustomExchange delayedExchange) {
+        return BindingBuilder
+                .bind(queue_Dead)
+                .to(delayedExchange)
+                .with(RabbitMQConfig.DELAY_ROUTINGKEY_NAME_DEAD)
+                .noargs();
+    }
+
+    @Bean
+    public DirectExchange directExchange() {
+        return new DirectExchange(DIRECT_EXCHANGE_NAME, true, false);
+    }
+
+    @Bean
+    public Queue directQueue() {
+        return new Queue(DIRECT_QUEUE_NAME, true);
+    }
+
+    @Bean
+    public Binding bindingDirect(@Qualifier("directQueue") Queue directQueue, @Qualifier("directExchange") DirectExchange directExchange) {
+        return BindingBuilder
+                .bind(directQueue)
+                .to(directExchange)
+                .with(RabbitMQConfig.DIRECT_ROUTINGKEY_NAME);
     }
 
     @Bean
@@ -130,7 +219,7 @@ public class RabbitMQConfig {
         //设置接收多个队列里面的消息，这里设置接收队列A
         // 假如想一个消费者处理多个队列里面的信息可以如下设置：
         // container.setQueues(queueA(),queueB(),queueC());
-        container.setQueues(queueA());
+        container.setQueues(queue_D(), queue_K(), queue_G());
         container.setExposeListenerChannel(true);
         //设置最大的并发的消费者数量
         container.setMaxConcurrentConsumers(10);

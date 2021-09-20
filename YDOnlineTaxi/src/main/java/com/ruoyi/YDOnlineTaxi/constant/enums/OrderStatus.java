@@ -1,12 +1,11 @@
 package com.ruoyi.YDOnlineTaxi.constant.enums;
 
 public enum OrderStatus {
-    WAIT_DISPATCHED, WAIT_SET_OUT,WAIT_ARRIVED,WAIT_AUDIT, WAIT_PAYMENT , FINISH
-    ;
+    WAIT_DISPATCHED, WAIT_AUDIT, WAIT_PAYMENT, FINISH;
 
     @Override
     public String toString() {
-        switch (this){
+        switch (this) {
             case WAIT_DISPATCHED:
                 return "待派单";
             case WAIT_AUDIT:

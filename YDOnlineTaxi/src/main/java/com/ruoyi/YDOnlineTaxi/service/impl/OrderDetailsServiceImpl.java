@@ -6,6 +6,7 @@ import com.ruoyi.YDOnlineTaxi.service.OrderDetailsService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @Service
 public class OrderDetailsServiceImpl implements OrderDetailsService {
@@ -43,4 +44,18 @@ public class OrderDetailsServiceImpl implements OrderDetailsService {
         return orderDetailsMapper.updateByPrimaryKey(record);
     }
 
+    @Override
+    public List<OrderDetails> selectAllByOrderId(String orderId) {
+        return orderDetailsMapper.selectAllByOrderId(orderId);
+    }
+
+    @Override
+    public List<OrderDetails> selectAllByDriverPhoneNumber(String driverPhoneNumber) {
+        return orderDetailsMapper.selectAllByDriverPhoneNumber(driverPhoneNumber);
+    }
+
+    @Override
+    public List<String> selectOrderIdByDriverPhoneNumber(String driverPhoneNumber) {
+        return orderDetailsMapper.selectOrderIdByDriverPhoneNumber(driverPhoneNumber);
+    }
 }

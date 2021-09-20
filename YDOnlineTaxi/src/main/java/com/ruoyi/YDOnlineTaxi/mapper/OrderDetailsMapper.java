@@ -1,6 +1,9 @@
 package com.ruoyi.YDOnlineTaxi.mapper;
 
 import com.ruoyi.YDOnlineTaxi.domain.OrderDetails;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface OrderDetailsMapper {
     /**
@@ -50,4 +53,12 @@ public interface OrderDetailsMapper {
      * @return update count
      */
     int updateByPrimaryKey(OrderDetails record);
+
+    List<OrderDetails> selectAllByOrderId(@Param("orderId") String orderId);
+
+    List<OrderDetails> selectAllByDriverPhoneNumber(@Param("driverPhoneNumber") String driverPhoneNumber);
+
+    List<String> selectOrderIdByDriverPhoneNumber(@Param("driverPhoneNumber") String driverPhoneNumber);
+
+
 }

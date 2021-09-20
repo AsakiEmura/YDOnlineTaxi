@@ -92,6 +92,7 @@ spring:
     cache:
       channel:
         size: 50
+    publisher-confirm-type: correlated
 ### 自定义配置
 mq:
   defaultExchange: topic # 默认交换器

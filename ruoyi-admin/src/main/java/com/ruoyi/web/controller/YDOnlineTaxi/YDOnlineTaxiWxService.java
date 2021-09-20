@@ -1,11 +1,12 @@
 package com.ruoyi.web.controller.YDOnlineTaxi;
 
-import com.ruoyi.YDOnlineTaxi.Properties.MQProperties;
+import com.ruoyi.YDOnlineTaxi.utils.RabbitMQ.MQProperties;
 import com.ruoyi.YDOnlineTaxi.domain.DriverAccount;
 import com.ruoyi.YDOnlineTaxi.domain.DriverInformation;
 import com.ruoyi.YDOnlineTaxi.domain.PonitsStatistics;
 import com.ruoyi.YDOnlineTaxi.domain.WxWithDrivers;
 import com.ruoyi.YDOnlineTaxi.service.*;
+import com.ruoyi.YDOnlineTaxi.utils.RabbitMQ.Producer.RabbitMQProducer;
 import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
@@ -31,8 +32,6 @@ public class YDOnlineTaxiWxService extends BaseController {
     @Autowired
     private ServerConfig serverConfig;
 
-    @Autowired
-    private WxWithDriversService wxWithDriversService;
 
     @Autowired
     private IPonitsStatisticsService ponitsStatisticsService;
@@ -46,35 +45,34 @@ public class YDOnlineTaxiWxService extends BaseController {
     @Autowired(required = false)
     private MQProperties mqProperties;
 
+    @Autowired
+    private RabbitMQProducer rabbitMQProducer;
 
 
     @PostMapping("/register")
     public AjaxResult register(@RequestBody DriverAccount driverAccount) {
-        try
-            {
-                if (UserConstants.NOT_UNIQUE.equals(driverAccountService.checkIdNumberUnique(driverAccount.getIdNumber()))) {
-                    return AjaxResult.error("exist");
-                }
-
-                if (UserConstants.NOT_UNIQUE.equals(driverAccountService.countByPhoneNumber(driverAccount.getPhoneNumber()))) {
-                    return AjaxResult.error("exist");
-                }
-
-                String salt = ShiroKit.getRandomSalt(5);
-                String driverPassword = ShiroKit.md5(driverAccount.getDriverPassword(), salt);
-
-                driverAccount.setDriverPassword(driverPassword);
-                driverAccount.setSalt(salt);
-                driverAccount.setStatus("待审核");
-
-
-                driverAccountService.insertDriverAccount(driverAccount);
-                rabbitTemplate.convertAndSend(mqProperties.getDefaultExchange(), mqProperties.getRouteKey(), driverAccount.getPhoneNumber() + " 待审核,请刷新界面!");
-
-                return AjaxResult.success("200");
+        try {
+            if (UserConstants.NOT_UNIQUE.equals(driverAccountService.checkIdNumberUnique(driverAccount.getIdNumber()))) {
+                return AjaxResult.error("exist");
             }
-        catch (Exception e)
-        {
+
+            if (UserConstants.NOT_UNIQUE.equals(driverAccountService.countByPhoneNumber(driverAccount.getPhoneNumber()))) {
+                return AjaxResult.error("exist");
+            }
+
+            String salt = ShiroKit.getRandomSalt(5);
+            String driverPassword = ShiroKit.md5(driverAccount.getDriverPassword(), salt);
+
+            driverAccount.setDriverPassword(driverPassword);
+            driverAccount.setSalt(salt);
+            driverAccount.setStatus("待审核");
+
+
+            driverAccountService.insertDriverAccount(driverAccount);
+            rabbitTemplate.convertAndSend(mqProperties.getDefaultExchange(), mqProperties.getRouteKey(), driverAccount.getPhoneNumber() + " 待审核,请刷新界面!");
+
+            return AjaxResult.success("200");
+        } catch (Exception e) {
             e.printStackTrace();
             return AjaxResult.error("400");
         }
@@ -83,8 +81,7 @@ public class YDOnlineTaxiWxService extends BaseController {
 
     @PostMapping("/register/uploadPhotos")
     public AjaxResult uploadImage(@RequestParam("files") MultipartFile file, @RequestParam("type") String type, @RequestParam("idCard") String idCard) throws Exception {
-        try
-        {
+        try {
             // 上传文件路径
             String filePath = RuoYiConfig.getUploadPath();
             // 上传并返回新文件名称
@@ -93,8 +90,7 @@ public class YDOnlineTaxiWxService extends BaseController {
 
             DriverAccount driverAccount = driverAccountService.selectDriverAccountByIdNumber(idCard);
 
-            switch (type)
-            {
+            switch (type) {
                 case "front_id":
                     driverAccount.setIdPhotoFront(fileName);
                     break;
@@ -117,32 +113,23 @@ public class YDOnlineTaxiWxService extends BaseController {
             ajax.put("status", "ok");
             ajax.put("msg", "上传图片成功");
             return ajax;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             return AjaxResult.error(e.getMessage());
         }
     }
 
 
-
-
     @PostMapping("/login")
-    public AjaxResult login(@RequestBody Map<String, Object> data)
-    {
+    public AjaxResult login(@RequestBody Map<String, Object> data) {
         String phoneNumber;
-        try
-        {
+        try {
             phoneNumber = data.get("phoneNumber").toString();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
             return AjaxResult.error("jsonError");
         }
 
-        if(!UserConstants.NOT_UNIQUE.equals(driverAccountService.countByPhoneNumber(phoneNumber)))
-        {
+        if (!UserConstants.NOT_UNIQUE.equals(driverAccountService.countByPhoneNumber(phoneNumber))) {
             return AjaxResult.error("notExist");
         }
         DriverAccount driverAccount = driverAccountService.selectDriverPassWordByPhoneNumber(phoneNumber);
@@ -152,12 +139,9 @@ public class YDOnlineTaxiWxService extends BaseController {
 
 
         String driverPassword;
-        try
-        {
+        try {
             driverPassword = data.get("driverPassword").toString();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
             return AjaxResult.error("jsonError");
         }
@@ -165,9 +149,9 @@ public class YDOnlineTaxiWxService extends BaseController {
         String salt = driverAccount.getSalt();
         String password = driverAccount.getDriverPassword();
 
-        String newPassword = ShiroKit.md5(driverPassword,salt);
+        String newPassword = ShiroKit.md5(driverPassword, salt);
 
-        if(!newPassword.equals(password)){
+        if (!newPassword.equals(password)) {
             return AjaxResult.error("passwordError");
         }
 
@@ -176,14 +160,11 @@ public class YDOnlineTaxiWxService extends BaseController {
 
 
     @PostMapping("/resetPwd/{phoneNumber}")
-    public AjaxResult resetPwd(@RequestBody Map<String, Object> password,@PathVariable("phoneNumber") String phoneNumber) {
+    public AjaxResult resetPwd(@RequestBody Map<String, Object> password, @PathVariable("phoneNumber") String phoneNumber) {
         String newPassword;
-        try
-        {
+        try {
             newPassword = password.get("password").toString();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
             return AjaxResult.error("304");
         }
@@ -196,33 +177,16 @@ public class YDOnlineTaxiWxService extends BaseController {
         driverAccount.setDriverPassword(driverPassword);
         driverAccount.setSalt(salt);
 
-        try
-        {
+        try {
             driverAccountService.resetPwd(driverAccount);
             return AjaxResult.success("200");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return AjaxResult.error("400");
         }
 
     }
 
-    @GetMapping("/getUserOpenId")
-    public List<String> getOpenIdList(){
-        List<String> openIdList = wxWithDriversService.selectOpenIdByPushTimesGreaterThan(0);
-        try{
-            for (String openId : openIdList) {
-                WxWithDrivers wxWithDrivers = wxWithDriversService.selectAllByOpenId(openId);
-                int times = wxWithDrivers.getPushTimes() - 1;
-                wxWithDrivers.setPushTimes(times);
-                wxWithDriversService.updateByOpenId(wxWithDrivers);
-            }
-        }catch (Exception e){
-            return null;
-        }
-        return openIdList;
-    }
 
     /**
      * url：/YDOnlineTaxi/WxService/getOrderNumber
@@ -232,13 +196,12 @@ public class YDOnlineTaxiWxService extends BaseController {
      * 输出：【{“msg”，“allOrderNumber”，“monthOrderNumber”，“allPoint”， "driverLevel"}】
      */
     @PostMapping("/getOrderNumber")
-    public Map<String, Object> getOrderNumber(@RequestBody Map<String, Object> data)
-    {
+    public Map<String, Object> getOrderNumber(@RequestBody Map<String, Object> data) {
         Map<String, Object> orderNumber = new HashMap<>();
         String phoneNumber;
         try {
             phoneNumber = data.get("phoneNumber").toString();
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             //输入数据错误
             orderNumber.put("msg", "40020");
@@ -249,23 +212,23 @@ public class YDOnlineTaxiWxService extends BaseController {
             orderNumber.put("msg", "成功");
             DriverInformation driverInformation = driverInformationService.selectDriverInformationByDriverPhoneNumber(phoneNumber);
             PonitsStatistics ponitsStatistics = ponitsStatisticsService.selectPonitsStatisticsByDriverPhoneNumber(phoneNumber);
-            if(driverInformation != null) {
+            if (driverInformation != null) {
                 orderNumber.put("allOrderNumber", driverInformation.getDriverCompleteOrderNumber());
                 orderNumber.put("monthOrderNumber", driverInformation.getDriverCompleteOrderNumberMonthly());
                 orderNumber.put("driverLevel", driverInformation.getDriverLevel());
-            }else {
+            } else {
                 orderNumber.put("allOrderNumber", 0);
                 orderNumber.put("monthOrderNumber", 0);
                 orderNumber.put("driverLevel", "青铜司机");
                 orderNumber.put("msg", "未知");
             }
-            if(ponitsStatistics != null){
+            if (ponitsStatistics != null) {
                 orderNumber.put("allPoint", ponitsStatistics.getTotalPoints());
-            }else {
+            } else {
                 orderNumber.put("allPoint", "未知");
                 orderNumber.put("msg", "未知");
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             //输入数据错误
             orderNumber.put("msg", "ELSE");
@@ -275,11 +238,9 @@ public class YDOnlineTaxiWxService extends BaseController {
     }
 
     @PostMapping("/getDriverInformation")
-    public DriverInformation getDriverInformation(@RequestBody DriverInformation driverInformation)
-    {
+    public DriverInformation getDriverInformation(@RequestBody DriverInformation driverInformation) {
         String phoneNumber = driverInformation.getDriverPhoneNumber();
-        if(phoneNumber==null)
-        {
+        if (phoneNumber == null) {
             return null;
         }
         DriverInformation information = driverInformationService.selectDriverInformationByDriverPhoneNumber(phoneNumber);
@@ -288,8 +249,7 @@ public class YDOnlineTaxiWxService extends BaseController {
 
 
     @PostMapping("/updateDriverInformation")
-    public AjaxResult updateDriverInformation(@RequestBody DriverInformation driverInformation)
-    {
+    public AjaxResult updateDriverInformation(@RequestBody DriverInformation driverInformation) {
         return toAjax(driverInformationService.updateDriverInformation(driverInformation));
     }
 }
