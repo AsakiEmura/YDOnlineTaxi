@@ -140,16 +140,18 @@ public class WxRabbitMQ {
                 orderInformation.setExpireTime(30);
             }
             orderInformationService.updateOrderInformation(orderInformation);
-            channel.basicAck(message.getMessageProperties().getDeliveryTag(), true);
+            channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
             rabbitMQProducer.sendMsg(RabbitMQConfig.DELAY_EXCHANGE_NAME_EXPIRED, RabbitMQConfig.DELAY_ROUTINGKEY_NAME_EXPIRED, orderId, 60 * 1000);
         } else if (orderStatus.equals("重新派单")) {
             orderInformation.setOrderStatus("待派单");
             orderInformation.setExpireTime(0);
-            channel.basicAck(message.getMessageProperties().getDeliveryTag(), true);
+            orderInformationService.updateOrderInformation(orderInformation);
+            channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
             rabbitMQProducer.sendMsg(RabbitMQConfig.DELAY_EXCHANGE_NAME, RabbitMQConfig.DELAY_ROUTINGKEY_NAME_DEAD, orderId, 40 * 60 * 1000);
         } else {
             orderInformation.setExpireTime(0);
-            channel.basicAck(message.getMessageProperties().getDeliveryTag(), true);
+            orderInformationService.updateOrderInformation(orderInformation);
+            channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
         }
     }
 }

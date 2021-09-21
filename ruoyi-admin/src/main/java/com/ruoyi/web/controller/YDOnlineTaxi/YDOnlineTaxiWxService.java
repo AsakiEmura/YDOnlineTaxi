@@ -1,12 +1,13 @@
 package com.ruoyi.web.controller.YDOnlineTaxi;
 
-import com.ruoyi.YDOnlineTaxi.utils.RabbitMQ.MQProperties;
 import com.ruoyi.YDOnlineTaxi.domain.DriverAccount;
 import com.ruoyi.YDOnlineTaxi.domain.DriverInformation;
 import com.ruoyi.YDOnlineTaxi.domain.PonitsStatistics;
-import com.ruoyi.YDOnlineTaxi.domain.WxWithDrivers;
-import com.ruoyi.YDOnlineTaxi.service.*;
+import com.ruoyi.YDOnlineTaxi.service.IDriverAccountService;
+import com.ruoyi.YDOnlineTaxi.service.IDriverInformationService;
+import com.ruoyi.YDOnlineTaxi.service.IPonitsStatisticsService;
 import com.ruoyi.YDOnlineTaxi.utils.RabbitMQ.Producer.RabbitMQProducer;
+import com.ruoyi.YDOnlineTaxi.utils.RabbitMQ.RabbitMQConfig;
 import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
@@ -20,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -41,9 +41,6 @@ public class YDOnlineTaxiWxService extends BaseController {
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
-
-    @Autowired(required = false)
-    private MQProperties mqProperties;
 
     @Autowired
     private RabbitMQProducer rabbitMQProducer;
@@ -69,7 +66,7 @@ public class YDOnlineTaxiWxService extends BaseController {
 
 
             driverAccountService.insertDriverAccount(driverAccount);
-            rabbitTemplate.convertAndSend(mqProperties.getDefaultExchange(), mqProperties.getRouteKey(), driverAccount.getPhoneNumber() + " 待审核,请刷新界面!");
+            rabbitTemplate.convertAndSend(RabbitMQConfig.DIRECT_EXCHANGE_NAME, RabbitMQConfig.DIRECT_ROUTINGKEY_NAME, driverAccount.getPhoneNumber() + " 待审核,请刷新界面!");
 
             return AjaxResult.success("200");
         } catch (Exception e) {

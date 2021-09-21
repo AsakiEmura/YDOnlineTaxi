@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.YDOnlineTaxi;
 
-import com.ruoyi.YDOnlineTaxi.utils.RabbitMQ.MQProperties;
 import com.ruoyi.YDOnlineTaxi.utils.RabbitMQ.RabbitMQConfig;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -6,9 +6,11 @@ import com.ruoyi.YDOnlineTaxi.domain.OrderInformation;
 import com.ruoyi.YDOnlineTaxi.service.IOrderInformationService;
 import com.ruoyi.YDOnlineTaxi.service.OrderDetailsService;
 import com.ruoyi.YDOnlineTaxi.utils.DateUtil;
+import com.ruoyi.YDOnlineTaxi.utils.RabbitMQ.RabbitMQConfig;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,12 +31,15 @@ public class YDOnlineTaxiDispatchOrder extends BaseController {
     @Autowired
     private OrderDetailsService orderDetailsService;
 
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
     public Boolean getOrderStatus(OrderInformation orderInformation) {
         String orderStatus = orderInformationService.selectOrderStatusByOrderId(orderInformation.getOrderId());
-        if (!orderStatus.equals("待派单")) {
-            return Boolean.FALSE;
-        } else {
+        if (orderStatus.equals("待派单") || orderStatus.equals("已超时")) {
             return Boolean.TRUE;
+        } else {
+            return Boolean.FALSE;
         }
     }
 
@@ -97,6 +102,7 @@ public class YDOnlineTaxiDispatchOrder extends BaseController {
 
         String orderStatus = originalOrder.getOrderStatus();
         switch (orderStatus) {
+            case "已超时":
             case "待派单":
                 try {
                     OrderDetails order = orderDetailsService.selectByPrimaryKey(orderInformation.getOrderId());
@@ -140,7 +146,7 @@ public class YDOnlineTaxiDispatchOrder extends BaseController {
 
                 orderInformation.setOrderStatus("待审核");
                 //TODO(inform administrator)
-
+                rabbitTemplate.convertAndSend(RabbitMQConfig.DIRECT_EXCHANGE_NAME, RabbitMQConfig.DIRECT_ROUTINGKEY_NAME, "订单编号为: " + orderInformation.getOrderId() + " 的订单待审核,请刷新订单审核界面!");
                 orderDetailsService.updateByPrimaryKeySelective(order3);
                 orderInformationService.updateOrderInformation(orderInformation);
 
@@ -168,14 +174,10 @@ public class YDOnlineTaxiDispatchOrder extends BaseController {
         List<String> orderIdList;
         orderIdList = orderDetailsService.selectOrderIdByDriverPhoneNumber(driverInformation.getDriverPhoneNumber());
 
-        List<OrderInformation> orderInformationList1 = new ArrayList<>();
-        List<OrderInformation> orderInformationList2 = new ArrayList<>();
-        List<OrderInformation> orderInformationList3 = new ArrayList<>();
-
         List<OrderInformation> orderList = new ArrayList<>();
 
         for (String orderId : orderIdList) {
-            OrderInformation order = new OrderInformation();
+            OrderInformation order;
 
             if (minTransportTime == null && maxTransportTime == null) {
                 order = orderInformationService.selectOrderInformationByOrderId(orderId);
@@ -188,6 +190,9 @@ public class YDOnlineTaxiDispatchOrder extends BaseController {
                 orderList.add(order);
             }
         }
+
+        List<OrderInformation> orderInformationList1 = new ArrayList<>();
+
         if (orderIdList != null) {
             for (OrderInformation order : orderList) {
                 switch (orderInformation.getOrderStatus()) {
@@ -198,13 +203,26 @@ public class YDOnlineTaxiDispatchOrder extends BaseController {
                         break;
                     case "正在进行":
                         if (order.getOrderStatus().equals("司机已出发") || order.getOrderStatus().equals("司机已到达")) {
-                            orderInformationList2.add(order);
+                            orderInformationList1.add(order);
                         }
                         break;
                     case "已完成":
                         if (order.getOrderStatus().equals("待审核") || order.getOrderStatus().equals("审核未通过") || order.getOrderStatus().equals("未结算") || order.getOrderStatus().equals("已结算")) {
-                            orderInformationList3.add(order);
+                            orderInformationList1.add(order);
                         }
+                        break;
+                    case "已获积分":
+                        if (order.getOrderStatus().equals("已结算")) {
+                            orderInformationList1.add(order);
+                        }
+                        break;
+                    case "未获积分":
+                        if (!order.getOrderStatus().equals("已结算")) {
+                            orderInformationList1.add(order);
+                        }
+                        break;
+                    case "全部":
+                        orderInformationList1.add(order);
                         break;
                 }
             }
@@ -212,21 +230,8 @@ public class YDOnlineTaxiDispatchOrder extends BaseController {
             startPage();
             return getDataTable(null);
         }
-        switch (orderInformation.getOrderStatus()) {
-            case "已派单":
-                startPage();
-                return getDataTable(orderInformationList1);
-            case "正在进行":
-                startPage();
-                return getDataTable(orderInformationList2);
-            case "已完成":
-                startPage();
-                return getDataTable(orderInformationList3);
-            default:
-                startPage();
-                return getDataTable(null);
-        }
-
+        startPage();
+        return getDataTable(orderInformationList1);
     }
 
     @GetMapping("/getOrderFinishTime")
@@ -236,4 +241,5 @@ public class YDOnlineTaxiDispatchOrder extends BaseController {
         orderFinishTime = order.getOrderFinishTime();
         return orderFinishTime;
     }
+
 }
