@@ -1,20 +1,14 @@
 package com.ruoyi.web.controller.YDOnlineTaxi;
 
-import com.alibaba.fastjson.JSONObject;
-import com.ruoyi.YDOnlineTaxi.config.MessageConfig;
-import com.ruoyi.YDOnlineTaxi.utils.MobileUtil;
 import com.ruoyi.common.core.redis.RedisCache;
-import com.zhenzi.sms.ZhenziSmsClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
-/**
- * @author penpen
- */
 @RestController
 @RequestMapping("/YDOnlineTaxi/OrderUserGuide")
 public class UserGuide {

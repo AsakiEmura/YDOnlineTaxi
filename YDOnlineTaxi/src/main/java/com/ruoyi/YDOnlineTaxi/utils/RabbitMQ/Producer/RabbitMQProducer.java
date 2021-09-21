@@ -1,20 +1,15 @@
 package com.ruoyi.YDOnlineTaxi.utils.RabbitMQ.Producer;
 
 import com.rabbitmq.client.Channel;
-import com.ruoyi.YDOnlineTaxi.domain.OrderInformation;
 import com.ruoyi.YDOnlineTaxi.utils.RabbitMQ.RabbitMQConfig;
 import com.ruoyi.common.utils.uuid.UUID;
-
-
-import com.sun.org.slf4j.internal.Logger;
-import com.sun.org.slf4j.internal.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -38,11 +33,14 @@ public final class RabbitMQProducer implements RabbitTemplate.ConfirmCallback, R
         rabbitTemplate.setReturnCallback(this);
     }
 
-    private final com.sun.org.slf4j.internal.Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
     public void returnedMessage(Message message, int replyCode, String replyText, String exchange, String routingKey) {
-        logger.debug("消息{},被交换机{}退回，退回原因:{},路由key:{}", new String(message.getBody()), exchange, replyText, routingKey);
+        if (exchange.equals(RabbitMQConfig.DIRECT_EXCHANGE_NAME) || exchange.equals(RabbitMQConfig.DELAY_EXCHANGE_NAME_EXPIRED) || exchange.equals(RabbitMQConfig.DELAY_EXCHANGE_NAME)) {
+            return;
+        }
+        logger.info("消息{},被交换机{}退回，退回原因:{},路由key:{}", new String(message.getBody()), exchange, replyText, routingKey);
     }
 
 
@@ -65,9 +63,9 @@ public final class RabbitMQProducer implements RabbitTemplate.ConfirmCallback, R
     public void confirm(CorrelationData correlationData, boolean ack, String reason) {
         String id = correlationData != null ? correlationData.getId() : "";
         if (ack) {
-            logger.debug("交换机已收到ID为:{}的消息", id);
+            logger.info("交换机已收到ID为:{}的消息", id);
         } else {
-            logger.debug("交换机未到ID为:{}的消息", id);
+            logger.info("交换机未到ID为:{}的消息", id);
         }
 
     }
@@ -102,9 +100,9 @@ public final class RabbitMQProducer implements RabbitTemplate.ConfirmCallback, R
 
     public void sendMsg(String exchangeName,String routingKey,String message,Integer delayTime) {
         CorrelationData correlationData = new CorrelationData(UUID.fastUUID().toString());
-        rabbitTemplate.convertAndSend(exchangeName, routingKey, message, msg ->{
+        rabbitTemplate.convertAndSend(exchangeName, routingKey, message, msg -> {
             msg.getMessageProperties().setDelay(delayTime);
             return msg;
-        });
+        }, correlationData);
     }
 }

@@ -3,6 +3,8 @@ package com.ruoyi.YDOnlineTaxi.utils;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DateUtil {
 
@@ -139,7 +141,7 @@ public class DateUtil {
         //设置年份
         calendar.set(Calendar.YEAR,year);
         //设置月份
-        calendar.set(Calendar.MONTH, month-1);
+        calendar.set(Calendar.MONTH, month - 1);
         //设置第几天
         calendar.set(Calendar.DAY_OF_MONTH, day);
         calendar.set(Calendar.HOUR_OF_DAY, 23);
@@ -147,5 +149,24 @@ public class DateUtil {
         calendar.set(Calendar.SECOND, 59);
         calendar.set(Calendar.MILLISECOND, 999);
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendar.getTime());
+    }
+
+    public static Map<String, String> getIntervalDate(Integer year, Integer month, Integer day) {
+        String minTransportTime = null;
+        String maxTransportTime = null;
+        if (year != null && month == null && day == null) {
+            minTransportTime = DateUtil.getYearFirst(year);
+            maxTransportTime = DateUtil.getYearLast(year);
+        } else if (year != null && month != null && day == null) {
+            minTransportTime = DateUtil.getFirstMomentOfMonth(year, month);
+            maxTransportTime = DateUtil.getLastMomentOfMonth(year, month);
+        } else if (year != null && month != null && day != null) {
+            minTransportTime = DateUtil.getStartOfDay(year, month, day);
+            maxTransportTime = DateUtil.getEndOfDay(year, month, day);
+        }
+        Map<String, String> map = new HashMap<>();
+        map.put("minTransportTime", minTransportTime);
+        map.put("maxTransportTime", maxTransportTime);
+        return map;
     }
 }

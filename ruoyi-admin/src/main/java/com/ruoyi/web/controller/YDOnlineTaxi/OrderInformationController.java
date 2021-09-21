@@ -129,6 +129,7 @@ public class OrderInformationController extends BaseController {
     @Log(title = "订单信息", businessType = BusinessType.DELETE)
     @DeleteMapping("/{orderIds}")
     public AjaxResult remove(@PathVariable String[] orderIds) {
+
         return toAjax(orderInformationService.deleteOrderInformationByOrderIds(orderIds));
     }
 
@@ -154,7 +155,7 @@ public class OrderInformationController extends BaseController {
             for (OrderInformation order : orderList) {
                 orderDetails.setOrderId(order.getOrderId());
                 orderDetailsService.insert(orderDetails);
-                rabbitMQProducer.sendMsg(RabbitMQConfig.DELAY_EXCHANGE_NAME, RabbitMQConfig.DELAY_ROUTINGKEY_NAME_G, order.getOrderId(), 40 * 60 * 1000);
+                rabbitMQProducer.sendMsg(RabbitMQConfig.DELAY_EXCHANGE_NAME, RabbitMQConfig.DELAY_ROUTINGKEY_NAME_DEAD, order.getOrderId(), 40 * 60 * 1000);
             }
 
             rabbitMQProducer.sendMsg(RabbitMQConfig.DELAY_EXCHANGE_NAME, RabbitMQConfig.DELAY_ROUTINGKEY_NAME_K, "有大量订单导入,请到小程序查看", 0);

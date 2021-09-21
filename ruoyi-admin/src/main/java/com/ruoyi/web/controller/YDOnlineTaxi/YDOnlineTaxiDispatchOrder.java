@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/YDOnlineTaxi/WxService/Order")
@@ -37,57 +38,47 @@ public class YDOnlineTaxiDispatchOrder extends BaseController {
         }
     }
 
-    @GetMapping("/getOrder")
-    public TableDataInfo list(DriverInformation driverInformation, OrderInformation orderInformation,Integer year,Integer month) {
-        orderInformation.setOrderStatus("待派单");
+    public List<OrderInformation> getOrder(DriverInformation driverInformation, OrderInformation orderInformation) {
+        String orderStatus = orderInformation.getOrderStatus();
         String minTransportTime = null;
         String maxTransportTime = null;
         if (orderInformation.getTransportTime() != null) {
             minTransportTime = DateUtil.getStartOfDay(orderInformation.getTransportTime());
             maxTransportTime = DateUtil.getEndOfDay(orderInformation.getTransportTime());
         }
-        else if(year != null && month == null){
-            minTransportTime = DateUtil.getYearFirst(year);
-            maxTransportTime = DateUtil.getYearLast(year);
-        }
-        else if(year != null && month != null){
-            minTransportTime = DateUtil.getFirstMomentOfMonth(year,month);
-            maxTransportTime = DateUtil.getLastMomentOfMonth(year,month);
-        }
 
 
         switch (driverInformation.getDriverCarType()) {
             case "舒适型":
                 orderInformation.setCarType("舒适型");
-                startPage();
-                return getDataTable(orderInformationService.getOrderInformationListByConditions(orderInformation.getCarType(), null, null, "待派单", minTransportTime, maxTransportTime, orderInformation.getRequirementTypes()));
+                return orderInformationService.getOrderInformationListByConditions(orderInformation.getCarType(), null, null, orderStatus, minTransportTime, maxTransportTime, orderInformation.getRequirementTypes());
             case "商务型":
                 if (orderInformation.getCarType() != null) {
-                    startPage();
-                    return getDataTable(orderInformationService.getOrderInformationListByConditions(orderInformation.getCarType(), null, null, "待派单", minTransportTime, maxTransportTime, orderInformation.getRequirementTypes()));
+                    return orderInformationService.getOrderInformationListByConditions(orderInformation.getCarType(), null, null, orderStatus, minTransportTime, maxTransportTime, orderInformation.getRequirementTypes());
                 } else {
-                    startPage();
-                    return getDataTable(orderInformationService.getOrderInformationListByConditions("舒适型", "商务型", null, "待派单", minTransportTime, maxTransportTime, orderInformation.getRequirementTypes()));
+                    return orderInformationService.getOrderInformationListByConditions("舒适型", "商务型", null, orderStatus, minTransportTime, maxTransportTime, orderInformation.getRequirementTypes());
                 }
             case "豪华型":
                 if (orderInformation.getCarType() != null) {
-                    startPage();
-                    return getDataTable(orderInformationService.getOrderInformationListByConditions(orderInformation.getCarType(), null, null, "待派单", minTransportTime, maxTransportTime, orderInformation.getRequirementTypes()));
+                    return orderInformationService.getOrderInformationListByConditions(orderInformation.getCarType(), null, null, orderStatus, minTransportTime, maxTransportTime, orderInformation.getRequirementTypes());
                 } else {
-                    startPage();
-                    return getDataTable(orderInformationService.getOrderInformationListByConditions("舒适型", "豪华型", null, "待派单", minTransportTime, maxTransportTime, orderInformation.getRequirementTypes()));
+                    return orderInformationService.getOrderInformationListByConditions("舒适型", "豪华型", null, orderStatus, minTransportTime, maxTransportTime, orderInformation.getRequirementTypes());
                 }
             case "豪华商务型":
                 if (orderInformation.getCarType() != null) {
-                    startPage();
-                    return getDataTable(orderInformationService.getOrderInformationListByConditions(orderInformation.getCarType(), null, null, "待派单", minTransportTime, maxTransportTime, orderInformation.getRequirementTypes()));
+                    return orderInformationService.getOrderInformationListByConditions(orderInformation.getCarType(), null, null, orderStatus, minTransportTime, maxTransportTime, orderInformation.getRequirementTypes());
                 } else {
-                    startPage();
-                    return getDataTable(orderInformationService.getOrderInformationListByConditions("舒适型", "豪华型", "商务型", "待派单", minTransportTime, maxTransportTime, orderInformation.getRequirementTypes()));
+                    return orderInformationService.getOrderInformationListByConditions("舒适型", "豪华型", "商务型", orderStatus, minTransportTime, maxTransportTime, orderInformation.getRequirementTypes());
                 }
             default:
-                return getDataTable(null);
+                return null;
         }
+    }
+
+    @GetMapping("/getOrder")
+    public TableDataInfo list(DriverInformation driverInformation, OrderInformation orderInformation, Integer year, Integer month) {
+        startPage();
+        return getDataTable(getOrder(driverInformation, orderInformation));
     }
 
     @PostMapping("/checkOrderStatus")
@@ -169,22 +160,10 @@ public class YDOnlineTaxiDispatchOrder extends BaseController {
     }
 
     @GetMapping("/getPersonalOrderList")
-    public TableDataInfo getPersonalOrderList(DriverInformation driverInformation, OrderInformation orderInformation,Integer year,Integer month,Integer day) {
-
-        String minTransportTime = null;
-        String maxTransportTime = null;
-        if(year != null && month == null && day == null){
-            minTransportTime = DateUtil.getYearFirst(year);
-            maxTransportTime = DateUtil.getYearLast(year);
-        }
-        else if(year != null && month != null && day == null){
-            minTransportTime = DateUtil.getFirstMomentOfMonth(year,month);
-            maxTransportTime = DateUtil.getLastMomentOfMonth(year,month);
-        }
-        else if(year != null && month != null && day != null){
-            minTransportTime = DateUtil.getStartOfDay(year,month,day);
-            maxTransportTime = DateUtil.getEndOfDay(year,month,day);
-        }
+    public TableDataInfo getPersonalOrderList(DriverInformation driverInformation, OrderInformation orderInformation, Integer year, Integer month, Integer day) {
+        Map<String, String> map = DateUtil.getIntervalDate(year, month, day);
+        String minTransportTime = map.get("minTransportTime");
+        String maxTransportTime = map.get("maxTransportTime");
 
         List<String> orderIdList;
         orderIdList = orderDetailsService.selectOrderIdByDriverPhoneNumber(driverInformation.getDriverPhoneNumber());
@@ -198,20 +177,18 @@ public class YDOnlineTaxiDispatchOrder extends BaseController {
         for (String orderId : orderIdList) {
             OrderInformation order = new OrderInformation();
 
-            if(minTransportTime == null && maxTransportTime == null){
+            if (minTransportTime == null && maxTransportTime == null) {
                 order = orderInformationService.selectOrderInformationByOrderId(orderId);
+            } else {
+                order = orderInformationService.selectAllByOrderIdAndTransportTimeBetween(orderId, minTransportTime, maxTransportTime);
             }
-            else{
-                order = orderInformationService.selectAllByOrderIdAndTransportTimeBetween(orderId,minTransportTime,maxTransportTime);
-            }
-            if(order == null)
+            if (order == null)
                 continue;
-            else{
+            else {
                 orderList.add(order);
             }
         }
-        if(orderIdList != null)
-        {
+        if (orderIdList != null) {
             for (OrderInformation order : orderList) {
                 switch (orderInformation.getOrderStatus()) {
                     case "已派单":
@@ -231,8 +208,7 @@ public class YDOnlineTaxiDispatchOrder extends BaseController {
                         break;
                 }
             }
-        }
-        else{
+        } else {
             startPage();
             return getDataTable(null);
         }
@@ -251,5 +227,13 @@ public class YDOnlineTaxiDispatchOrder extends BaseController {
                 return getDataTable(null);
         }
 
+    }
+
+    @GetMapping("/getOrderFinishTime")
+    public Date orderFinishTime(String orderId) {
+        OrderDetails order = orderDetailsService.selectByPrimaryKey(orderId);
+        Date orderFinishTime;
+        orderFinishTime = order.getOrderFinishTime();
+        return orderFinishTime;
     }
 }
