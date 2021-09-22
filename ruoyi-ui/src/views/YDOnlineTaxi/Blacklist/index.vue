@@ -82,7 +82,14 @@
 </template>
 
 <script>
-import {blacklistDriverAccount, getDriverAccount, pushOut,} from '@/api/YDOnlineTaxi/DriverAccount'
+import {
+  listDriverAccount,
+  getDriverAccount,
+  updateDriverAccount,
+  refuseDriver,
+  audit, blacklistDriverAccount, pushOut,
+} from '@/api/YDOnlineTaxi/DriverAccount'
+import {delDriverInformation} from "@/api/YDOnlineTaxi/DriverInformation";
 
 export default {
   name: 'DriverAccount',
@@ -263,13 +270,12 @@ export default {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
-      }).then(async function () {
+      }).then(async function() {
         const tempDriver = await getDriverAccount(idNumber);
         pushOut(tempDriver.data);
       }).then(() => {
         _this.getList();
-      }).catch(() => {
-      });
+      }).catch(() => {});
     },
   }
 }

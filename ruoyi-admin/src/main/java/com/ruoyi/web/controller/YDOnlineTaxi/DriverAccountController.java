@@ -8,6 +8,7 @@ import com.ruoyi.YDOnlineTaxi.service.IDriverAccountService;
 import com.ruoyi.YDOnlineTaxi.service.IDriverInformationService;
 import com.ruoyi.YDOnlineTaxi.service.IPonitsStatisticsService;
 import com.ruoyi.YDOnlineTaxi.service.WxWithDriversService;
+import com.ruoyi.YDOnlineTaxi.utils.RSAEncrypt;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
@@ -21,6 +22,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 司机详细信息Controller
@@ -53,6 +55,16 @@ public class DriverAccountController extends BaseController {
         return getDataTable(list);
     }
 
+    /**
+     * 查询黑名单司机详细信息列表
+     */
+    @PreAuthorize("@ss.hasPermi('YDOnlineTaxi:DriverAccount:list')")
+    @GetMapping("/Blacklist")
+    public TableDataInfo Blacklist() {
+        startPage();
+        List<DriverAccount> list = driverAccountService.selectAllByStatus("黑名单");
+        return getDataTable(list);
+    }
     /**
      * 导出司机详细信息列表
      */
@@ -104,16 +116,6 @@ public class DriverAccountController extends BaseController {
     }
 
     /**
-     * 删除司机详细信息
-     */
-    @PreAuthorize("@ss.hasPermi('YDOnlineTaxi:DriverAccount:remove')")
-    @Log(title = "司机详细信息", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{idNumbers}")
-    public AjaxResult remove(@PathVariable String[] idNumbers) {
-        return toAjax(driverAccountService.deleteDriverAccountByIdNumbers(idNumbers));
-    }
-
-    /**
      * 重置密码
      */
     @PreAuthorize("@ss.hasPermi('YDOnlineTaxi:DriverAccount:resetPwd')")
@@ -129,13 +131,18 @@ public class DriverAccountController extends BaseController {
         return toAjax(driverAccountService.resetPwd(driverAccount));
     }
 
+    /**
+     * 审核司机详细信息
+     */
     @Log(title = "审核司机", businessType = BusinessType.UPDATE)
     @PutMapping("/audit")
     public AjaxResult audit(@RequestBody DriverAccount driverAccount) {
-        if(driverAccount.getStatus().equals("审核通过"))
+        if("审核通过".equals(driverAccount.getStatus()))
         {
             String driverName = driverAccount.getDriverName();
             String phoneNumber =driverAccount.getPhoneNumber();
+
+            driverAccountService.updateDriverAccount(driverAccount);
 
             DriverInformation driverInformation = new DriverInformation();
             driverInformation.setDriverName(driverAccount.getDriverName());
@@ -147,7 +154,7 @@ public class DriverAccountController extends BaseController {
             WxWithDrivers wxWithDrivers = new WxWithDrivers();
             wxWithDrivers.setDriverName(driverAccount.getDriverName());
             wxWithDrivers.setOpenId(driverAccount.getOpenId());
-            wxWithDrivers.setPhoneNumber(driverAccount.getDriverPassword());
+            wxWithDrivers.setPhoneNumber(phoneNumber);
             wxWithDrivers.setPushTimes(5);
 
             PonitsStatistics ponitsStatistics = new PonitsStatistics();
@@ -158,11 +165,73 @@ public class DriverAccountController extends BaseController {
             wxWithDriversService.insert(wxWithDrivers);
             ponitsStatisticsService.insertPonitsStatistics(ponitsStatistics);
         }
-        else if(driverAccount.getStatus().equals("审核不通过"))
+        else if("审核不通过".equals(driverAccount.getStatus()))
         {
-
             driverAccountService.deleteDriverAccountByIdNumber(driverAccount.getIdNumber());
         }
         return AjaxResult.success("审核操作成功");
+    }
+
+    /**
+     * 移出黑名单
+     */
+    @Log(title = "移出黑名单", businessType = BusinessType.UPDATE)
+    @PutMapping("/pushOut")
+    public AjaxResult pushOut(@RequestBody DriverAccount driverAccount) {
+        driverAccount.setStatus("审核通过");
+        driverAccountService.updateDriverAccount(driverAccount);
+
+        DriverInformation driverInformation = new DriverInformation();
+        driverInformation.setDriverName(driverAccount.getDriverName());
+        driverInformation.setDriverPhoneNumber(driverAccount.getPhoneNumber());
+        driverInformation.setDriverCarType(driverAccount.getMotorcycleType());
+        driverInformation.setDriverCarId(driverAccount.getLicensePlateNumber());
+        driverInformation.setDriverEmergencyContactPhoneNumber(driverAccount.getEmergencyContactNumber());
+
+        driverInformationService.insertDriverInformation(driverInformation);
+        return AjaxResult.success("审核操作成功");
+    }
+
+    /**
+     * 删除司机详细信息
+     */
+    @PreAuthorize("@ss.hasPermi('YDOnlineTaxi:DriverAccount:remove')")
+    @Log(title = "司机详细信息", businessType = BusinessType.DELETE)
+    @DeleteMapping("/{idNumbers}")
+    public AjaxResult remove(@PathVariable String[] idNumbers) {
+        return toAjax(driverAccountService.deleteDriverAccountByIdNumbers(idNumbers));
+    }
+
+
+    /**
+     * url：/YDOnlineTaxi/DriverAccount/refuseDriver
+     * 拒绝通过司机
+     */
+    @PostMapping("/refuseDriver")
+    public void refuseDriver(@RequestBody Map<String, Object> data) {
+        String phoneNumber = null;
+        String refuseReason = null;
+        try {
+            phoneNumber = data.get("phoneNumber").toString();
+            refuseReason = data.get("refuseReason").toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        DriverAccount reDriver = driverAccountService.selectAllByPhoneNumber(phoneNumber);
+        String openId = reDriver.getOpenId();
+        String name = reDriver.getDriverName();
+        String idNumber = reDriver.getIdNumber();
+        String label = "您的申请被拒绝";
+
+        try {
+            openId = RSAEncrypt.decrypt(openId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        sendAuditRes.getAccessToken(openId, name, idNumber, label, refuseReason);
+
+        driverAccountService.deleteDriverAccountByIdNumber(idNumber);
     }
 }

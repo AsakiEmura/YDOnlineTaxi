@@ -18,7 +18,7 @@ export function singleStatusList(data) {
   })
 }
 
-// 查询多种状态订单信息列表
+// 查询已接单司机未出发司机已出发状态订单信息列表
 export function receivedListList() {
   return request({
     url: '/YDOnlineTaxi/OrderInformation/receivedList',
@@ -26,20 +26,26 @@ export function receivedListList() {
   })
 }
 
-// 查询到达审核信息列表
-export function listAudit_information(query) {
+export function settlement() {
   return request({
-    url: '/YDOnlineTaxi/audit_information/list',
+    url: '/YDOnlineTaxi/OrderInformation/settlement',
+    method: 'put',
+  })
+}
+
+// 查询审核结算订单信息列表
+export function auditSettlementList() {
+  return request({
+    url: '/YDOnlineTaxi/OrderInformation/auditSettlementList',
     method: 'get',
-    params: query
   })
 }
 
 // 查询到达审核信息详细
-export function getAudit_information(orderid) {
+export function getArrival_information(orderid) {
   return request({
-    url: '/YDOnlineTaxi/audit_information/' + orderid,
-    method: 'get'
+    url: '/YDOnlineTaxi/OrderInformation/arrival_information/' + orderid,
+    method: 'get',
   })
 }
 

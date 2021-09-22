@@ -10,7 +10,7 @@
     type="textarea"
     :autosize="{ minRows: 30, maxRows: 30}"
     placeholder="请输入内容"
-    v-model="form.guide"
+    v-model="data"
     :disabled="true">
     </el-input>
     <div style="text-align: center; margin-top: 20px">
@@ -21,7 +21,7 @@
       type="textarea"
       :autosize="{ minRows: 24, maxRows: 24}"
       placeholder="请输入内容"
-      v-model="data">
+      v-model="form.guide">
     </el-input>
       <div slot="footer" class="dialog-footer" style="text-align: center">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -33,7 +33,6 @@
 
 <script>
 import { getUserGuide, updateUserGuide } from "@/api/YDOnlineTaxi/UserGuide";
-import { getToken } from "@/utils/auth";
 
 export default {
   name: "UserGuide",
@@ -73,8 +72,7 @@ export default {
     },
     /** 提交按钮 */
     submitForm() {
-      this.form.guide = this.data;
-      updateUserGuide(this.data).then(response => {
+      updateUserGuide(this.form).then(response => {
         this.msgSuccess("修改成功");
         this.open = false;
         this.getGuide();

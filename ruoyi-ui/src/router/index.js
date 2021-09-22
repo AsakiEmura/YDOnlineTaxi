@@ -1,9 +1,10 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-/* Layout */
-import Layout from '@/layout'
 
 Vue.use(Router)
+
+/* Layout */
+import Layout from '@/layout'
 
 /**
  * Note: 路由配置项
@@ -66,7 +67,7 @@ export const constantRoutes = [
         path: 'index',
         component: (resolve) => require(['@/views/index'], resolve),
         name: 'Index',
-        meta: {title: '首页', icon: 'chart', affix: true}
+        meta: { title: '首页', icon: 'chart', affix: true }
       }
     ]
   },

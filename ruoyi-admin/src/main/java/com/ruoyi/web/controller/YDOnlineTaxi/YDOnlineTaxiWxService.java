@@ -1,25 +1,27 @@
 package com.ruoyi.web.controller.YDOnlineTaxi;
 
-import com.ruoyi.YDOnlineTaxi.domain.DriverAccount;
-import com.ruoyi.YDOnlineTaxi.domain.DriverInformation;
-import com.ruoyi.YDOnlineTaxi.domain.PonitsStatistics;
-import com.ruoyi.YDOnlineTaxi.service.IDriverAccountService;
-import com.ruoyi.YDOnlineTaxi.service.IDriverInformationService;
-import com.ruoyi.YDOnlineTaxi.service.IPonitsStatisticsService;
+import com.ruoyi.YDOnlineTaxi.domain.*;
+import com.ruoyi.YDOnlineTaxi.service.*;
+import com.ruoyi.YDOnlineTaxi.utils.RSAEncrypt;
 import com.ruoyi.YDOnlineTaxi.utils.RabbitMQ.Producer.RabbitMQProducer;
 import com.ruoyi.YDOnlineTaxi.utils.RabbitMQ.RabbitMQConfig;
+import com.ruoyi.YDOnlineTaxi.utils.RabbitMQ.RabbitMQService;
 import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.redis.RedisCache;
+import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.utils.ShiroKit;
 import com.ruoyi.common.utils.file.FileUploadUtils;
 import com.ruoyi.framework.config.ServerConfig;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,18 +34,37 @@ public class YDOnlineTaxiWxService extends BaseController {
     @Autowired
     private ServerConfig serverConfig;
 
+    @Autowired
+    private WxWithDriversService wxWithDriversService;
+
+    @Autowired
+    private RedisCache redisUtils;
+
+    @Autowired
+    private RabbitMQService rabbitMQService;
+
+    @Autowired
+    private IOrderInformationService orderInformationService;
+
+    @Autowired
+    private OrderDetailsService orderDetailsService;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    @Autowired(required = false)
+    private RSAEncrypt rsaEncrypt;
+
+    private RestTemplate restTemplate;
+
+    @Autowired
+    private IArrivalAuditInformationService arrivalAuditInformationService;
 
     @Autowired
     private IPonitsStatisticsService ponitsStatisticsService;
 
     @Autowired
     private IDriverInformationService driverInformationService;
-
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
-
-    @Autowired
-    private RabbitMQProducer rabbitMQProducer;
 
 
     @PostMapping("/register")
@@ -111,6 +132,64 @@ public class YDOnlineTaxiWxService extends BaseController {
             ajax.put("msg", "上传图片成功");
             return ajax;
         } catch (Exception e) {
+            return AjaxResult.error(e.getMessage());
+        }
+    }
+
+    @PostMapping("/audit/attestation")
+    public AjaxResult Attestation(@RequestParam("orderId") String orderId, @RequestParam("points") Long points, @RequestParam("file1") MultipartFile file1, @RequestParam("notes") String notes) throws Exception {
+        try
+        {
+            OrderInformation orderInformation = orderInformationService.selectOrderInformationByOrderId(orderId);
+            String departure = orderInformation.getDeparture();
+            String destination = orderInformation.getDestination();
+            Date transportTime = orderInformation.getTransportTime();
+            String requirementTypes = orderInformation.getRequirementTypes();
+            String carType = orderInformation.getCarType();
+
+            // 上传文件路径
+            String filePath = RuoYiConfig.getUploadPath();
+            // 上传并返回新文件名称
+            String fileName1 = FileUploadUtils.upload(filePath, file1);
+            String url1 = serverConfig.getUrl() + fileName1;
+
+            ArrivalAuditInformation arrivalAuditInformation = new ArrivalAuditInformation();
+            arrivalAuditInformation.setOrderId(orderId);
+            arrivalAuditInformation.setDeparture(departure);
+            arrivalAuditInformation.setDestination(destination);
+            arrivalAuditInformation.setTransportTime(transportTime);
+            arrivalAuditInformation.setRequirementTypes(requirementTypes);
+            arrivalAuditInformation.setCatType(carType);
+            arrivalAuditInformation.setExtraOrderPoints(points);
+            arrivalAuditInformation.setProofPhoto1(fileName1);
+            arrivalAuditInformation.setNotes(notes);
+            arrivalAuditInformationService.insertArrivalAuditInformation(arrivalAuditInformation);
+
+            if("已结算".equals(orderInformation.getOrderStatus())){
+                OrderDetails orderDetails = orderDetailsService.selectByPrimaryKey(orderId);
+                PonitsStatistics ponitsStatistics = ponitsStatisticsService.selectPonitsStatisticsByDriverPhoneNumber(orderDetails.getDriverPhoneNumber());
+                DriverInformation driverInformation = driverInformationService.selectDriverInformationByDriverPhoneNumber(orderDetails.getDriverPhoneNumber());
+
+                driverInformation.setDriverCompleteOrderNumber(Convert.toStr(Convert.toInt(driverInformation.getDriverCompleteOrderNumber()) - 1));
+                driverInformation.setDriverCompleteOrderNumberMonthly(Convert.toStr(Convert.toInt(driverInformation.getDriverCompleteOrderNumberMonthly()) - 1));
+                driverInformationService.updateDriverInformation(driverInformation);
+
+                ponitsStatistics.setTotalPoints(ponitsStatistics.getTotalPoints() - points);
+                ponitsStatistics.setMonthPoints(ponitsStatistics.getMonthPoints() - points);
+                ponitsStatisticsService.updatePonitsStatistics(ponitsStatistics);
+            }
+            orderInformation.setOrderStatus("待审核");
+            orderInformationService.updateOrderInformation(orderInformation);
+
+            AjaxResult ajax = AjaxResult.success();
+            ajax.put("fileName1", fileName1);
+            ajax.put("url1", url1);
+            ajax.put("status", "ok");
+            ajax.put("msg", "上传图片成功");
+            return ajax;
+        }
+        catch (Exception e)
+        {
             return AjaxResult.error(e.getMessage());
         }
     }

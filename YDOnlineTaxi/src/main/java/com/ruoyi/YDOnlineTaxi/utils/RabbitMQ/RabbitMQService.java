@@ -20,7 +20,7 @@ public class RabbitMQService {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
-    @RabbitListener(queues = RabbitMQConfig.DIRECT_ROUTINGKEY_NAME)
+    @RabbitListener(queues = RabbitMQConfig.DIRECT_QUEUE_NAME)
     public void receive(Message message, Channel channel) throws IOException {
         LOGGER.info("消费内容为：{}", new String(message.getBody()));
         channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);

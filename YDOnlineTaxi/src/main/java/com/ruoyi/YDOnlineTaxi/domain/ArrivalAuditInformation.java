@@ -1,97 +1,196 @@
 package com.ruoyi.YDOnlineTaxi.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import java.util.Date;
+
 /**
  * 到达审核信息对象 arrival_audit_information
  *
  * @author ruoyi
- * @date 2021-09-19
+ * @date 2021-09-20
  */
-public class ArrivalAuditInformation extends BaseEntity {
+public class ArrivalAuditInformation extends BaseEntity
+{
     private static final long serialVersionUID = 1L;
 
-    /**
-     * 订单号
-     */
+    /** 订单号 */
     @Excel(name = "订单号")
-    private String orderid;
+    private String orderId;
 
-    /**
-     * 额外订单积分
-     */
+    /** 出发地 */
+    @Excel(name = "出发地")
+    private String departure;
+
+    /** 到达地 */
+    @Excel(name = "到达地")
+    private String destination;
+
+    /** 额外订单积分 */
     @Excel(name = "额外订单积分")
     private Long extraOrderPoints;
 
-    /**
-     * 备注
-     */
+    /** 需求类型 */
+    @Excel(name = "需求类型")
+    private String requirementTypes;
+
+    /** 备注 */
     @Excel(name = "备注")
     private String notes;
 
-    /**
-     * 证明照片1
-     */
+    /** 用车类型 */
+    @Excel(name = "用车类型")
+    private String catType;
+
+    /** 证明照片1 */
     @Excel(name = "证明照片1")
     private String proofPhoto1;
 
-    /**
-     * 证明照片2
-     */
+    /** 用车时间 */
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm")
+    @Excel(name = "用车时间", width = 30, dateFormat = "yyyy-MM-dd hh:mm")
+    private Date transportTime;
+
+    /** 证明照片2 */
     @Excel(name = "证明照片2")
     private String proofPhoto2;
 
-    public void setOrderid(String orderid) {
-        this.orderid = orderid;
+    /** 拒绝理由 */
+    @Excel(name = "拒绝理由")
+    private String refuseReason;
+
+    /** 额外积分申请状态 */
+    @Excel(name = "额外积分申请状态")
+    private String extraPointsStatus;
+
+    public void setOrderId(String orderId)
+    {
+        this.orderId = orderId;
     }
 
-    public String getOrderid() {
-        return orderid;
+    public String getOrderId()
+    {
+        return orderId;
+    }
+    public void setDeparture(String departure)
+    {
+        this.departure = departure;
     }
 
-    public void setExtraOrderPoints(Long extraOrderPoints) {
+    public String getDeparture()
+    {
+        return departure;
+    }
+    public void setDestination(String destination)
+    {
+        this.destination = destination;
+    }
+
+    public String getDestination()
+    {
+        return destination;
+    }
+    public void setExtraOrderPoints(Long extraOrderPoints)
+    {
         this.extraOrderPoints = extraOrderPoints;
     }
 
-    public Long getExtraOrderPoints() {
+    public Long getExtraOrderPoints()
+    {
         return extraOrderPoints;
     }
+    public void setRequirementTypes(String requirementTypes)
+    {
+        this.requirementTypes = requirementTypes;
+    }
 
-    public void setNotes(String notes) {
+    public String getRequirementTypes()
+    {
+        return requirementTypes;
+    }
+    public void setNotes(String notes)
+    {
         this.notes = notes;
     }
 
-    public String getNotes() {
+    public String getNotes()
+    {
         return notes;
     }
+    public void setCatType(String catType)
+    {
+        this.catType = catType;
+    }
 
-    public void setProofPhoto1(String proofPhoto1) {
+    public String getCatType()
+    {
+        return catType;
+    }
+    public void setProofPhoto1(String proofPhoto1)
+    {
         this.proofPhoto1 = proofPhoto1;
     }
 
-    public String getProofPhoto1() {
+    public String getProofPhoto1()
+    {
         return proofPhoto1;
     }
+    public void setTransportTime(Date transportTime)
+    {
+        this.transportTime = transportTime;
+    }
 
-    public void setProofPhoto2(String proofPhoto2) {
+    public Date getTransportTime()
+    {
+        return transportTime;
+    }
+    public void setProofPhoto2(String proofPhoto2)
+    {
         this.proofPhoto2 = proofPhoto2;
     }
 
-    public String getProofPhoto2() {
+    public String getProofPhoto2()
+    {
         return proofPhoto2;
+    }
+    public void setRefuseReason(String refuseReason)
+    {
+        this.refuseReason = refuseReason;
+    }
+
+    public String getRefuseReason()
+    {
+        return refuseReason;
+    }
+    public void setExtraPointsStatus(String extraPointsStatus)
+    {
+        this.extraPointsStatus = extraPointsStatus;
+    }
+
+    public String getExtraPointsStatus()
+    {
+        return extraPointsStatus;
     }
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("orderid", getOrderid())
+        return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
+                .append("orderId", getOrderId())
+                .append("departure", getDeparture())
+                .append("destination", getDestination())
                 .append("extraOrderPoints", getExtraOrderPoints())
+                .append("requirementTypes", getRequirementTypes())
                 .append("notes", getNotes())
+                .append("catType", getCatType())
                 .append("proofPhoto1", getProofPhoto1())
+                .append("transportTime", getTransportTime())
                 .append("proofPhoto2", getProofPhoto2())
+                .append("refuseReason", getRefuseReason())
+                .append("extraPointsStatus", getExtraPointsStatus())
                 .toString();
     }
 }

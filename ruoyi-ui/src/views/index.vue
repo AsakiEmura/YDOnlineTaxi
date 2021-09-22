@@ -48,13 +48,14 @@ export default {
     }
   },
   created(){
-    LineChartData().then(res=>{
-      this.lineChart.newVisitis.actualData = res.rows[0].newVisitis;
-      this.lineChart.invoice.actualData = res.rows[0].invoice;
-      this.lineChart.purchases.actualData = res.rows[0].purchases;
-      this.lineChart.reimburse.actualData = res.rows[0].reimburse;
-      this.lineChartData = this.lineChart.newVisitis;
-    })
+    console.log(111)
+    // LineChartData().then(res=>{
+    //   this.lineChart.newVisitis.actualData = res.rows[0].newVisitis;
+    //   this.lineChart.invoice.actualData = res.rows[0].invoice;
+    //   this.lineChart.purchases.actualData = res.rows[0].purchases;
+    //   this.lineChart.reimburse.actualData = res.rows[0].reimburse;
+    //   this.lineChartData = this.lineChart.newVisitis;
+    // })
   },
   methods: {
     handleSetLineChartData(type) {

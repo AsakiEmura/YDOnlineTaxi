@@ -122,8 +122,7 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['YDOnlineTaxi:PointsStatistics:edit']"
-          >奖惩
-          </el-button>
+          >奖惩</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -159,19 +158,19 @@
 
 <script>
 import {
-  exportPointsStatistics,
-  getPointsStatistics,
   listPointsStatistics,
-  reLog,
-  updatePointsStatistics
+  getPointsStatistics,
+  updatePointsStatistics,
+  exportPointsStatistics,
 } from "@/api/YDOnlineTaxi/PointsStatistics";
+import {addRPlog} from "@/api/YDOnlineTaxi/RPlog";
 
 export default {
   name: "PointsStatistics",
   data() {
     return {
       //奖惩积分
-      rpPoint: null,
+      rpPoint: 0,
       //奖惩理由
       rpReason: '',
       // 遮罩层
@@ -288,20 +287,26 @@ export default {
     },
     /** 提交按钮 */
     submitForm() {
-      this.form.rewardsPunishmentPoints = Number(this.form.totalPoints) + Number(this.rpPoint);
+      this.form.totalPoints = Number(this.form.totalPoints) + Number(this.rpPoint);
+      this.form.monthPoints = Number(this.form.monthPoints) + Number(this.rpPoint);
+      this.form.rewardsPunishmentPoints = Number(this.form.rewardsPunishmentPoints) + Number(this.rpPoint);
       updatePointsStatistics(this.form).then(response => {
         this.msgSuccess("修改成功");
-        this.open = false;
-        this.getList();
       });
-      const reTempLog = {
+      let temp = {
         phoneNumber: this.form.phoneNumber,
         driverName: this.form.driverName,
         rpReason: this.rpReason,
-        operatingTime: '',
-        operatingPeople: '',
+        points: this.rpPoint,
+        operatingTime: null,
+        operatingPeople: null
       }
-      reLog(reTempLog);
+      addRPlog(temp).then(response => {
+        this.open = false;
+        this.rpPoint = 0;
+        this.rpReason = '';
+        this.getList();
+      });
     },
     /** 导出按钮操作 */
     handleExport() {

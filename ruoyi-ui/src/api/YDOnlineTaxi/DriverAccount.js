@@ -91,3 +91,13 @@ export function resetUserPwd(idNumber, driverPassword) {
     data: data
   })
 }
+
+//refuseDriver:拒绝申请
+// 新增司机详细信息
+export function refuseDriver(data) {
+  return request({
+    url: '/YDOnlineTaxi/DriverAccount/refuseDriver',
+    method: 'post',
+    data: data
+  })
+}

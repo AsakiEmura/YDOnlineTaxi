@@ -54,7 +54,7 @@
           <span v-if="!loading">注 册</span>
           <span v-else>注 册 中...</span>
         </el-button>
-        <div style="float: right;">
+        <div style="float: right;padding-top: 20px">
           <router-link class="link-type" :to="'/login'">使用已有账户登录</router-link>
         </div>
       </el-form-item>
@@ -156,12 +156,12 @@ export default {
 .title {
   margin: 0px auto 30px auto;
   text-align: center;
-  color: #707070;
+  color: #070D41;
 }
 
 .register-form {
   border-radius: 6px;
-  background: #ffffff;
+  background-image: linear-gradient(to left bottom, #d7d2cc 20%, #070D41 90%);
   width: 400px;
   padding: 25px 25px 5px 25px;
   .el-input {

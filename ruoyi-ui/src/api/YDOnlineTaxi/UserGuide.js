@@ -12,7 +12,7 @@ export function getUserGuide() {
 export function updateUserGuide(data) {
   return request({
     url: '/YDOnlineTaxi/OrderUserGuide/updataUserGuide',
-    method: 'get',
+    method: 'post',
     data: data
   })
 }

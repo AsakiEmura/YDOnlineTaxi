@@ -30,30 +30,37 @@
       </el-form-item>
       <el-form-item label="用车时间" prop="transportTime">
         <el-date-picker clearable size="small"
-                        v-model="queryParams.transportTime"
-                        type="date"
-                        value-format="yyyy-MM-dd"
-                        placeholder="选择用车时间">
+          v-model="queryParams.transportTime"
+          type="date"
+          value-format="yyyy-MM-dd"
+          placeholder="选择用车时间">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="需求类型" prop="requirementTypes">
         <el-select v-model="queryParams.requirementTypes" placeholder="请输入需求类型" clearable size="small">
-          <el-option label="接站" value="接站"/>
-          <el-option label="送站" value="送站"/>
-          <el-option label="全包" value="全包"/>
-          <el-option label="半包" value="半包"/>
-          <el-option label="市内单程" value="市内单程"/>
-          <el-option label="市内往返" value="市内往返"/>
-          <el-option label="外地单程" value="外地单程"/>
-          <el-option label="外地往返" value="外地往返"/>
+          <el-option label="接站" value="接站" />
+          <el-option label="送站" value="送站" />
+          <el-option label="全包" value="全包" />
+          <el-option label="半包" value="半包" />
+          <el-option label="市内单程" value="市内单程" />
+          <el-option label="市内往返" value="市内往返" />
+          <el-option label="外地单程" value="外地单程" />
+          <el-option label="外地往返" value="外地往返" />
         </el-select>
       </el-form-item>
       <el-form-item label="用车类型" prop="carType">
         <el-select v-model="queryParams.carType" placeholder="请选择用车类型" clearable size="small">
-          <el-option label="舒适型" value="舒适型"/>
-          <el-option label="豪华型" value="豪华型"/>
-          <el-option label="商务型" value="商务型"/>
-          <el-option label="豪华商务型" value="豪华商务型"/>
+          <el-option label="舒适型" value="舒适型" />
+          <el-option label="豪华型" value="豪华型" />
+          <el-option label="商务型" value="商务型" />
+          <el-option label="豪华商务型" value="豪华商务型" />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="订单状态" prop="carType">
+        <el-select v-model="queryParams.orderStatus" placeholder="请选择订单状态" clearable size="small">
+          <el-option label="待审核" value="待审核" />
+          <el-option label="未结算" value="未结算" />
+          <el-option label="未通过" value="未通过" />
         </el-select>
       </el-form-item>
       <el-form-item label="乘客称呼" prop="passenger">
@@ -92,6 +99,16 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
+          type="success"
+          plain
+          icon="el-icon-edit"
+          size="mini"
+          @click="clickSettlement"
+          v-hasPermi="['YDOnlineTaxi:OrderInformation:edit']"
+        >一键结算</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
           type="danger"
           plain
           icon="el-icon-delete"
@@ -99,8 +116,7 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['YDOnlineTaxi:OrderInformation:remove']"
-        >删除
-        </el-button>
+        >删除</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -111,8 +127,7 @@
           :loading="exportLoading"
           @click="handleExport"
           v-hasPermi="['YDOnlineTaxi:OrderInformation:export']"
-        >导出
-        </el-button>
+        >导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
@@ -134,13 +149,10 @@
         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
         <div class="el-upload__tip text-center" slot="tip">
           <div class="el-upload__tip" slot="tip">
-            <el-checkbox v-model="upload.updateSupport"/>
-            是否更新已经存在的订单数据
+            <el-checkbox v-model="upload.updateSupport" /> 是否更新已经存在的订单数据
           </div>
           <span>仅允许导入xls、xlsx格式文件。</span>
-          <el-link type="primary" :underline="false" style="font-size:12px;vertical-align: baseline;"
-                   @click="importTemplate">下载模板
-          </el-link>
+          <el-link type="primary" :underline="false" style="font-size:12px;vertical-align: baseline;" @click="importTemplate">下载模板</el-link>
         </div>
       </el-upload>
       <div slot="footer" class="dialog-footer">
@@ -150,22 +162,22 @@
     </el-dialog>
 
     <el-table v-loading="loading" :data="OrderInformationList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="订单编号" align="center" prop="orderId"/>
-      <el-table-column label="出发地" align="center" prop="departure"/>
-      <el-table-column label="到达地" align="center" prop="destination"/>
+      <el-table-column type="selection" width="55" align="center" />
+      <el-table-column label="订单编号" align="center" prop="orderId" />
+      <el-table-column label="出发地" align="center" prop="departure" />
+      <el-table-column label="到达地" align="center" prop="destination" />
       <el-table-column label="用车时间" align="center" prop="transportTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.transportTime, '{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="需求类型" align="center" prop="requirementTypes"/>
-      <el-table-column label="用车类型" align="center" prop="carType"/>
-      <el-table-column label="乘客称呼" align="center" prop="passenger"/>
-      <el-table-column label="乘客手机" align="center" prop="passengerPhone"/>
-      <el-table-column label="积分" align="center" prop="points"/>
-      <el-table-column label="订单备注" align="center" prop="note"/>
-      <el-table-column label="状态" align="center" prop="orderStatus"/>
+      <el-table-column label="需求类型" align="center" prop="requirementTypes" />
+      <el-table-column label="用车类型" align="center" prop="carType" />
+      <el-table-column label="乘客称呼" align="center" prop="passenger" />
+      <el-table-column label="乘客手机" align="center" prop="passengerPhone" />
+      <el-table-column label="积分" align="center" prop="points" />
+      <el-table-column label="订单备注" align="center" prop="note" />
+      <el-table-column label="状态" align="center" prop="orderStatus" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -174,16 +186,15 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['YDOnlineTaxi:OrderInformation:edit']"
-          >审核
-          </el-button>
+            v-if="scope.row.orderStatus === '待审核' || scope.row.orderStatus === '未通过'"
+          >审核</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['YDOnlineTaxi:OrderInformation:remove']"
-          >删除
-          </el-button>
+          >删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -198,45 +209,77 @@
 
     <!-- 添加或修改订单信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="出发地" prop="departure">
-          <el-input v-model="form.departure" placeholder="请输入出发地"/>
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
+        <el-form-item label="司机手机号" prop="departure">
+          <span>{{arrival_form.driverPhoneNumber}}</span>
         </el-form-item>
-        <el-form-item label="到达地" prop="destination">
-          <el-input v-model="form.destination" placeholder="请输入到达地"/>
+        <el-form-item label="司机姓名" prop="departure">
+          <span>{{arrival_form.driverName}}</span>
         </el-form-item>
-        <el-form-item label="用车时间" prop="transportTime">
-          <el-date-picker clearable size="small"
-                          v-model="form.transportTime"
-                          type="date"
-                          value-format="yyyy-MM-dd"
-                          placeholder="选择用车时间">
-          </el-date-picker>
+        <el-form-item label="司机车牌号" prop="departure">
+          <span>{{arrival_form.driverCarId}}</span>
         </el-form-item>
-        <el-form-item label="需求类型" prop="requirementTypes">
-          <el-input v-model="form.requirementTypes" placeholder="请输入需求类型"/>
+        <el-form-item label="司机出发地" prop="departure">
+          <span>{{arrival_form.departureLocation}}</span>
         </el-form-item>
-        <el-form-item label="用车类型" prop="carType">
-          <el-select v-model="form.carType" placeholder="请选择用车类型">
-            <el-option label="请选择字典生成" value=""/>
-          </el-select>
+        <el-form-item label="实际接客地点" prop="departure">
+          <span>{{arrival_form.arrivalLocation}}</span>
+        </el-form-item>
+        <el-form-item label="去接客出发时间" prop="departure">
+          <span>{{arrival_form.departureTime}}</span>
+        </el-form-item>
+        <el-form-item label="接客后出发时间" prop="departure">
+          <span>{{arrival_form.arrivalRime}}</span>
+        </el-form-item>
+        <el-form-item label="订单完成时间" prop="transportTime">
+          <span>{{arrival_form.orderFinishTime}}</span>
         </el-form-item>
         <el-form-item label="乘客称呼" prop="passenger">
-          <el-input v-model="form.passenger" placeholder="请输入乘客称呼"/>
+          <span>{{form.departure}}</span>
         </el-form-item>
-        <el-form-item label="乘客手机" prop="passengerPhone">
-          <el-input v-model="form.passengerPhone" placeholder="请输入乘客手机"/>
+        <el-form-item label="乘客手机号" prop="passengerPhone">
+          <span>{{form.passengerPhone}}</span>
         </el-form-item>
-        <el-form-item label="积分" prop="points">
-          <el-input v-model="form.points" placeholder="请输入积分"/>
+        <el-form-item label="乘客出发地" prop="departure">
+          <span>{{form.departure}}</span>
+        </el-form-item>
+        <el-form-item label="乘客到达地" prop="destination">
+          <span>{{form.destination}}</span>
+        </el-form-item>
+        <el-form-item label="用车时间" prop="transportTime">
+          <span>{{form.transportTime}}</span>
+        </el-form-item>
+        <el-form-item label="需求类型" prop="requirementTypes">
+          <span>{{form.requirementTypes}}</span>
+        </el-form-item>
+        <el-form-item label="用车类型" prop="carType">
+          <span>{{form.carType}}</span>
+        </el-form-item>
+        <el-form-item label="订单积分" prop="points">
+          <span>{{form.points}}</span>
         </el-form-item>
         <el-form-item label="订单备注" prop="note">
-          <el-input v-model="form.note" type="textarea" placeholder="请输入内容"/>
+          <span>{{form.note}}</span>
+        </el-form-item>
+        <el-form-item label="审核结果" prop="refuseReason">
+          <el-select v-model="form.orderStatus" placeholder="请指定申请结果" clearable size="small">
+            <el-option label="审核通过" value="审核通过" />
+            <el-option label="审核不通过" value="审核不通过" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="拒绝理由" prop="note">
+          <el-input
+            type="textarea"
+            :autosize="{ minRows: 4, maxRows: 6}"
+            placeholder="如果不通过，请输入不通过的原因,最多50个字"
+            v-model="form.refuseReason">
+          </el-input>
         </el-form-item>
       </el-form>
+
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
+        <el-button type="primary" @click="submitForm">通 过</el-button>
+        <el-button @click="noThrough">不通过</el-button>
       </div>
     </el-dialog>
   </div>
@@ -244,15 +287,16 @@
 
 <script>
 import {
-  addOrderInformation,
-  delOrderInformation,
-  exportOrderInformation,
+  listOrderInformation,
   getOrderInformation,
+  delOrderInformation,
+  addOrderInformation,
+  updateOrderInformation,
+  exportOrderInformation,
   importTemplate,
-  singleStatusList,
-  updateOrderInformation
+  singleStatusList, auditSettlementList, settlement, getArrival_information
 } from "@/api/YDOnlineTaxi/OrderInformation";
-import {getToken} from "@/utils/auth";
+import { getToken } from "@/utils/auth";
 
 export default {
   name: "OrderInformation",
@@ -304,7 +348,7 @@ export default {
         // 是否更新已经存在的用户数据
         updateSupport: 0,
         // 设置上传的请求头部
-        headers: {Authorization: "Bearer " + getToken()},
+        headers: { Authorization: "Bearer " + getToken() },
         // 上传的地址
         url: process.env.VUE_APP_BASE_API + "/YDOnlineTaxi/OrderInformation/importData"
       },
@@ -313,33 +357,35 @@ export default {
       // 表单校验
       rules: {
         departure: [
-          {required: true, message: "出发地不能为空", trigger: "blur"}
+          { required: true, message: "出发地不能为空", trigger: "blur" }
         ],
         destination: [
-          {required: true, message: "到达地不能为空", trigger: "blur"}
+          { required: true, message: "到达地不能为空", trigger: "blur" }
         ],
         transportTime: [
-          {required: true, message: "用车时间不能为空", trigger: "blur"}
+          { required: true, message: "用车时间不能为空", trigger: "blur" }
         ],
         requirementTypes: [
-          {required: true, message: "需求类型不能为空", trigger: "blur"}
+          { required: true, message: "需求类型不能为空", trigger: "blur" }
         ],
         carType: [
-          {required: true, message: "用车类型不能为空", trigger: "change"}
+          { required: true, message: "用车类型不能为空", trigger: "change" }
         ],
         passenger: [
-          {required: true, message: "乘客称呼不能为空", trigger: "blur"}
+          { required: true, message: "乘客称呼不能为空", trigger: "blur" }
         ],
         passengerPhone: [
-          {required: true, message: "乘客手机不能为空", trigger: "blur"}
+          { required: true, message: "乘客手机不能为空", trigger: "blur" }
         ],
         points: [
-          {required: true, message: "积分不能为空", trigger: "blur"}
+          { required: true, message: "积分不能为空", trigger: "blur" }
         ],
         orderStatus: [
-          {required: true, message: "状态不能为空", trigger: "change"}
+          { required: true, message: "状态不能为空", trigger: "change" }
         ],
-      }
+      },
+      //订单详细情况表单
+      arrival_form: {},
     };
   },
   created() {
@@ -349,10 +395,7 @@ export default {
     /** 查询订单信息列表 */
     getList() {
       this.loading = true;
-      let temp = {
-        status: "待审核"
-      }
-      singleStatusList(temp).then(response => {
+      auditSettlementList().then(response => {
         this.OrderInformationList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -379,7 +422,19 @@ export default {
         orderStatus: null,
         refuseReason: null
       };
+      this.arrival_form = {
+        orderId: null,
+        driverName: null,
+        driverPhoneNumber: null,
+        driverCarId: null,
+        departureLocation: null,
+        departureTime: null,
+        arrivalLocation: null,
+        arrivalRime: null,
+        orderFinishTime: null
+      };
       this.resetForm("form");
+      this.resetForm("arrival_form");
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -394,7 +449,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.orderId)
-      this.single = selection.length !== 1
+      this.single = selection.length!==1
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
@@ -409,61 +464,81 @@ export default {
       const orderId = row.orderId || this.ids
       getOrderInformation(orderId).then(response => {
         this.form = response.data;
-        this.open = true;
-        this.title = "修改订单信息";
       });
+      getArrival_information(orderId).then(response => {
+        this.arrival_form = response.data;
+        this.open = true;
+        this.title = "审核订单";
+      })
+    },
+    /** 一键结算 */
+    clickSettlement(){
+      this.$confirm('是否确认结算前24小时的未结算订单', "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(function() {
+        settlement();
+        this.getList();
+      }).then(() => {
+        this.msgSuccess("结算成功");
+      }).catch(() => {});
     },
     /** 提交按钮 */
     submitForm() {
-      this.form.orderStatus = "完成";
       this.$refs["form"].validate(valid => {
         if (valid) {
-          if (this.form.orderId != null) {
-            updateOrderInformation(this.form).then(response => {
-              this.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addOrderInformation(this.form).then(response => {
-              this.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
-          }
+          this.form.orderStatus = "未结算";
+          updateOrderInformation(this.form).then(response => {
+            this.msgSuccess("修改成功");
+            this.open = false;
+            this.getList();
+          });
         }
       });
+    },
+    noThrough() {
+      this.$refs["form"].validate(valid => {
+        if (valid) {
+          this.form.orderStatus = "审核不通过";
+          updateOrderInformation(this.form).then(response => {
+            this.msgSuccess("修改成功");
+            this.open = false;
+            this.getList();
+          });
+        }
+      });
+      this.open = false;
+      this.reset();
     },
     /** 删除按钮操作 */
     handleDelete(row) {
       const orderIds = row.orderId || this.ids;
       this.$confirm('是否确认删除订单信息编号为"' + orderIds + '"的数据项?', "警告", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      }).then(function () {
-        return delOrderInformation(orderIds);
-      }).then(() => {
-        this.getList();
-        this.msgSuccess("删除成功");
-      }).catch(() => {
-      });
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }).then(function() {
+          return delOrderInformation(orderIds);
+        }).then(() => {
+          this.getList();
+          this.msgSuccess("删除成功");
+        }).catch(() => {});
     },
     /** 导出按钮操作 */
     handleExport() {
       const queryParams = this.queryParams;
       this.$confirm('是否确认导出所有订单信息数据项?', "警告", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      }).then(() => {
-        this.exportLoading = true;
-        return exportOrderInformation(queryParams);
-      }).then(response => {
-        this.download(response.msg);
-        this.exportLoading = false;
-      }).catch(() => {
-      });
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }).then(() => {
+          this.exportLoading = true;
+          return exportOrderInformation(queryParams);
+        }).then(response => {
+          this.download(response.msg);
+          this.exportLoading = false;
+        }).catch(() => {});
     },
     /** 导入按钮操作 */
     handleImport() {
@@ -479,7 +554,7 @@ export default {
       this.upload.open = false;
       this.upload.isUploading = false;
       this.$refs.upload.clearFiles();
-      this.$alert(response.msg, "导入结果", {dangerouslyUseHTMLString: true});
+      this.$alert(response.msg, "导入结果", { dangerouslyUseHTMLString: true });
       this.getList();
     },
     // 提交上传文件

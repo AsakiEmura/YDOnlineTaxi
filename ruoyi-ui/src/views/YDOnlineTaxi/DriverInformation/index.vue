@@ -72,8 +72,7 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['YDOnlineTaxi:DriverInformation:remove']"
-        >移入黑名单
-        </el-button>
+        >移入黑名单</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
@@ -106,8 +105,7 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['YDOnlineTaxi:PointsStatistics:edit']"
-          >修改等级
-          </el-button>
+          >修改等级</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -140,12 +138,13 @@
 
 <script>
 import {
+  listDriverInformation,
   delDriverInformation,
   getDriverInformation,
-  listDriverInformation,
   updateDriverInformation
 } from "@/api/YDOnlineTaxi/DriverInformation";
-import {resetUserPwd} from "@/api/YDOnlineTaxi/DriverAccount";
+import {resetUserPwd, getDriverAccount, updateDriverAccount} from "@/api/YDOnlineTaxi/DriverAccount";
+import {addPointsStatistics, getPointsStatistics, updatePointsStatistics} from "@/api/YDOnlineTaxi/PointsStatistics";
 
 export default {
   name: "DriverInformation",
@@ -206,13 +205,13 @@ export default {
           { required: true, message: "车辆颜色不能为空", trigger: "blur" }
         ],
         driverCompleteOrderNumber: [
-          {required: true, message: "已完成单数不能为空", trigger: "blur"}
+          { required: true, message: "已完成单数不能为空", trigger: "blur" }
         ],
         driverCompleteOrderNumberMonthly: [
-          {required: true, message: "本月完成单数不能为空", trigger: "blur"}
+          { required: true, message: "本月完成单数不能为空", trigger: "blur" }
         ],
         driverLevel: [
-          {required: true, message: "等级不能为空", trigger: "change"}
+          { required: true, message: "等级不能为空", trigger: "change" }
         ]
       },
       // 司机等级
@@ -233,14 +232,14 @@ export default {
     this.getList();
     // this.$emit("queryTable");
   },
-  watch: {
-    $route() {
+  watch:{
+    $route(){
       this.getList()
     }
   },
   methods: {
     /** 查询司机线上账户信息
-     列表 */
+列表 */
     getList() {
       this.loading = true;
       listDriverInformation(this.queryParams).then(response => {
@@ -283,7 +282,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.driverPhoneNumber)
-      this.single = selection.length !== 1
+      this.single = selection.length!==1
       this.multiple = !selection.length
     },
     /** 修改司机等级操作 */
@@ -325,12 +324,12 @@ export default {
     handleDelete(row) {
       const driverPhoneNumbers = row.driverPhoneNumber || this.ids;
       this.$confirm('是否确认删除司机线上账户信息编号为"' + driverPhoneNumbers + '"的数据项?', "警告", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      }).then(function () {
-        return delDriverInformation(driverPhoneNumbers);
-      }).then(() => {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }).then(function() {
+          return delDriverInformation(driverPhoneNumbers);
+        }).then(() => {
           this.getList();
           this.msgSuccess("删除成功");
         }).catch(() => {});

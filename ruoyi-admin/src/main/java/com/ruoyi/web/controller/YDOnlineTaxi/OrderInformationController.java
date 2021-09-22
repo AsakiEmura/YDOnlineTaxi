@@ -1,8 +1,10 @@
 package com.ruoyi.web.controller.YDOnlineTaxi;
 
+import com.ruoyi.YDOnlineTaxi.domain.DriverInformation;
 import com.ruoyi.YDOnlineTaxi.domain.OrderDetails;
 import com.ruoyi.YDOnlineTaxi.domain.OrderInformation;
-import com.ruoyi.YDOnlineTaxi.service.IOrderInformationService;
+import com.ruoyi.YDOnlineTaxi.domain.PonitsStatistics;
+import com.ruoyi.YDOnlineTaxi.service.*;
 import com.ruoyi.YDOnlineTaxi.service.OrderDetailsService;
 import com.ruoyi.YDOnlineTaxi.utils.RabbitMQ.Producer.RabbitMQProducer;
 import com.ruoyi.YDOnlineTaxi.utils.RabbitMQ.RabbitMQConfig;
@@ -15,11 +17,15 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.ServletUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.framework.web.service.TokenService;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -38,8 +44,14 @@ public class OrderInformationController extends BaseController {
     @Autowired
     private TokenService tokenService;
 
-    @Autowired
+    @Autowired(required = false)
     private OrderDetailsService orderDetailsService;
+
+    @Autowired
+    private IPonitsStatisticsService ponitsStatisticsService;
+
+    @Autowired
+    private IDriverInformationService driverInformationService;
 
     @Autowired
     private RabbitMQProducer rabbitMQProducer;
@@ -78,6 +90,69 @@ public class OrderInformationController extends BaseController {
         };
         List<OrderInformation> list = orderInformationService.selectOrderByReceived(status);
         return getDataTable(list);
+    }
+
+    /**
+     * 查询待审核已结算未结算订单信息列表
+     */
+    @GetMapping("/auditSettlementList")
+    public TableDataInfo auditSettlementList()
+    {
+        startPage();
+        String[] status = {
+                "待审核",
+                "未通过",
+                "未结算"
+        };
+        List<OrderInformation> list = orderInformationService.selectOrderByReceived(status);
+        return getDataTable(list);
+    }
+
+    /**
+     * 查询订单详细到达信息
+     */
+    @GetMapping(value = "/arrival_information/{orderId}")
+    public AjaxResult arrival_information(@PathVariable("orderId") String orderId)
+    {
+        OrderDetails orderDetails = orderDetailsService.selectByPrimaryKey(orderId);
+        return AjaxResult.success(orderDetailsService.selectByPrimaryKey(orderId));
+    }
+
+    /**
+     * 一键结算
+     */
+    @PutMapping("/settlement")
+    public AjaxResult settlement()
+    {
+        try{
+            List<OrderInformation> list = orderInformationService.selectOrderByStatus("未结算");
+            SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd hh:mm");
+            Date date = new Date();
+            df.format(date);
+            long nowTime = date.getTime();
+            for(int i=0;i<list.size()-1;i++){
+                OrderInformation orderInformation = list.get(i);
+                String orderId = orderInformation.getOrderId();
+                OrderDetails orderDetails = orderDetailsService.selectByPrimaryKey(orderId);
+                long tempHour = nowTime-orderDetails.getOrderFinishTime().getTime()/(60*60*1000);
+                if(tempHour > 24){
+                    PonitsStatistics ponitsStatistics = ponitsStatisticsService.selectPonitsStatisticsByDriverPhoneNumber(orderDetails.getDriverPhoneNumber());
+                    ponitsStatistics.setTotalPoints(orderInformation.getPoints() + ponitsStatistics.getTotalPoints());
+                    ponitsStatistics.setMonthPoints(orderInformation.getPoints() + ponitsStatistics.getMonthPoints());
+                    ponitsStatisticsService.updatePonitsStatistics(ponitsStatistics);
+                    DriverInformation driverInformation =(driverInformationService.selectDriverInformationByDriverPhoneNumber(orderDetails.getDriverPhoneNumber()));
+                    driverInformation.setDriverCompleteOrderNumber(driverInformation.getDriverCompleteOrderNumber() + 1);
+                    driverInformation.setDriverCompleteOrderNumberMonthly(driverInformation.getDriverCompleteOrderNumberMonthly() + 1);
+                    driverInformationService.updateDriverInformation(driverInformation);
+
+                    orderInformation.setOrderStatus("已结算");
+                    orderInformationService.updateOrderInformation(orderInformation);
+                }
+            }
+            return AjaxResult.success();
+        }catch (Exception e){
+            return AjaxResult.error(e.toString());
+        }
     }
 
     /**

@@ -38,22 +38,22 @@
       </el-form-item>
       <el-form-item label="需求类型" prop="requirementTypes">
         <el-select v-model="queryParams.requirementTypes" placeholder="请输入需求类型" clearable size="small">
-          <el-option label="接站" value="接站"/>
-          <el-option label="送站" value="送站"/>
-          <el-option label="全包" value="全包"/>
-          <el-option label="半包" value="半包"/>
-          <el-option label="市内单程" value="市内单程"/>
-          <el-option label="市内往返" value="市内往返"/>
-          <el-option label="外地单程" value="外地单程"/>
-          <el-option label="外地往返" value="外地往返"/>
+          <el-option label="接站" value="接站" />
+          <el-option label="送站" value="送站" />
+          <el-option label="全包" value="全包" />
+          <el-option label="半包" value="半包" />
+          <el-option label="市内单程" value="市内单程" />
+          <el-option label="市内往返" value="市内往返" />
+          <el-option label="外地单程" value="外地单程" />
+          <el-option label="外地往返" value="外地往返" />
         </el-select>
       </el-form-item>
       <el-form-item label="用车类型" prop="carType">
         <el-select v-model="queryParams.carType" placeholder="请选择用车类型" clearable size="small">
-          <el-option label="舒适型" value="舒适型"/>
-          <el-option label="豪华型" value="豪华型"/>
-          <el-option label="商务型" value="商务型"/>
-          <el-option label="豪华商务型" value="豪华商务型"/>
+          <el-option label="舒适型" value="舒适型" />
+          <el-option label="豪华型" value="豪华型" />
+          <el-option label="商务型" value="商务型" />
+          <el-option label="豪华商务型" value="豪华商务型" />
         </el-select>
       </el-form-item>
       <el-form-item label="乘客称呼" prop="passenger">
@@ -269,15 +269,16 @@
 
 <script>
 import {
-  addOrderInformation,
-  delOrderInformation,
-  exportOrderInformation,
+  listOrderInformation,
   getOrderInformation,
+  delOrderInformation,
+  addOrderInformation,
+  updateOrderInformation,
+  exportOrderInformation,
   importTemplate,
-  singleStatusList,
-  updateOrderInformation
+  singleStatusList
 } from "@/api/YDOnlineTaxi/OrderInformation";
-import {getToken} from "@/utils/auth";
+import { getToken } from "@/utils/auth";
 
 export default {
   name: "OrderInformation",

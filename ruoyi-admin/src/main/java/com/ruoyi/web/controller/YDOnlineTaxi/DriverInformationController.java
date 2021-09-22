@@ -1,6 +1,8 @@
 package com.ruoyi.web.controller.YDOnlineTaxi;
 
+import com.ruoyi.YDOnlineTaxi.domain.DriverAccount;
 import com.ruoyi.YDOnlineTaxi.domain.DriverInformation;
+import com.ruoyi.YDOnlineTaxi.service.IDriverAccountService;
 import com.ruoyi.YDOnlineTaxi.service.IDriverInformationService;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
@@ -27,6 +29,9 @@ public class DriverInformationController extends BaseController
 {
     @Autowired
     private IDriverInformationService driverInformationService;
+
+    @Autowired
+    private IDriverAccountService driverAccountService;
 
     /**
      * 查询司机线上账户信息列表
@@ -83,6 +88,22 @@ public class DriverInformationController extends BaseController
     public AjaxResult edit(@RequestBody DriverInformation driverInformation)
     {
         return toAjax(driverInformationService.updateDriverInformation(driverInformation));
+    }
+
+    /**
+     * 移到黑名单并删除该司机
+     */
+    @PreAuthorize("@ss.hasPermi('YDOnlineTaxi:DriverInformation:remove')")
+    @Log(title = "司机线上账户信息", businessType = BusinessType.DELETE)
+    @DeleteMapping("/{driverPhoneNumbers}")
+    public AjaxResult remove(@PathVariable String[] driverPhoneNumbers)
+    {
+        for (String driverPhoneNumber : driverPhoneNumbers) {
+            DriverAccount driverAccount = driverAccountService.selectAllByPhoneNumber(driverPhoneNumber);
+            driverAccount.setStatus("黑名单");
+            driverAccountService.updateDriverAccount(driverAccount);
+        }
+        return toAjax(driverInformationService.deleteDriverInformationByDriverPhoneNumbers(driverPhoneNumbers));
     }
 
 }
