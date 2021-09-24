@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,15 +36,6 @@ public class YDOnlineTaxiWxService extends BaseController {
     private ServerConfig serverConfig;
 
     @Autowired
-    private WxWithDriversService wxWithDriversService;
-
-    @Autowired
-    private RedisCache redisUtils;
-
-    @Autowired
-    private RabbitMQService rabbitMQService;
-
-    @Autowired
     private IOrderInformationService orderInformationService;
 
     @Autowired
@@ -51,11 +43,6 @@ public class YDOnlineTaxiWxService extends BaseController {
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
-
-    @Autowired(required = false)
-    private RSAEncrypt rsaEncrypt;
-
-    private RestTemplate restTemplate;
 
     @Autowired
     private IArrivalAuditInformationService arrivalAuditInformationService;
@@ -65,6 +52,9 @@ public class YDOnlineTaxiWxService extends BaseController {
 
     @Autowired
     private IDriverInformationService driverInformationService;
+
+    @Autowired
+    private WxWithDriversService wxWithDriversService;
 
 
     @PostMapping("/register")
@@ -138,8 +128,7 @@ public class YDOnlineTaxiWxService extends BaseController {
 
     @PostMapping("/audit/attestation")
     public AjaxResult Attestation(@RequestParam("orderId") String orderId, @RequestParam("points") Long points, @RequestParam("file1") MultipartFile file1, @RequestParam("notes") String notes) throws Exception {
-        try
-        {
+        try {
             OrderInformation orderInformation = orderInformationService.selectOrderInformationByOrderId(orderId);
             String departure = orderInformation.getDeparture();
             String destination = orderInformation.getDestination();
@@ -165,7 +154,7 @@ public class YDOnlineTaxiWxService extends BaseController {
             arrivalAuditInformation.setNotes(notes);
             arrivalAuditInformationService.insertArrivalAuditInformation(arrivalAuditInformation);
 
-            if("已结算".equals(orderInformation.getOrderStatus())){
+            if ("已结算".equals(orderInformation.getOrderStatus())) {
                 OrderDetails orderDetails = orderDetailsService.selectByPrimaryKey(orderId);
                 PonitsStatistics ponitsStatistics = ponitsStatisticsService.selectPonitsStatisticsByDriverPhoneNumber(orderDetails.getDriverPhoneNumber());
                 DriverInformation driverInformation = driverInformationService.selectDriverInformationByDriverPhoneNumber(orderDetails.getDriverPhoneNumber());
@@ -187,50 +176,35 @@ public class YDOnlineTaxiWxService extends BaseController {
             ajax.put("status", "ok");
             ajax.put("msg", "上传图片成功");
             return ajax;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             return AjaxResult.error(e.getMessage());
         }
     }
 
 
     @PostMapping("/login")
-    public AjaxResult login(@RequestBody Map<String, Object> data) {
+    public AjaxResult login(DriverAccount driverAccount) {
         String phoneNumber;
-        try {
-            phoneNumber = data.get("phoneNumber").toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return AjaxResult.error("jsonError");
-        }
-
-        if (!UserConstants.NOT_UNIQUE.equals(driverAccountService.countByPhoneNumber(phoneNumber))) {
+        phoneNumber = driverAccount.getPhoneNumber();
+        if (!UserConstants.NOT_UNIQUE.equals(driverAccountService.countByPhoneNumber(phoneNumber))|| phoneNumber == null) {
             return AjaxResult.error("notExist");
         }
-        DriverAccount driverAccount = driverAccountService.selectDriverPassWordByPhoneNumber(phoneNumber);
-        if (!driverAccount.getStatus().equals("审核通过")) {
+        DriverAccount driver = driverAccountService.selectDriverPassWordByPhoneNumber(phoneNumber);
+        if (!driver.getStatus().equals("审核通过")) {
             return AjaxResult.error("waitAudit");
         }
 
-
         String driverPassword;
-        try {
-            driverPassword = data.get("driverPassword").toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return AjaxResult.error("jsonError");
-        }
+        driverPassword = driverAccount.getDriverPassword();
 
-        String salt = driverAccount.getSalt();
-        String password = driverAccount.getDriverPassword();
+        String salt = driver.getSalt();
+        String password = driver.getDriverPassword();
 
         String newPassword = ShiroKit.md5(driverPassword, salt);
 
-        if (!newPassword.equals(password)) {
+        if (!newPassword.equals(password) || driverPassword == null) {
             return AjaxResult.error("passwordError");
         }
-
         return AjaxResult.success("success");
     }
 
@@ -327,5 +301,20 @@ public class YDOnlineTaxiWxService extends BaseController {
     @PostMapping("/updateDriverInformation")
     public AjaxResult updateDriverInformation(@RequestBody DriverInformation driverInformation) {
         return toAjax(driverInformationService.updateDriverInformation(driverInformation));
+    }
+
+    @PostMapping("/addPushTimeForDriver")
+    public AjaxResult addPushTimeForDriver(WxWithDrivers wxWithDrivers) {
+        wxWithDriversService.addPushTimeByPhoneNumber(wxWithDrivers.getPhoneNumber());
+        return AjaxResult.success("success");
+    }
+
+    @PostMapping("/countByPhoneNumber")
+    public AjaxResult countByPhoneNumber(DriverAccount driverAccount) {
+        if (!UserConstants.NOT_UNIQUE.equals(driverAccountService.countByPhoneNumber(driverAccount.getPhoneNumber()))) {
+            return AjaxResult.error("notExist");
+        } else {
+            return AjaxResult.success("exist");
+        }
     }
 }

@@ -1,14 +1,9 @@
 package com.ruoyi.web.controller.YDOnlineTaxi;
 
-import com.ruoyi.YDOnlineTaxi.domain.DriverAccount;
-import com.ruoyi.YDOnlineTaxi.domain.DriverInformation;
-import com.ruoyi.YDOnlineTaxi.domain.PonitsStatistics;
-import com.ruoyi.YDOnlineTaxi.domain.WxWithDrivers;
-import com.ruoyi.YDOnlineTaxi.service.IDriverAccountService;
-import com.ruoyi.YDOnlineTaxi.service.IDriverInformationService;
-import com.ruoyi.YDOnlineTaxi.service.IPonitsStatisticsService;
-import com.ruoyi.YDOnlineTaxi.service.WxWithDriversService;
+import com.ruoyi.YDOnlineTaxi.domain.*;
+import com.ruoyi.YDOnlineTaxi.service.*;
 import com.ruoyi.YDOnlineTaxi.utils.RSAEncrypt;
+import com.ruoyi.YDOnlineTaxi.utils.WxService;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
@@ -17,10 +12,12 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.ShiroKit;
 import com.ruoyi.common.utils.poi.ExcelUtil;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -44,6 +41,10 @@ public class DriverAccountController extends BaseController {
 
     @Autowired
     private IPonitsStatisticsService ponitsStatisticsService;
+
+    @Autowired
+    private OrderDetailsService orderDetailsService;
+
     /**
      * 查询司机详细信息列表
      */
@@ -134,13 +135,15 @@ public class DriverAccountController extends BaseController {
     /**
      * 审核司机详细信息
      */
+    @PreAuthorize("@ss.hasPermi('YDOnlineTaxi:DriverAccount:audit')")
     @Log(title = "审核司机", businessType = BusinessType.UPDATE)
     @PutMapping("/audit")
-    public AjaxResult audit(@RequestBody DriverAccount driverAccount) {
+    public AjaxResult audit(@RequestBody DriverAccount driverAccount) throws IOException {
+        String phoneNumber =driverAccount.getPhoneNumber();
         if("审核通过".equals(driverAccount.getStatus()))
         {
             String driverName = driverAccount.getDriverName();
-            String phoneNumber =driverAccount.getPhoneNumber();
+
 
             driverAccountService.updateDriverAccount(driverAccount);
 
@@ -164,12 +167,39 @@ public class DriverAccountController extends BaseController {
             driverInformationService.insertDriverInformation(driverInformation);
             wxWithDriversService.insert(wxWithDrivers);
             ponitsStatisticsService.insertPonitsStatistics(ponitsStatistics);
+
+            if(noticeAuditedUser(phoneNumber,"审核通过,请登录小程序进行验证.")){
+                return AjaxResult.success("审核操作成功");
+            }
+            else{
+                return AjaxResult.error("审核操作失败");
+            }
         }
         else if("审核不通过".equals(driverAccount.getStatus()))
         {
             driverAccountService.deleteDriverAccountByIdNumber(driverAccount.getIdNumber());
         }
         return AjaxResult.success("审核操作成功");
+    }
+
+    public Boolean noticeAuditedUser(String phoneNumber,String text) throws IOException {
+        String openId = driverAccountService.selectOpenIdByPhoneNumber(phoneNumber);
+        DriverAccount driverAccount = driverAccountService.selectAllByPhoneNumber(phoneNumber);
+        String openIdDe = "";
+        try
+        {
+            openIdDe = RSAEncrypt.decrypt(openId);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        if ("".equals(openIdDe))
+            return Boolean.FALSE;
+        else{
+            sendAuditRes.pushNotification(openIdDe, driverAccount.getDriverName(),driverAccount.getIdNumber(),"司机审核通过",text);
+            return Boolean.TRUE;
+        }
     }
 
     /**
@@ -207,6 +237,8 @@ public class DriverAccountController extends BaseController {
      * url：/YDOnlineTaxi/DriverAccount/refuseDriver
      * 拒绝通过司机
      */
+    @PreAuthorize("@ss.hasPermi('YDOnlineTaxi:DriverAccount:refuse')")
+    @Log(title = "司机审核不通过", businessType = BusinessType.DELETE)
     @PostMapping("/refuseDriver")
     public void refuseDriver(@RequestBody Map<String, Object> data) {
         String phoneNumber = null;
@@ -230,7 +262,7 @@ public class DriverAccountController extends BaseController {
             e.printStackTrace();
         }
 
-        sendAuditRes.getAccessToken(openId, name, idNumber, label, refuseReason);
+        sendAuditRes.pushNotification(openId, name, idNumber, label, refuseReason);
 
         driverAccountService.deleteDriverAccountByIdNumber(idNumber);
     }

@@ -12,10 +12,6 @@ import org.springframework.web.client.RestTemplate;
  */
 public class sendAuditRes {
 
-    public static void main(String[] args) {
-        getAccessToken("oLQhU5fwZctlTA19fhTxvVRBc9Po", "王鹏","330182200105034016", "不通过","因为王鹏是畜生");
-    }
-
     /**
      * 静态方法：推送审核结果
      *
@@ -25,7 +21,7 @@ public class sendAuditRes {
      * @param status 审核结果
      * @param text   备注
      */
-    public static void getAccessToken(String openid, String name, String idCard, String status, String text) {
+    public static void pushNotification(String openid, String name, String idCard, String status, String text) {
         //获取access_token
         RestTemplate restTemplate = new RestTemplate();
         String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx44a2da7b0d95d7e5&secret=b3258e011e2871232cab0d551e3bc600";
@@ -72,6 +68,5 @@ public class sendAuditRes {
         headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
         HttpEntity<String> httpEntity = new HttpEntity<>(requestData.toJSONString(), headers);
         JSONObject jsonObject = restTemplate.postForObject(send_url, httpEntity, JSONObject.class);
-        System.out.println(jsonObject);
     }
 }

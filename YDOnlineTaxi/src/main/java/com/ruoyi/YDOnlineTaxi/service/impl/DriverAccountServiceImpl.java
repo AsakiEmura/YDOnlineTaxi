@@ -168,4 +168,9 @@ public class DriverAccountServiceImpl implements IDriverAccountService
         }
         return UserConstants.UNIQUE;
     }
+
+    @Override
+    public String selectOpenIdByPhoneNumber(String phoneNumber) {
+        return driverAccountMapper.selectOpenIdByPhoneNumber(phoneNumber);
+    }
 }

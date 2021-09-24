@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Component
-public class WxRabbitMQ {
+public final class WxRabbitMQ {
     @Autowired
     private WxWithDriversService wxWithDriversService;
 

@@ -49,4 +49,14 @@ public class WxWithDriversServiceImpl implements WxWithDriversService{
     public List<String> selectOpenIdByDriverLevel(String driverLevel) {
         return wxWithDriversMapper.selectOpenIdByDriverLevel(driverLevel);
     }
+
+    @Override
+    public String selectOpenIdByPhoneNumber(String phoneNumber) {
+        return wxWithDriversMapper.selectOpenIdByPhoneNumber(phoneNumber);
+    }
+
+    @Override
+    public int addPushTimeByPhoneNumber(String phoneNumber) {
+        return wxWithDriversMapper.addPushTimeByPhoneNumber(phoneNumber);
+    }
 }

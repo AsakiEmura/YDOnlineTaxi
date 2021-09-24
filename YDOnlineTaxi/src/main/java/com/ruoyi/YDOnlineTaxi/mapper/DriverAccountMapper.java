@@ -13,7 +13,6 @@ import java.util.List;
  */
 public interface DriverAccountMapper 
 {
-    //TODO penpen
     /**
      * 查询司机详细信息
      *
@@ -101,6 +100,8 @@ public interface DriverAccountMapper
     public DriverAccount selectAllByPhoneNumber(@Param("phoneNumber")String phoneNumber);
 
     public Integer countByPhoneNumber(@Param("phoneNumber")String phoneNumber);
+
+    String selectOpenIdByPhoneNumber(@Param("phoneNumber")String phoneNumber);
 
 
 }

@@ -20,4 +20,8 @@ public interface WxWithDriversService{
     public int updateByOpenId(WxWithDrivers updated);
 
     public List<String> selectOpenIdByDriverLevel(String driverLevel);
+
+    public String selectOpenIdByPhoneNumber(String phoneNumber);
+
+    public int addPushTimeByPhoneNumber(String phoneNumber);
 }

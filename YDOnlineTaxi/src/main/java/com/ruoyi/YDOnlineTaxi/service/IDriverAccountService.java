@@ -101,10 +101,11 @@ public interface IDriverAccountService
      * @param status 账号审核状态
      * @return
      */
-    public List<DriverAccount> selectAllByStatus(@Param("status")String status);
+    public List<DriverAccount> selectAllByStatus(String status);
 
-    public DriverAccount selectAllByPhoneNumber(@Param("phoneNumber")String phoneNumber);
+    public DriverAccount selectAllByPhoneNumber(String phoneNumber);
 
+    public String countByPhoneNumber(String phoneNumber);
 
-    public String countByPhoneNumber(@Param("phoneNumber")String phoneNumber);
+    public String selectOpenIdByPhoneNumber(String phoneNumber);
 }

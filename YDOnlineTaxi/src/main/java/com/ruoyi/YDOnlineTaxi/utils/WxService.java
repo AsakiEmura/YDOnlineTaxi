@@ -58,6 +58,7 @@ public class WxService {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
         HttpEntity<String> httpEntity = new HttpEntity<>(requestData.toJSONString(), headers);
-        restTemplate.postForObject(send_url, httpEntity, JSONObject.class);
+        JSONObject jsonObject = restTemplate.postForObject(send_url, httpEntity, JSONObject.class);
+
     }
 }

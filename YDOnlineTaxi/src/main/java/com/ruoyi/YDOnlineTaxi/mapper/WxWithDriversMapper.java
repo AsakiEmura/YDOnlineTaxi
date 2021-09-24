@@ -33,8 +33,13 @@ public interface WxWithDriversMapper {
 
     public List<String> selectOpenIdByDriverLevel(@Param("driverLevel")String driverLevel);
 
-	List<WxWithDrivers> selectAllByDriverLevel(@Param("driverLevel")String driverLevel);
+    public List<WxWithDrivers> selectAllByDriverLevel(@Param("driverLevel")String driverLevel);
 
+    public String selectOpenIdByPhoneNumber(@Param("phoneNumber")String phoneNumber);
+
+    public int addPushTimeByPhoneNumber(@Param("phoneNumber") String phoneNumber);
+
+    public Integer countByPhoneNumber(@Param("phoneNumber")String phoneNumber);
 
 
 }
