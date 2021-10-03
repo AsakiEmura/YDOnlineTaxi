@@ -156,9 +156,8 @@ public class DriverAccountController extends BaseController {
 
             WxWithDrivers wxWithDrivers = new WxWithDrivers();
             wxWithDrivers.setDriverName(driverAccount.getDriverName());
-            wxWithDrivers.setOpenId(driverAccount.getOpenId());
+            wxWithDrivers.setMachineId(driverAccount.getMachineId());
             wxWithDrivers.setPhoneNumber(phoneNumber);
-            wxWithDrivers.setPushTimes(5);
 
             PonitsStatistics ponitsStatistics = new PonitsStatistics();
             ponitsStatistics.setDriverName(driverName);
@@ -183,21 +182,21 @@ public class DriverAccountController extends BaseController {
     }
 
     public Boolean noticeAuditedUser(String phoneNumber,String text) throws IOException {
-        String openId = driverAccountService.selectOpenIdByPhoneNumber(phoneNumber);
+        String machineId = driverAccountService.selectMachineIdByPhoneNumber(phoneNumber);
         DriverAccount driverAccount = driverAccountService.selectAllByPhoneNumber(phoneNumber);
-        String openIdDe = "";
+        String machineIdDe = "";
         try
         {
-            openIdDe = RSAEncrypt.decrypt(openId);
+            machineIdDe = RSAEncrypt.decrypt(machineId);
         }
         catch (Exception e)
         {
             e.printStackTrace();
         }
-        if ("".equals(openIdDe))
+        if ("".equals(machineIdDe))
             return Boolean.FALSE;
         else{
-            sendAuditRes.pushNotification(openIdDe, driverAccount.getDriverName(),driverAccount.getIdNumber(),"司机审核通过",text);
+            sendAuditRes.pushNotification(machineIdDe, driverAccount.getDriverName(),driverAccount.getIdNumber(),"司机审核通过",text);
             return Boolean.TRUE;
         }
     }
@@ -251,18 +250,18 @@ public class DriverAccountController extends BaseController {
         }
 
         DriverAccount reDriver = driverAccountService.selectAllByPhoneNumber(phoneNumber);
-        String openId = reDriver.getOpenId();
+        String machineId = reDriver.getMachineId();
         String name = reDriver.getDriverName();
         String idNumber = reDriver.getIdNumber();
         String label = "您的申请被拒绝";
 
         try {
-            openId = RSAEncrypt.decrypt(openId);
+            machineId = RSAEncrypt.decrypt(machineId);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        sendAuditRes.pushNotification(openId, name, idNumber, label, refuseReason);
+        sendAuditRes.pushNotification(machineId, name, idNumber, label, refuseReason);
 
         driverAccountService.deleteDriverAccountByIdNumber(idNumber);
     }

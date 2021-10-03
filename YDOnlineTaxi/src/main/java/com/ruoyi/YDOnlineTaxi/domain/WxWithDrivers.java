@@ -17,12 +17,8 @@ public class WxWithDrivers {
     /**
     * 微信用户唯一标识
     */
-    private String openId;
+    private String machineId;
 
-    /**
-    * 可推送次数
-    */
-    private Integer pushTimes;
 
     /**
      * 司机等级
@@ -45,20 +41,12 @@ public class WxWithDrivers {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getOpenId() {
-        return openId;
+    public String getMachineId() {
+        return machineId;
     }
 
-    public void setOpenId(String openId) {
-        this.openId = openId;
-    }
-
-    public Integer getPushTimes() {
-        return pushTimes;
-    }
-
-    public void setPushTimes(Integer pushTimes) {
-        this.pushTimes = pushTimes;
+    public void setMachineId(String machineId) {
+        this.machineId = machineId;
     }
 
     public String getDriverLevel() {
@@ -74,8 +62,7 @@ public class WxWithDrivers {
         return "WxWithDrivers{" +
                 "driverName='" + driverName + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
-                ", openId='" + openId + '\'' +
-                ", pushTimes=" + pushTimes +
+                ", machineId='" + machineId + '\''+
                 '}';
     }
 }

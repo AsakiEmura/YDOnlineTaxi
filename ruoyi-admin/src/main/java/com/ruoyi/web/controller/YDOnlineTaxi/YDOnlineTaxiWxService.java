@@ -303,12 +303,6 @@ public class YDOnlineTaxiWxService extends BaseController {
         return toAjax(driverInformationService.updateDriverInformation(driverInformation));
     }
 
-    @PostMapping("/addPushTimeForDriver")
-    public AjaxResult addPushTimeForDriver(WxWithDrivers wxWithDrivers) {
-        wxWithDriversService.addPushTimeByPhoneNumber(wxWithDrivers.getPhoneNumber());
-        return AjaxResult.success("success");
-    }
-
     @PostMapping("/countByPhoneNumber")
     public AjaxResult countByPhoneNumber(DriverAccount driverAccount) {
         if (!UserConstants.NOT_UNIQUE.equals(driverAccountService.countByPhoneNumber(driverAccount.getPhoneNumber()))) {

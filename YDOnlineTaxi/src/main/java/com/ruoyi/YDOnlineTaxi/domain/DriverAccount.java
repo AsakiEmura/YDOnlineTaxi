@@ -66,7 +66,7 @@ public class DriverAccount extends BaseEntity
     private String salt;
 
     /** 用户微信openid*/
-    private String openId;
+    private String machineId;
 
 
     public void setDriverName(String driverName) 
@@ -196,12 +196,12 @@ public class DriverAccount extends BaseEntity
         return salt;
     }
 
-    public String getOpenId() {
-        return openId;
+    public String getMachineId() {
+        return machineId;
     }
 
-    public void setOpenId(String openId) {
-        this.openId = openId;
+    public void setMachineId(String machineId) {
+        this.machineId = machineId;
     }
 
     @Override
@@ -221,7 +221,7 @@ public class DriverAccount extends BaseEntity
             .append("status", getStatus())
             .append("driverPassword", getDriverPassword())
             .append("salt", getSalt())
-            .append("openId",getOpenId())
+            .append("machineId",getMachineId())
             .toString();
     }
 }

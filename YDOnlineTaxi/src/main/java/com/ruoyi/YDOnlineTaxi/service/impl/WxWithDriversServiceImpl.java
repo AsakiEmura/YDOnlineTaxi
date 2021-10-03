@@ -26,37 +26,32 @@ public class WxWithDriversServiceImpl implements WxWithDriversService{
     }
 
     @Override
-    public List<String> selectOpenId() {
-        return wxWithDriversMapper.selectOpenId();
+    public List<String> selectMachineId() {
+        return wxWithDriversMapper.selectMachineId();
     }
 
     @Override
-    public List<String> selectOpenIdByPushTimesGreaterThan(@Param("minPushTimes")Integer minPushTimes) {
-        return wxWithDriversMapper.selectOpenIdByPushTimesGreaterThan(minPushTimes);
+    public WxWithDrivers selectAllByMachineId(String machineId) {
+        return wxWithDriversMapper.selectAllByMachineId(machineId);
     }
 
     @Override
-    public WxWithDrivers selectAllByOpenId(String openId) {
-        return wxWithDriversMapper.selectAllByOpenId(openId);
+    public int updateByMachineId(WxWithDrivers updated) {
+        return wxWithDriversMapper.updateByMachineId(updated);
     }
 
     @Override
-    public int updateByOpenId(WxWithDrivers updated) {
-        return wxWithDriversMapper.updateByOpenId(updated);
+    public List<String> selectMachineIdByDriverLevel(String driverLevel) {
+        return selectMachineIdByDriverLevel(driverLevel);
     }
 
     @Override
-    public List<String> selectOpenIdByDriverLevel(String driverLevel) {
-        return wxWithDriversMapper.selectOpenIdByDriverLevel(driverLevel);
+    public String selectMachineIdByPhoneNumber(String phoneNumber) {
+        return wxWithDriversMapper.selectMachineIdByPhoneNumber(phoneNumber);
     }
 
     @Override
-    public String selectOpenIdByPhoneNumber(String phoneNumber) {
-        return wxWithDriversMapper.selectOpenIdByPhoneNumber(phoneNumber);
-    }
-
-    @Override
-    public int addPushTimeByPhoneNumber(String phoneNumber) {
-        return wxWithDriversMapper.addPushTimeByPhoneNumber(phoneNumber);
+    public int countByPhoneNumber(String phoneNumber) {
+        return 0;
     }
 }

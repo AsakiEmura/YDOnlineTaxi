@@ -107,5 +107,5 @@ public interface IDriverAccountService
 
     public String countByPhoneNumber(String phoneNumber);
 
-    public String selectOpenIdByPhoneNumber(String phoneNumber);
+    public String selectMachineIdByPhoneNumber(String phoneNumber);
 }

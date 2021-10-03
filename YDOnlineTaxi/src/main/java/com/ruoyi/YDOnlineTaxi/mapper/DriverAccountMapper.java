@@ -101,7 +101,7 @@ public interface DriverAccountMapper
 
     public Integer countByPhoneNumber(@Param("phoneNumber")String phoneNumber);
 
-    String selectOpenIdByPhoneNumber(@Param("phoneNumber")String phoneNumber);
+    String selectMachineIdByPhoneNumber(@Param("phoneNumber")String phoneNumber);
 
 
 }

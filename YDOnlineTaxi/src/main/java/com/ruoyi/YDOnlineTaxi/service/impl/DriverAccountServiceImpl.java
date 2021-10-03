@@ -170,7 +170,7 @@ public class DriverAccountServiceImpl implements IDriverAccountService
     }
 
     @Override
-    public String selectOpenIdByPhoneNumber(String phoneNumber) {
-        return driverAccountMapper.selectOpenIdByPhoneNumber(phoneNumber);
+    public String selectMachineIdByPhoneNumber(String phoneNumber) {
+        return driverAccountMapper.selectMachineIdByPhoneNumber(phoneNumber);
     }
 }

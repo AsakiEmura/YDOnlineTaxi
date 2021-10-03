@@ -11,17 +11,15 @@ public interface WxWithDriversService{
 
     public int insertSelective(WxWithDrivers record);
 
-    public List<String> selectOpenId();
+    public List<String> selectMachineId();
 
-    public List<String> selectOpenIdByPushTimesGreaterThan(@Param("minPushTimes")Integer minPushTimes);
+    public WxWithDrivers selectAllByMachineId(@Param("machineId")String machineId);
 
-    public WxWithDrivers selectAllByOpenId(@Param("openId")String openId);
+    public int updateByMachineId(WxWithDrivers updated);
 
-    public int updateByOpenId(WxWithDrivers updated);
+    public List<String> selectMachineIdByDriverLevel(String driverLevel);
 
-    public List<String> selectOpenIdByDriverLevel(String driverLevel);
+    public String selectMachineIdByPhoneNumber(String phoneNumber);
 
-    public String selectOpenIdByPhoneNumber(String phoneNumber);
-
-    public int addPushTimeByPhoneNumber(String phoneNumber);
+    public int countByPhoneNumber(String phoneNumber);
 }

@@ -85,7 +85,7 @@ export default {
         pageSize: 10,
         driverName: null,
         phoneNumber: null,
-        openId: null,
+        machineId: null,
         pushTimes: null
       },
       // 表单参数
@@ -98,7 +98,7 @@ export default {
         phoneNumber: [
           { required: true, message: "手机号不能为空", trigger: "blur" }
         ],
-        openId: [
+        machineId: [
           { required: true, message: "微信用户唯一标识不能为空", trigger: "blur" }
         ],
         pushTimes: [
@@ -130,7 +130,7 @@ export default {
       this.form = {
         driverName: null,
         phoneNumber: null,
-        openId: null,
+        machineId: null,
         pushTimes: null
       };
       this.resetForm("form");

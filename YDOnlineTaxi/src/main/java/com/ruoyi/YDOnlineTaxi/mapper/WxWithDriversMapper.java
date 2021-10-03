@@ -23,21 +23,18 @@ public interface WxWithDriversMapper {
      */
     int insertSelective(WxWithDrivers record);
 
-    public List<String> selectOpenId();
+    public List<String> selectMachineId();
 
-    public List<String> selectOpenIdByPushTimesGreaterThan(@Param("minPushTimes") Integer minPushTimes);
 
-    public WxWithDrivers selectAllByOpenId(@Param("openId") String openId);
+    public WxWithDrivers selectAllByMachineId(@Param("machineId") String machineId);
 
-    public int updateByOpenId(WxWithDrivers updated);
+    public int updateByMachineId(WxWithDrivers updated);
 
-    public List<String> selectOpenIdByDriverLevel(@Param("driverLevel")String driverLevel);
+    public List<String> selectMachineIdByDriverLevel(@Param("driverLevel")String driverLevel);
 
     public List<WxWithDrivers> selectAllByDriverLevel(@Param("driverLevel")String driverLevel);
 
-    public String selectOpenIdByPhoneNumber(@Param("phoneNumber")String phoneNumber);
-
-    public int addPushTimeByPhoneNumber(@Param("phoneNumber") String phoneNumber);
+    public String selectMachineIdByPhoneNumber(@Param("phoneNumber")String phoneNumber);
 
     public Integer countByPhoneNumber(@Param("phoneNumber")String phoneNumber);
 
