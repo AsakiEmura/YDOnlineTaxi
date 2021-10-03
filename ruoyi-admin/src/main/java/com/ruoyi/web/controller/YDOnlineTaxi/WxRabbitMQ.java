@@ -32,29 +32,14 @@ public final class WxRabbitMQ {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public List<String> getOpenIdList(String driverLevel) {
-        List<String> openIdList = wxWithDriversService.selectOpenIdByDriverLevel(driverLevel);
-        try {
-            for (String openId : openIdList) {
-                WxWithDrivers wxWithDrivers = wxWithDriversService.selectAllByOpenId(openId);
-                int times = wxWithDrivers.getPushTimes() - 1;
-                wxWithDrivers.setPushTimes(times);
-                wxWithDriversService.updateByOpenId(wxWithDrivers);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-        return openIdList;
-    }
 
     @RabbitListener(queues = RabbitMQConfig.DELAY_QUEUE_NAME_KING)
     public void consumerK(Message message, Channel channel) throws IOException {
         String msg = new String(message.getBody());
         //获取对应等级的openid列表,并且次数减一
-        List<String> openIdList = getOpenIdList("王者");
-        if (openIdList != null) {
-            for (String openId : openIdList) {
+        List<String> machineIdList = wxWithDriversService.selectMachineIdByDriverLevel("王者");
+        if (machineIdList != null) {
+            for (String openId : machineIdList) {
                 String openIdDe = "";
                 try {
                     openIdDe = RSAEncrypt.decrypt(openId);
@@ -77,9 +62,9 @@ public final class WxRabbitMQ {
     public void consumerD(Message message, Channel channel) throws IOException {
         String msg = new String(message.getBody());
         //获取对应等级的openid列表,并且次数减一
-        List<String> openIdList = getOpenIdList("钻石");
-        if (openIdList != null) {
-            for (String openId : openIdList) {
+        List<String> machineIdList = wxWithDriversService.selectMachineIdByDriverLevel("钻石");
+        if (machineIdList != null) {
+            for (String openId : machineIdList) {
                 String openIdDe = "";
                 try {
                     openIdDe = RSAEncrypt.decrypt(openId);
@@ -103,9 +88,9 @@ public final class WxRabbitMQ {
     public void consumerG(Message message, Channel channel) throws IOException {
         String msg = new String(message.getBody());
         //获取对应等级的openid列表,并且次数减一
-        List<String> openIdList = getOpenIdList("黄金");
-        if (openIdList != null) {
-            for (String openId : openIdList) {
+        List<String> machineIdList = wxWithDriversService.selectMachineIdByDriverLevel("黄金");
+        if (machineIdList != null) {
+            for (String openId : machineIdList) {
                 String openIdDe = "";
                 try {
                     openIdDe = RSAEncrypt.decrypt(openId);
