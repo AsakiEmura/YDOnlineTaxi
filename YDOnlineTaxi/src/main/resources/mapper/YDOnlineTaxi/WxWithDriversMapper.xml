@@ -16,7 +16,7 @@
   <insert id="insert" parameterType="com.ruoyi.YDOnlineTaxi.domain.WxWithDrivers">
     <!--@mbg.generated-->
     insert into YDOnlineTaxi.wx_with_drivers (driver_name, phone_number, machine_id)
-    values (#{driverName,jdbcType=CHAR}, #{phoneNumber,jdbcType=CHAR}, #{machineId,jdbcType=CHAR}
+    values (#{driverName,jdbcType=CHAR}, #{phoneNumber,jdbcType=CHAR}, #{machineId,jdbcType=CHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.ruoyi.YDOnlineTaxi.domain.WxWithDrivers">
     <!--@mbg.generated-->

@@ -2,6 +2,7 @@ package com.ruoyi.web.controller.YDOnlineTaxi;
 
 import com.ruoyi.YDOnlineTaxi.domain.*;
 import com.ruoyi.YDOnlineTaxi.service.*;
+import com.ruoyi.YDOnlineTaxi.utils.JPushUtils;
 import com.ruoyi.YDOnlineTaxi.utils.RSAEncrypt;
 import com.ruoyi.YDOnlineTaxi.utils.WxService;
 import com.ruoyi.common.annotation.Log;
@@ -18,8 +19,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static com.ruoyi.YDOnlineTaxi.utils.JPushUtils.sendToRegistrationId;
 
 /**
  * 司机详细信息Controller
@@ -41,10 +45,6 @@ public class DriverAccountController extends BaseController {
 
     @Autowired
     private IPonitsStatisticsService ponitsStatisticsService;
-
-    @Autowired
-    private OrderDetailsService orderDetailsService;
-
     /**
      * 查询司机详细信息列表
      */
@@ -167,7 +167,7 @@ public class DriverAccountController extends BaseController {
             wxWithDriversService.insert(wxWithDrivers);
             ponitsStatisticsService.insertPonitsStatistics(ponitsStatistics);
 
-            if(noticeAuditedUser(phoneNumber,"审核通过,请登录小程序进行验证.")){
+            if(noticeAuditedUser(phoneNumber,"审核通过,请登录app查看.")){
                 return AjaxResult.success("审核操作成功");
             }
             else{
@@ -183,7 +183,6 @@ public class DriverAccountController extends BaseController {
 
     public Boolean noticeAuditedUser(String phoneNumber,String text) throws IOException {
         String machineId = driverAccountService.selectMachineIdByPhoneNumber(phoneNumber);
-        DriverAccount driverAccount = driverAccountService.selectAllByPhoneNumber(phoneNumber);
         String machineIdDe = "";
         try
         {
@@ -196,7 +195,9 @@ public class DriverAccountController extends BaseController {
         if ("".equals(machineIdDe))
             return Boolean.FALSE;
         else{
-            sendAuditRes.pushNotification(machineIdDe, driverAccount.getDriverName(),driverAccount.getIdNumber(),"司机审核通过",text);
+            List<String> registrationIds = new ArrayList<>();
+            registrationIds.add(machineIdDe);
+            JPushUtils.sendToRegistrationId(registrationIds,"司机审核结果","司机审核结果",text);
             return Boolean.TRUE;
         }
     }
@@ -255,13 +256,15 @@ public class DriverAccountController extends BaseController {
         String idNumber = reDriver.getIdNumber();
         String label = "您的申请被拒绝";
 
+
+        String machineIdDE = "";
         try {
-            machineId = RSAEncrypt.decrypt(machineId);
+            machineIdDE = RSAEncrypt.decrypt(machineId);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        sendAuditRes.pushNotification(machineId, name, idNumber, label, refuseReason);
+        sendAuditRes.pushNotification(machineIdDE, name, idNumber, label, refuseReason);
 
         driverAccountService.deleteDriverAccountByIdNumber(idNumber);
     }

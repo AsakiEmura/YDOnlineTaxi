@@ -42,7 +42,7 @@ public class WxWithDriversServiceImpl implements WxWithDriversService{
 
     @Override
     public List<String> selectMachineIdByDriverLevel(String driverLevel) {
-        return selectMachineIdByDriverLevel(driverLevel);
+        return wxWithDriversMapper.selectMachineIdByDriverLevel(driverLevel);
     }
 
     @Override
@@ -52,6 +52,6 @@ public class WxWithDriversServiceImpl implements WxWithDriversService{
 
     @Override
     public int countByPhoneNumber(String phoneNumber) {
-        return 0;
+        return wxWithDriversMapper.countByPhoneNumber(phoneNumber);
     }
 }

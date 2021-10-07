@@ -56,7 +56,6 @@ public class OrderInformationController extends BaseController {
     @Autowired
     private RabbitMQProducer rabbitMQProducer;
 
-
     /**
      * 查询订单信息列表
      */

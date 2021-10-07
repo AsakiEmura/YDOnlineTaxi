@@ -14,17 +14,17 @@ import java.util.Map;
 
 public final class RSAEncrypt {
     private static Map<Integer, String> keyMap = new HashMap<Integer, String>();  //用于封装随机产生的公钥与私钥
-//    public static void main(String[] args) throws Exception {
-//        //生成公钥和私钥
+    public static void main(String[] args) throws Exception {
+        //生成公钥和私钥
 //        genKeyPair();
-//        //加密字符串
-//        String message = "oLQhU5fwZctlTA19fhTxvVRBc9Po";
-//        String messageEn = encrypt(message);
-//        System.out.println(message + "\t加密后的字符串为:" + messageEn);
-//        String messageDe = decrypt("IdZ+LUuytC+ic2Kixu0fBFTfCYd9NX+5JWRmLIH6jB762wn9f9lso22P1CM14ODIg8fB1xP2WNa3XQo9YI/5EOtxnLv3y56VKqN0Ai3zkl4rfGb1fDCuS1vo0xmqlmrPbsA8tyTUnQovJuAeaxYQRbLV1Hqp5a6oVsvVoD683kQ=");
-//        System.out.println("还原后的字符串为:" + messageDe);
-//        System.out.println(messageEn.length());;
-//    }
+        //加密字符串
+        String message = "170976fa8a46ce9a6e8";
+        String messageEn = encrypt(message);
+        System.out.println(message + "\t加密后的字符串为:" + messageEn);
+        String messageDe = decrypt("Cq+mj/YeheHE4YnD3iBvv0Kp53qMsY2EomtJxeuci2J/J7EuTUWcAGfEcKE+jDkeensfmVjYr8Yr1ZjQ/7fglxoFB1c+I3J0Ip1SBVqrUQCjn/ZxmqDsyHgZ30L6ExKPjfE1vRUMV2bUno76Jo8Iyt5YZGjw5ME/FJ6zgcWtCpM=");
+        System.out.println("还原后的字符串为:" + messageDe);
+        System.out.println(messageEn.length());;
+    }
 
     /**
      * 随机生成密钥对

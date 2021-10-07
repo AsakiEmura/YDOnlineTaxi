@@ -5,6 +5,7 @@ import com.ruoyi.YDOnlineTaxi.domain.OrderInformation;
 import com.ruoyi.YDOnlineTaxi.domain.WxWithDrivers;
 import com.ruoyi.YDOnlineTaxi.service.IOrderInformationService;
 import com.ruoyi.YDOnlineTaxi.service.WxWithDriversService;
+import com.ruoyi.YDOnlineTaxi.utils.JPushUtils;
 import com.ruoyi.YDOnlineTaxi.utils.RSAEncrypt;
 import com.ruoyi.YDOnlineTaxi.utils.RabbitMQ.Producer.RabbitMQProducer;
 import com.ruoyi.YDOnlineTaxi.utils.RabbitMQ.RabbitMQConfig;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -40,15 +42,17 @@ public final class WxRabbitMQ {
         List<String> machineIdList = wxWithDriversService.selectMachineIdByDriverLevel("王者");
         if (machineIdList != null) {
             for (String openId : machineIdList) {
-                String openIdDe = "";
+                String machineIdDe = "";
                 try {
-                    openIdDe = RSAEncrypt.decrypt(openId);
+                    machineIdDe = RSAEncrypt.decrypt(openId);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                if ("".equals(openIdDe))
+                if ("".equals(machineIdDe))
                     return;
-                WxService.pushNotification(openIdDe, new String(message.getBody()));
+                List<String> registrationIds = new ArrayList<>();
+                registrationIds.add(machineIdDe);
+                JPushUtils.sendToRegistrationId(registrationIds,"订单通知","订单通知","有新的订单导入,请到app查看详情");
             }
             logger.info("王者级司机已收到信息{}", msg);
             channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
@@ -65,15 +69,17 @@ public final class WxRabbitMQ {
         List<String> machineIdList = wxWithDriversService.selectMachineIdByDriverLevel("钻石");
         if (machineIdList != null) {
             for (String openId : machineIdList) {
-                String openIdDe = "";
+                String machineIdDe = "";
                 try {
-                    openIdDe = RSAEncrypt.decrypt(openId);
+                    machineIdDe = RSAEncrypt.decrypt(openId);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                if ("".equals(openIdDe))
+                if ("".equals(machineIdDe))
                     return;
-                WxService.pushNotification(openIdDe, new String(message.getBody()));
+                List<String> registrationIds = new ArrayList<>();
+                registrationIds.add(machineIdDe);
+                JPushUtils.sendToRegistrationId(registrationIds,"订单通知","订单通知","有新的订单导入,请到app查看详情");
             }
             logger.info("钻石级司机已收到信息{}", msg);
             channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
@@ -91,15 +97,17 @@ public final class WxRabbitMQ {
         List<String> machineIdList = wxWithDriversService.selectMachineIdByDriverLevel("黄金");
         if (machineIdList != null) {
             for (String openId : machineIdList) {
-                String openIdDe = "";
+                String machineIdDe = "";
                 try {
-                    openIdDe = RSAEncrypt.decrypt(openId);
+                    machineIdDe = RSAEncrypt.decrypt(openId);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                if ("".equals(openIdDe))
+                if ("".equals(machineIdDe))
                     return;
-                WxService.pushNotification(openIdDe, new String(message.getBody()));
+                List<String> registrationIds = new ArrayList<>();
+                registrationIds.add(machineIdDe);
+                JPushUtils.sendToRegistrationId(registrationIds,"订单通知","订单通知","有新的订单导入,请到app查看详情");
             }
             logger.info("黄金级司机已收到信息{}", msg);
             channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
