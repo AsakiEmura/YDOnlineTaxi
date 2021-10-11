@@ -30,16 +30,7 @@ public class YDOnlineTaxiWxService extends BaseController {
     private ServerConfig serverConfig;
 
     @Autowired
-    private IOrderInformationService orderInformationService;
-
-    @Autowired
-    private OrderDetailsService orderDetailsService;
-
-    @Autowired
     private RabbitTemplate rabbitTemplate;
-
-    @Autowired
-    private IArrivalAuditInformationService arrivalAuditInformationService;
 
     @Autowired
     private IPonitsStatisticsService ponitsStatisticsService;
@@ -126,60 +117,60 @@ public class YDOnlineTaxiWxService extends BaseController {
         }
     }
 
-    @PostMapping("/audit/attestation")
-    public AjaxResult Attestation(@RequestParam("orderId") String orderId, @RequestParam("points") Long points, @RequestParam("file1") MultipartFile file1, @RequestParam("notes") String notes) {
-        try {
-            OrderInformation orderInformation = orderInformationService.selectOrderInformationByOrderId(orderId);
-            String departure = orderInformation.getDeparture();
-            String destination = orderInformation.getDestination();
-            Date transportTime = orderInformation.getTransportTime();
-            String requirementTypes = orderInformation.getRequirementTypes();
-            String carType = orderInformation.getCarType();
-
-            // 上传文件路径
-            String filePath = RuoYiConfig.getUploadPath();
-            // 上传并返回新文件名称
-            String fileName1 = FileUploadUtils.upload(filePath, file1);
-            String url1 = serverConfig.getUrl() + fileName1;
-
-            ArrivalAuditInformation arrivalAuditInformation = new ArrivalAuditInformation();
-            arrivalAuditInformation.setOrderId(orderId);
-            arrivalAuditInformation.setDeparture(departure);
-            arrivalAuditInformation.setDestination(destination);
-            arrivalAuditInformation.setTransportTime(transportTime);
-            arrivalAuditInformation.setRequirementTypes(requirementTypes);
-            arrivalAuditInformation.setCatType(carType);
-            arrivalAuditInformation.setExtraOrderPoints(points);
-            arrivalAuditInformation.setProofPhoto1(fileName1);
-            arrivalAuditInformation.setNotes(notes);
-            arrivalAuditInformationService.insertArrivalAuditInformation(arrivalAuditInformation);
-
-            if ("已结算".equals(orderInformation.getOrderStatus())) {
-                OrderDetails orderDetails = orderDetailsService.selectByPrimaryKey(orderId);
-                PonitsStatistics ponitsStatistics = ponitsStatisticsService.selectPonitsStatisticsByDriverPhoneNumber(orderDetails.getDriverPhoneNumber());
-                DriverInformation driverInformation = driverInformationService.selectDriverInformationByDriverPhoneNumber(orderDetails.getDriverPhoneNumber());
-
-                driverInformation.setDriverCompleteOrderNumber(Convert.toStr(Convert.toInt(driverInformation.getDriverCompleteOrderNumber()) - 1));
-                driverInformation.setDriverCompleteOrderNumberMonthly(Convert.toStr(Convert.toInt(driverInformation.getDriverCompleteOrderNumberMonthly()) - 1));
-                driverInformationService.updateDriverInformation(driverInformation);
-
-                ponitsStatistics.setTotalPoints(ponitsStatistics.getTotalPoints() - points);
-                ponitsStatistics.setMonthPoints(ponitsStatistics.getMonthPoints() - points);
-                ponitsStatisticsService.updatePonitsStatistics(ponitsStatistics);
-            }
-            orderInformation.setOrderStatus("待审核");
-            orderInformationService.updateOrderInformation(orderInformation);
-
-            AjaxResult ajax = AjaxResult.success();
-            ajax.put("fileName1", fileName1);
-            ajax.put("url1", url1);
-            ajax.put("status", "ok");
-            ajax.put("msg", "上传图片成功");
-            return ajax;
-        } catch (Exception e) {
-            return AjaxResult.error(e.getMessage());
-        }
-    }
+//    @PostMapping("/audit/attestation")
+//    public AjaxResult Attestation(@RequestParam("orderId") String orderId, @RequestParam("points") Long points, @RequestParam("file1") MultipartFile file1, @RequestParam("notes") String notes) {
+//        try {
+//            OrderInformation orderInformation = orderInformationService.selectOrderInformationByOrderId(orderId);
+//            String departure = orderInformation.getDeparture();
+//            String destination = orderInformation.getDestination();
+//            Date transportTime = orderInformation.getTransportTime();
+//            String requirementTypes = orderInformation.getRequirementTypes();
+//            String carType = orderInformation.getCarType();
+//
+//            // 上传文件路径
+//            String filePath = RuoYiConfig.getUploadPath();
+//            // 上传并返回新文件名称
+//            String fileName1 = FileUploadUtils.upload(filePath, file1);
+//            String url1 = serverConfig.getUrl() + fileName1;
+//
+//            ArrivalAuditInformation arrivalAuditInformation = new ArrivalAuditInformation();
+//            arrivalAuditInformation.setOrderId(orderId);
+//            arrivalAuditInformation.setDeparture(departure);
+//            arrivalAuditInformation.setDestination(destination);
+//            arrivalAuditInformation.setTransportTime(transportTime);
+//            arrivalAuditInformation.setRequirementTypes(requirementTypes);
+//            arrivalAuditInformation.setCatType(carType);
+//            arrivalAuditInformation.setExtraOrderPoints(points);
+//            arrivalAuditInformation.setProofPhoto1(fileName1);
+//            arrivalAuditInformation.setNotes(notes);
+//            arrivalAuditInformationService.insertArrivalAuditInformation(arrivalAuditInformation);
+//
+//            if ("已结算".equals(orderInformation.getOrderStatus())) {
+//                OrderDetails orderDetails = orderDetailsService.selectByPrimaryKey(orderId);
+//                PonitsStatistics ponitsStatistics = ponitsStatisticsService.selectPonitsStatisticsByDriverPhoneNumber(orderDetails.getDriverPhoneNumber());
+//                DriverInformation driverInformation = driverInformationService.selectDriverInformationByDriverPhoneNumber(orderDetails.getDriverPhoneNumber());
+//
+//                driverInformation.setDriverCompleteOrderNumber(Convert.toStr(Convert.toInt(driverInformation.getDriverCompleteOrderNumber()) - 1));
+//                driverInformation.setDriverCompleteOrderNumberMonthly(Convert.toStr(Convert.toInt(driverInformation.getDriverCompleteOrderNumberMonthly()) - 1));
+//                driverInformationService.updateDriverInformation(driverInformation);
+//
+//                ponitsStatistics.setTotalPoints(ponitsStatistics.getTotalPoints() - points);
+//                ponitsStatistics.setMonthPoints(ponitsStatistics.getMonthPoints() - points);
+//                ponitsStatisticsService.updatePonitsStatistics(ponitsStatistics);
+//            }
+//            orderInformation.setOrderStatus("待审核");
+//            orderInformationService.updateOrderInformation(orderInformation);
+//
+//            AjaxResult ajax = AjaxResult.success();
+//            ajax.put("fileName1", fileName1);
+//            ajax.put("url1", url1);
+//            ajax.put("status", "ok");
+//            ajax.put("msg", "上传图片成功");
+//            return ajax;
+//        } catch (Exception e) {
+//            return AjaxResult.error(e.getMessage());
+//        }
+//    }
 
 
     @PostMapping("/login")
