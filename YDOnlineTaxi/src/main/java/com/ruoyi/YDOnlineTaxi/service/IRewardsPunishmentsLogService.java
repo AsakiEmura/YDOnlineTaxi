@@ -1,6 +1,7 @@
 package com.ruoyi.YDOnlineTaxi.service;
 
 import com.ruoyi.YDOnlineTaxi.domain.RewardsPunishmentsLog;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -58,4 +59,9 @@ public interface IRewardsPunishmentsLogService {
      * @return 结果
      */
     public int deleteRewardsPunishmentsLogByPhoneNumber(String phoneNumber);
+
+    public List<RewardsPunishmentsLog> selectAllByOperatingTimeBetweenAndPhoneNumber(String minOperatingTime,String maxOperatingTime,String phoneNumber);
+
+    public List<RewardsPunishmentsLog> selectAllByPhoneNumber(String phoneNumber);
+
 }

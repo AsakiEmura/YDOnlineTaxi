@@ -29,6 +29,12 @@ public class RewardsPunishmentsLog extends BaseEntity {
     private String driverName;
 
     /**
+     * 积分
+     */
+    @Excel(name = "奖惩积分")
+    private String points;
+
+    /**
      * 奖惩原因
      */
     @Excel(name = "奖惩原因")
@@ -87,6 +93,14 @@ public class RewardsPunishmentsLog extends BaseEntity {
         return operatingPeople;
     }
 
+    public String getPoints() {
+        return points;
+    }
+
+    public void setPoints(String points) {
+        this.points = points;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
@@ -95,6 +109,7 @@ public class RewardsPunishmentsLog extends BaseEntity {
                 .append("rpReason", getRpReason())
                 .append("operatingTime", getOperatingTime())
                 .append("operatingPeople", getOperatingPeople())
+                .append("points", getPoints())
                 .toString();
     }
 }

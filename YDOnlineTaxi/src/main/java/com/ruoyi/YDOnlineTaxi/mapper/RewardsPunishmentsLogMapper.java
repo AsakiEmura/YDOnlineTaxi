@@ -1,4 +1,6 @@
 package com.ruoyi.YDOnlineTaxi.mapper;
+import java.util.Date;
+import org.apache.ibatis.annotations.Param;
 
 import com.ruoyi.YDOnlineTaxi.domain.RewardsPunishmentsLog;
 
@@ -58,4 +60,9 @@ public interface RewardsPunishmentsLogMapper {
      * @return 结果
      */
     public int deleteRewardsPunishmentsLogByPhoneNumbers(String[] phoneNumbers);
+
+    public List<RewardsPunishmentsLog> selectAllByOperatingTimeBetweenAndPhoneNumber(@Param("minOperatingTime")String minOperatingTime,@Param("maxOperatingTime")String maxOperatingTime,@Param("phoneNumber")String phoneNumber);
+
+    public List<RewardsPunishmentsLog> selectAllByPhoneNumber(@Param("phoneNumber")String phoneNumber);
+
 }

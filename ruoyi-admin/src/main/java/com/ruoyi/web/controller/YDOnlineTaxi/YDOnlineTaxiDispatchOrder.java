@@ -3,7 +3,9 @@ package com.ruoyi.web.controller.YDOnlineTaxi;
 import com.ruoyi.YDOnlineTaxi.domain.DriverInformation;
 import com.ruoyi.YDOnlineTaxi.domain.OrderDetails;
 import com.ruoyi.YDOnlineTaxi.domain.OrderInformation;
+import com.ruoyi.YDOnlineTaxi.domain.RewardsPunishmentsLog;
 import com.ruoyi.YDOnlineTaxi.service.IOrderInformationService;
+import com.ruoyi.YDOnlineTaxi.service.IRewardsPunishmentsLogService;
 import com.ruoyi.YDOnlineTaxi.service.OrderDetailsService;
 import com.ruoyi.YDOnlineTaxi.utils.DateUtil;
 import com.ruoyi.YDOnlineTaxi.utils.RabbitMQ.RabbitMQConfig;
@@ -33,6 +35,9 @@ public class YDOnlineTaxiDispatchOrder extends BaseController {
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    private IRewardsPunishmentsLogService rewardsPunishmentsLogService;
 
     public Boolean getOrderStatus(OrderInformation orderInformation) {
         String orderStatus = orderInformationService.selectOrderStatusByOrderId(orderInformation.getOrderId());
@@ -80,8 +85,28 @@ public class YDOnlineTaxiDispatchOrder extends BaseController {
         }
     }
 
+    @GetMapping("/RPLog")
+    public TableDataInfo getRPLog(String phoneNumber,Integer year, Integer month, Integer day) {
+        if(year != null)
+        {
+            Map<String, String> map = DateUtil.getIntervalDate(year, month, day);
+            String minOperatingTime = map.get("minTransportTime");
+            String maxOperatingTime = map.get("maxTransportTime");
+
+            List<RewardsPunishmentsLog> rewardsPunishmentsLogs = rewardsPunishmentsLogService.selectAllByOperatingTimeBetweenAndPhoneNumber(minOperatingTime, maxOperatingTime, phoneNumber);
+            startPage();
+            return getDataTable(rewardsPunishmentsLogs);
+        }
+        else
+        {
+            List<RewardsPunishmentsLog> rewardsPunishmentsLogs = rewardsPunishmentsLogService.selectAllByPhoneNumber(phoneNumber);
+            startPage();
+            return getDataTable(rewardsPunishmentsLogs);
+        }
+    }
+
     @GetMapping("/getOrder")
-    public TableDataInfo list(DriverInformation driverInformation, OrderInformation orderInformation, Integer year, Integer month) {
+    public TableDataInfo list(DriverInformation driverInformation, OrderInformation orderInformation) {
         startPage();
         return getDataTable(getOrder(driverInformation, orderInformation));
     }

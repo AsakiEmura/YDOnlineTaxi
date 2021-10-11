@@ -281,8 +281,9 @@ export default {
       const driverPhoneNumber = row.driverPhoneNumber || this.ids
       getPointsStatistics(driverPhoneNumber).then(response => {
         this.form = response.data;
+        console.log(response.data)
         this.open = true;
-        this.title = "奖惩设置";
+        this.title = "奖惩操作";
       });
     },
     /** 提交按钮 */
@@ -294,10 +295,10 @@ export default {
         this.msgSuccess("修改成功");
       });
       let temp = {
-        phoneNumber: this.form.phoneNumber,
+        phoneNumber: this.form.driverPhoneNumber,
         driverName: this.form.driverName,
         rpReason: this.rpReason,
-        points: this.rpPoint,
+        points: Number(this.rpPoint),
         operatingTime: null,
         operatingPeople: null
       }

@@ -2,15 +2,11 @@ package com.ruoyi.web.controller.YDOnlineTaxi;
 
 import com.ruoyi.YDOnlineTaxi.domain.*;
 import com.ruoyi.YDOnlineTaxi.service.*;
-import com.ruoyi.YDOnlineTaxi.utils.RSAEncrypt;
-import com.ruoyi.YDOnlineTaxi.utils.RabbitMQ.Producer.RabbitMQProducer;
 import com.ruoyi.YDOnlineTaxi.utils.RabbitMQ.RabbitMQConfig;
-import com.ruoyi.YDOnlineTaxi.utils.RabbitMQ.RabbitMQService;
 import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
-import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.utils.ShiroKit;
 import com.ruoyi.common.utils.file.FileUploadUtils;
@@ -18,10 +14,8 @@ import com.ruoyi.framework.config.ServerConfig;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,9 +47,15 @@ public class YDOnlineTaxiWxService extends BaseController {
     @Autowired
     private IDriverInformationService driverInformationService;
 
-    @Autowired
-    private WxWithDriversService wxWithDriversService;
-
+    @PostMapping("/checkPhoneNumberUnique")
+    public AjaxResult checkPhoneNumberUnique(String phoneNumber){
+        if (UserConstants.NOT_UNIQUE.equals(driverAccountService.countByPhoneNumber(phoneNumber))) {
+            return AjaxResult.success("exist");
+        }
+        else{
+            return AjaxResult.success("notExist");
+        }
+    }
 
     @PostMapping("/register")
     public AjaxResult register(@RequestBody DriverAccount driverAccount) {
@@ -88,7 +88,7 @@ public class YDOnlineTaxiWxService extends BaseController {
     }
 
     @PostMapping("/register/uploadPhotos")
-    public AjaxResult uploadImage(@RequestParam("files") MultipartFile file, @RequestParam("type") String type, @RequestParam("idCard") String idCard) throws Exception {
+    public AjaxResult uploadImage(@RequestParam("files") MultipartFile file, @RequestParam("type") String type, @RequestParam("idCard") String idCard) {
         try {
             // 上传文件路径
             String filePath = RuoYiConfig.getUploadPath();
@@ -127,7 +127,7 @@ public class YDOnlineTaxiWxService extends BaseController {
     }
 
     @PostMapping("/audit/attestation")
-    public AjaxResult Attestation(@RequestParam("orderId") String orderId, @RequestParam("points") Long points, @RequestParam("file1") MultipartFile file1, @RequestParam("notes") String notes) throws Exception {
+    public AjaxResult Attestation(@RequestParam("orderId") String orderId, @RequestParam("points") Long points, @RequestParam("file1") MultipartFile file1, @RequestParam("notes") String notes) {
         try {
             OrderInformation orderInformation = orderInformationService.selectOrderInformationByOrderId(orderId);
             String departure = orderInformation.getDeparture();
@@ -186,7 +186,7 @@ public class YDOnlineTaxiWxService extends BaseController {
     public AjaxResult login(DriverAccount driverAccount) {
         String phoneNumber;
         phoneNumber = driverAccount.getPhoneNumber();
-        if (!UserConstants.NOT_UNIQUE.equals(driverAccountService.countByPhoneNumber(phoneNumber))|| phoneNumber == null) {
+        if (!UserConstants.NOT_UNIQUE.equals(driverAccountService.countByPhoneNumber(phoneNumber)) || phoneNumber == null) {
             return AjaxResult.error("notExist");
         }
         DriverAccount driver = driverAccountService.selectDriverPassWordByPhoneNumber(phoneNumber);

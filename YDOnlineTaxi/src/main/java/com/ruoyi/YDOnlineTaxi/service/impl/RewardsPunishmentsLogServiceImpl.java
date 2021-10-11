@@ -84,4 +84,14 @@ public class RewardsPunishmentsLogServiceImpl implements IRewardsPunishmentsLogS
     public int deleteRewardsPunishmentsLogByPhoneNumber(String phoneNumber) {
         return rewardsPunishmentsLogMapper.deleteRewardsPunishmentsLogByPhoneNumber(phoneNumber);
     }
+
+    @Override
+    public List<RewardsPunishmentsLog> selectAllByOperatingTimeBetweenAndPhoneNumber(String minOperatingTime, String maxOperatingTime, String phoneNumber) {
+        return rewardsPunishmentsLogMapper.selectAllByOperatingTimeBetweenAndPhoneNumber(minOperatingTime,maxOperatingTime,phoneNumber);
+    }
+
+    @Override
+    public List<RewardsPunishmentsLog> selectAllByPhoneNumber(String phoneNumber) {
+        return rewardsPunishmentsLogMapper.selectAllByPhoneNumber(phoneNumber);
+    }
 }
