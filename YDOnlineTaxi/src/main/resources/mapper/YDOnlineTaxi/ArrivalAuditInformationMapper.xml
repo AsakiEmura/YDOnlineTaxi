@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.YDOnlineTaxi.mapper.ArrivalAuditInformationMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.YDOnlineTaxi.domain.ArrivalAuditInformation">
+    <!--@mbg.generated-->
+    <!--@Table YDOnlineTaxi.arrival_audit_information-->
+    <id column="order_id" jdbcType="CHAR" property="orderId" />
+    <result column="extra_order_points" jdbcType="INTEGER" property="extraOrderPoints" />
+    <result column="proof_photo1" jdbcType="LONGVARCHAR" property="proofPhoto1" />
+    <result column="proof_photo2" jdbcType="LONGVARCHAR" property="proofPhoto2" />
+    <result column="notes" jdbcType="VARCHAR" property="notes" />
+    <result column="refuse_reason" jdbcType="VARCHAR" property="refuseReason" />
+    <result column="extra_points_status" jdbcType="VARCHAR" property="extraPointsStatus" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    order_id, extra_order_points, proof_photo1, proof_photo2, notes, refuse_reason, extra_points_status
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from YDOnlineTaxi.arrival_audit_information
+    where order_id = #{orderId,jdbcType=CHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    <!--@mbg.generated-->
+    delete from YDOnlineTaxi.arrival_audit_information
+    where order_id = #{orderId,jdbcType=CHAR}
+  </delete>
+  <insert id="insert" parameterType="com.ruoyi.YDOnlineTaxi.domain.ArrivalAuditInformation">
+    <!--@mbg.generated-->
+    insert into YDOnlineTaxi.arrival_audit_information (order_id, extra_order_points, proof_photo1,
+      proof_photo2, notes, refuse_reason, 
+      extra_points_status)
+    values (#{orderId,jdbcType=CHAR}, #{extraOrderPoints,jdbcType=INTEGER}, #{proofPhoto1,jdbcType=LONGVARCHAR}, 
+      #{proofPhoto2,jdbcType=LONGVARCHAR}, #{notes,jdbcType=VARCHAR}, #{refuseReason,jdbcType=VARCHAR}, 
+      #{extraPointsStatus,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.ruoyi.YDOnlineTaxi.domain.ArrivalAuditInformation">
+    <!--@mbg.generated-->
+    insert into YDOnlineTaxi.arrival_audit_information
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        order_id,
+      </if>
+      <if test="extraOrderPoints != null">
+        extra_order_points,
+      </if>
+      <if test="proofPhoto1 != null">
+        proof_photo1,
+      </if>
+      <if test="proofPhoto2 != null">
+        proof_photo2,
+      </if>
+      <if test="notes != null">
+        notes,
+      </if>
+      <if test="refuseReason != null">
+        refuse_reason,
+      </if>
+      <if test="extraPointsStatus != null">
+        extra_points_status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        #{orderId,jdbcType=CHAR},
+      </if>
+      <if test="extraOrderPoints != null">
+        #{extraOrderPoints,jdbcType=INTEGER},
+      </if>
+      <if test="proofPhoto1 != null">
+        #{proofPhoto1,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="proofPhoto2 != null">
+        #{proofPhoto2,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="notes != null">
+        #{notes,jdbcType=VARCHAR},
+      </if>
+      <if test="refuseReason != null">
+        #{refuseReason,jdbcType=VARCHAR},
+      </if>
+      <if test="extraPointsStatus != null">
+        #{extraPointsStatus,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.ruoyi.YDOnlineTaxi.domain.ArrivalAuditInformation">
+    <!--@mbg.generated-->
+    update YDOnlineTaxi.arrival_audit_information
+    <set>
+      <if test="extraOrderPoints != null">
+        extra_order_points = #{extraOrderPoints,jdbcType=INTEGER},
+      </if>
+      <if test="proofPhoto1 != null">
+        proof_photo1 = #{proofPhoto1,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="proofPhoto2 != null">
+        proof_photo2 = #{proofPhoto2,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="notes != null">
+        notes = #{notes,jdbcType=VARCHAR},
+      </if>
+      <if test="refuseReason != null">
+        refuse_reason = #{refuseReason,jdbcType=VARCHAR},
+      </if>
+      <if test="extraPointsStatus != null">
+        extra_points_status = #{extraPointsStatus,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where order_id = #{orderId,jdbcType=CHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.ruoyi.YDOnlineTaxi.domain.ArrivalAuditInformation">
+    <!--@mbg.generated-->
+    update YDOnlineTaxi.arrival_audit_information
+    set extra_order_points = #{extraOrderPoints,jdbcType=INTEGER},
+      proof_photo1 = #{proofPhoto1,jdbcType=LONGVARCHAR},
+      proof_photo2 = #{proofPhoto2,jdbcType=LONGVARCHAR},
+      notes = #{notes,jdbcType=VARCHAR},
+      refuse_reason = #{refuseReason,jdbcType=VARCHAR},
+      extra_points_status = #{extraPointsStatus,jdbcType=VARCHAR}
+    where order_id = #{orderId,jdbcType=CHAR}
+  </update>
+</mapper>
