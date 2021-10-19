@@ -131,37 +131,8 @@
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
-    <!-- 用户导入对话框 -->
-    <el-dialog :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body>
-      <el-upload
-        ref="upload"
-        :limit="1"
-        accept=".xlsx, .xls"
-        :headers="upload.headers"
-        :action="upload.url + '?updateSupport=' + upload.updateSupport"
-        :disabled="upload.isUploading"
-        :on-progress="handleFileUploadProgress"
-        :on-success="handleFileSuccess"
-        :auto-upload="false"
-        drag
-      >
-        <i class="el-icon-upload"></i>
-        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-        <div class="el-upload__tip text-center" slot="tip">
-          <div class="el-upload__tip" slot="tip">
-            <el-checkbox v-model="upload.updateSupport" /> 是否更新已经存在的订单数据
-          </div>
-          <span>仅允许导入xls、xlsx格式文件。</span>
-          <el-link type="primary" :underline="false" style="font-size:12px;vertical-align: baseline;" @click="importTemplate">下载模板</el-link>
-        </div>
-      </el-upload>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitFileForm">确 定</el-button>
-        <el-button @click="upload.open = false">取 消</el-button>
-      </div>
-    </el-dialog>
 
-    <el-table v-loading="loading" :data="OrderInformationList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="OrderInformationList" @selection-change="handleSelectionChange" :key="currentKey">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="订单编号" align="center" prop="orderId" />
       <el-table-column label="出发地" align="center" prop="departure" />
@@ -185,16 +156,25 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
+            :disabled="scope.row.flag"
             v-hasPermi="['YDOnlineTaxi:OrderInformation:edit']"
             v-if="scope.row.orderStatus === '待审核' || scope.row.orderStatus === '未通过'"
-          >审核</el-button>
+          >订单审核</el-button>
           <el-button
             size="mini"
             type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['YDOnlineTaxi:OrderInformation:remove']"
-          >删除</el-button>
+            icon="el-icon-edit"
+            @click="getExtraPointData(scope.row)"
+            v-hasPermi="['YDOnlineTaxi:AuditExtraOrder:edit']"
+            v-if="scope.row.flag"
+          >额外积分</el-button>
+<!--          <el-button-->
+<!--            size="mini"-->
+<!--            type="text"-->
+<!--            icon="el-icon-delete"-->
+<!--            @click="handleDelete(scope.row)"-->
+<!--            v-hasPermi="['YDOnlineTaxi:OrderInformation:remove']"-->
+<!--          >删除</el-button>-->
         </template>
       </el-table-column>
     </el-table>
@@ -209,7 +189,7 @@
 
     <!-- 添加或修改订单信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
+      <el-form ref="form" :model="form" label-width="120px">
         <el-form-item label="司机手机号" prop="departure">
           <span>{{arrival_form.driverPhoneNumber}}</span>
         </el-form-item>
@@ -262,24 +242,59 @@
           <span>{{form.note}}</span>
         </el-form-item>
         <el-form-item label="审核结果" prop="refuseReason">
-          <el-select v-model="form.orderStatus" placeholder="请指定申请结果" clearable size="small">
-            <el-option label="审核通过" value="审核通过" />
-            <el-option label="审核不通过" value="审核不通过" />
+          <el-select v-model="form.orderStatus" placeholder="请指定申请结果" size="small">
+            <el-option label="审核通过" value="未结算" />
+            <el-option label="审核未通过" value="未通过" />
           </el-select>
         </el-form-item>
-        <el-form-item label="拒绝理由" prop="note">
+        <el-form-item label="拒绝理由" prop="note" v-if="form.orderStatus==='未通过'">
           <el-input
             type="textarea"
             :autosize="{ minRows: 4, maxRows: 6}"
-            placeholder="如果不通过，请输入不通过的原因,最多50个字"
+            placeholder="请输入不通过的原因,最多50个字"
             v-model="form.refuseReason">
           </el-input>
         </el-form-item>
       </el-form>
 
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">通 过</el-button>
-        <el-button @click="noThrough">不通过</el-button>
+        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="noThrough">取 消</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 额外积分审核 -->
+    <el-dialog :title="title" :visible.sync="open_extra" width="500px" append-to-body>
+      <el-form ref="form" :model="extra_form" :rules="rules" label-width="80px">
+        <el-form-item label="订单号" prop="orderId">
+          <span>{{extra_form.orderId}}</span>
+        </el-form-item>
+        <el-form-item label="额外积分" prop="extraOrderPoints">
+          <span>{{extra_form.extraOrderPoints}}</span>
+        </el-form-item>
+        <el-form-item label="证明照片" v-for="(item, index) in extra_form.proofPhoto">
+          <el-image
+            style="width: 200px; height: 200px;"
+            :src="item"
+            :preview-src-list="extra_form.proofPhoto"
+          />
+          <el-form-item label="备注" prop="notes">
+            <span>{{extra_form.notes[index]}}</span>
+          </el-form-item>
+        </el-form-item>
+        <el-form-item label="审核结果" prop="refuseReason">
+          <el-select v-model="extra_form.extraPointsStatus" placeholder="请指定申请结果"  size="small">
+            <el-option label="审核通过" value="审核通过" />
+            <el-option label="审核不通过" value="审核不通过" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="拒绝理由" prop="refuseReason" v-if="extra_form.extraPointsStatus==='审核不通过'">
+          <el-input v-model="extra_form.refuseReason" type="textarea" placeholder="请输入内容" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="extraSubmitForm">确 定</el-button>
+        <el-button @click="cancel">取消</el-button>
       </div>
     </el-dialog>
   </div>
@@ -287,16 +302,19 @@
 
 <script>
 import {
-  listOrderInformation,
   getOrderInformation,
   delOrderInformation,
-  addOrderInformation,
   updateOrderInformation,
   exportOrderInformation,
   importTemplate,
   singleStatusList, auditSettlementList, settlement, getArrival_information
 } from "@/api/YDOnlineTaxi/OrderInformation";
 import { getToken } from "@/utils/auth";
+import {
+  getArrival_Audit_information,
+  getAudit_information,
+  updateExtraOrder
+} from "@/api/YDOnlineTaxi/audit_information";
 
 export default {
   name: "OrderInformation",
@@ -312,6 +330,7 @@ export default {
       single: true,
       // 非多个禁用
       multiple: true,
+      currentKey:false,
       // 显示搜索条件
       showSearch: true,
       // 总条数
@@ -322,6 +341,7 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
+      open_extra: false,
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -337,23 +357,10 @@ export default {
         points: null,
         orderStatus: null,
       },
-      // 用户导入参数
-      upload: {
-        // 是否显示弹出层（用户导入）
-        open: false,
-        // 弹出层标题（用户导入）
-        title: "",
-        // 是否禁用上传
-        isUploading: false,
-        // 是否更新已经存在的用户数据
-        updateSupport: 0,
-        // 设置上传的请求头部
-        headers: { Authorization: "Bearer " + getToken() },
-        // 上传的地址
-        url: process.env.VUE_APP_BASE_API + "/YDOnlineTaxi/OrderInformation/importData"
-      },
       // 表单参数
       form: {},
+      // 额外积分表单参数
+      extra_form: {},
       // 表单校验
       rules: {
         departure: [
@@ -388,22 +395,29 @@ export default {
       arrival_form: {},
     };
   },
-  created() {
+  mounted() {
+    //获取订单信息
     this.getList();
   },
   methods: {
     /** 查询订单信息列表 */
     getList() {
       this.loading = true;
-      auditSettlementList().then(response => {
+      auditSettlementList().then(async (response) => {
         this.OrderInformationList = response.rows;
         this.total = response.total;
+        //判断是否有额外订单信息
+        for (let i = 0; i < this.OrderInformationList.length; i++) {
+          this.OrderInformationList[i].flag = !!(await this.haveExtraPoints(this.OrderInformationList[i].orderId));
+        }
+        this.currentKey = !this.currentKey;
         this.loading = false;
       });
     },
     // 取消按钮
     cancel() {
       this.open = false;
+      this.open_extra = false;
       this.reset();
     },
     // 表单重置
@@ -433,8 +447,17 @@ export default {
         arrivalRime: null,
         orderFinishTime: null
       };
+      this.extra_form = {
+        orderId: null,
+        extraOrderPoints: null,
+        proofPhoto: [],
+        notes: [],
+        refuseReason: null,
+        extraPointsStatus: null
+      };
       this.resetForm("form");
       this.resetForm("arrival_form");
+      this.resetForm("extra_form");
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -452,23 +475,59 @@ export default {
       this.single = selection.length!==1
       this.multiple = !selection.length
     },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加订单信息";
-    },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
       const orderId = row.orderId || this.ids
       getOrderInformation(orderId).then(response => {
         this.form = response.data;
+        this.form.transportTime = String(this.form.transportTime)
       });
       getArrival_information(orderId).then(response => {
         this.arrival_form = response.data;
+        console.log(this.arrival_form.arrivalRime)
+        this.arrival_form.arrivalRime = this.arrival_form.arrivalRime.substr(0,10) + " " + this.arrival_form.arrivalRime.substr(11,5)
+        this.arrival_form.departureTime = this.arrival_form.departureTime.substr(0,10) + " " + this.arrival_form.departureTime.substr(11,5)
+        this.arrival_form.orderTookTime = this.arrival_form.orderTookTime.substr(0,10) + " " + this.arrival_form.orderTookTime.substr(11,5)
+        this.arrival_form.orderFinishTime = this.arrival_form.orderFinishTime.substr(0,10) + " " + this.arrival_form.orderFinishTime.substr(11,5)
         this.open = true;
         this.title = "审核订单";
+      })
+    },
+    /** 判断是否存在额外积分*/
+    async haveExtraPoints(orderId){
+      this.reset();
+      let flag
+      await getArrival_Audit_information(orderId).then(response => {
+        flag = response.length !== 0
+      })
+      return flag
+    },
+    /** 得到这个订单的额外积分申请数据 */
+    getExtraPointData(row) {
+      this.reset();
+      const orderId = row.orderId || this.ids
+      // getAudit_information(orderId).then(response => {
+      //   console.log(response)
+      // })
+      getArrival_Audit_information(orderId).then(response => {
+        if(response.length === 0){
+          this.$confirm('该订单已不存在额外积分申请', "提示", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning"
+          })
+        }else{
+          for(let i=0;i<response.length;i++){
+            this.extra_form.orderId = response[i].orderId;
+            this.extra_form.extraOrderPoints += response[i].extraOrderPoints;
+            this.extra_form.proofPhoto.push(response[i].proofPhoto1);
+            this.extra_form.notes.push(response[i].notes);
+            this.extra_form.extraPointsStatus = response[i].extraPointsStatus;
+          }
+          this.open_extra = true;
+          this.title = "审核额外积分";
+        }
       })
     },
     /** 一键结算 */
@@ -488,7 +547,6 @@ export default {
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          this.form.orderStatus = "未结算";
           updateOrderInformation(this.form).then(response => {
             this.msgSuccess("修改成功");
             this.open = false;
@@ -497,17 +555,24 @@ export default {
         }
       });
     },
-    noThrough() {
+    /** 提交额外积分审核结果按钮 */
+    extraSubmitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          this.form.orderStatus = "审核不通过";
-          updateOrderInformation(this.form).then(response => {
+          let data = new FormData();
+          data.append("orderId",this.extra_form.orderId)
+          data.append("refuseReason",this.extra_form.refuseReason)
+          data.append("extraPointsStatus",this.extra_form.extraPointsStatus)
+          data.append("extraOrderPoints",this.extra_form.extraOrderPoints)
+          updateExtraOrder(data).then(response => {
             this.msgSuccess("修改成功");
-            this.open = false;
+            this.open_extra = false;
             this.getList();
           });
         }
       });
+    },
+    noThrough() {
       this.open = false;
       this.reset();
     },
@@ -539,33 +604,6 @@ export default {
           this.download(response.msg);
           this.exportLoading = false;
         }).catch(() => {});
-    },
-    /** 导入按钮操作 */
-    handleImport() {
-      this.upload.title = "订单导入";
-      this.upload.open = true;
-    },
-    // 文件上传中处理
-    handleFileUploadProgress(event, file, fileList) {
-      this.upload.isUploading = true;
-    },
-    // 文件上传成功处理
-    handleFileSuccess(response, file, fileList) {
-      this.upload.open = false;
-      this.upload.isUploading = false;
-      this.$refs.upload.clearFiles();
-      this.$alert(response.msg, "导入结果", { dangerouslyUseHTMLString: true });
-      this.getList();
-    },
-    // 提交上传文件
-    submitFileForm() {
-      this.$refs.upload.submit();
-    },
-    /** 下载模板操作 */
-    importTemplate() {
-      importTemplate().then(response => {
-        this.download(response.msg);
-      });
     },
   }
 };

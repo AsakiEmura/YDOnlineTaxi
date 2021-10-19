@@ -139,7 +139,7 @@ public class YDOnlineTaxiWxService extends BaseController {
 //            arrivalAuditInformation.setDestination(destination);
 //            arrivalAuditInformation.setTransportTime(transportTime);
 //            arrivalAuditInformation.setRequirementTypes(requirementTypes);
-//            arrivalAuditInformation.setCatType(carType);
+//            arrivalAuditInformation.setcarType(carType);
 //            arrivalAuditInformation.setExtraOrderPoints(points);
 //            arrivalAuditInformation.setProofPhoto1(fileName1);
 //            arrivalAuditInformation.setNotes(notes);

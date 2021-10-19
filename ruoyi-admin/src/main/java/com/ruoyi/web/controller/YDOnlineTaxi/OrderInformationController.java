@@ -113,7 +113,6 @@ public class OrderInformationController extends BaseController {
     @GetMapping(value = "/arrival_information/{orderId}")
     public AjaxResult arrival_information(@PathVariable("orderId") String orderId)
     {
-        OrderDetails orderDetails = orderDetailsService.selectByPrimaryKey(orderId);
         return AjaxResult.success(orderDetailsService.selectByPrimaryKey(orderId));
     }
 
@@ -128,17 +127,17 @@ public class OrderInformationController extends BaseController {
             SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd hh:mm");
             Date date = new Date();
             df.format(date);
-            long nowTime = date.getTime();
-            for(int i=0;i<list.size()-1;i++){
+            for(int i=0; i<list.size(); i++){
                 OrderInformation orderInformation = list.get(i);
                 String orderId = orderInformation.getOrderId();
                 OrderDetails orderDetails = orderDetailsService.selectByPrimaryKey(orderId);
-                long tempHour = nowTime-orderDetails.getOrderFinishTime().getTime()/(60*60*1000);
+                long tempHour = date.getTime()-orderDetails.getOrderFinishTime().getTime()/(60*60*1000);
                 if(tempHour > 24){
                     PonitsStatistics ponitsStatistics = ponitsStatisticsService.selectPonitsStatisticsByDriverPhoneNumber(orderDetails.getDriverPhoneNumber());
                     ponitsStatistics.setTotalPoints(orderInformation.getPoints() + ponitsStatistics.getTotalPoints());
                     ponitsStatistics.setMonthPoints(orderInformation.getPoints() + ponitsStatistics.getMonthPoints());
                     ponitsStatisticsService.updatePonitsStatistics(ponitsStatistics);
+
                     DriverInformation driverInformation =(driverInformationService.selectDriverInformationByDriverPhoneNumber(orderDetails.getDriverPhoneNumber()));
                     driverInformation.setDriverCompleteOrderNumber(driverInformation.getDriverCompleteOrderNumber() + 1);
                     driverInformation.setDriverCompleteOrderNumberMonthly(driverInformation.getDriverCompleteOrderNumberMonthly() + 1);

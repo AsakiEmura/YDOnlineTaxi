@@ -12,6 +12,7 @@ import com.ruoyi.YDOnlineTaxi.utils.RabbitMQ.RabbitMQConfig;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -170,7 +172,6 @@ public class YDOnlineTaxiDispatchOrder extends BaseController {
                 order3.setOrderFinishTime(new Date());
 
                 orderInformation.setOrderStatus("待审核");
-                //TODO(inform administrator)
                 rabbitTemplate.convertAndSend(RabbitMQConfig.DIRECT_EXCHANGE_NAME, RabbitMQConfig.DIRECT_ROUTINGKEY_NAME, "订单编号为: " + orderInformation.getOrderId() + " 的订单待审核,请刷新订单审核界面!");
                 orderDetailsService.updateByPrimaryKeySelective(order3);
                 orderInformationService.updateOrderInformation(orderInformation);
@@ -191,72 +192,35 @@ public class YDOnlineTaxiDispatchOrder extends BaseController {
     }
 
     @GetMapping("/getPersonalOrderList")
-    public TableDataInfo getPersonalOrderList(DriverInformation driverInformation, OrderInformation orderInformation, Integer year, Integer month, Integer day) {
+    public TableDataInfo getPersonalOrderList(DriverInformation driverInformation, OrderInformation orderInformation, Integer year, Integer month, Integer day)  {
         Map<String, String> map = DateUtil.getIntervalDate(year, month, day);
         String minTransportTime = map.get("minTransportTime");
         String maxTransportTime = map.get("maxTransportTime");
 
-        List<String> orderIdList;
-        orderIdList = orderDetailsService.selectOrderIdByDriverPhoneNumber(driverInformation.getDriverPhoneNumber());
-
-        List<OrderInformation> orderList = new ArrayList<>();
-
-        for (String orderId : orderIdList) {
-            OrderInformation order;
-
-            if (minTransportTime == null && maxTransportTime == null) {
-                order = orderInformationService.selectOrderInformationByOrderId(orderId);
-            } else {
-                order = orderInformationService.selectAllByOrderIdAndTransportTimeBetween(orderId, minTransportTime, maxTransportTime);
-            }
-            if (order == null)
-                continue;
-            else {
-                orderList.add(order);
-            }
-        }
-
-        List<OrderInformation> orderInformationList1 = new ArrayList<>();
-
-        if (orderIdList != null) {
-            for (OrderInformation order : orderList) {
-                switch (orderInformation.getOrderStatus()) {
-                    case "已派单":
-                        if (order.getOrderStatus().equals("已派单")) {
-                            orderInformationList1.add(order);
-                        }
-                        break;
-                    case "正在进行":
-                        if (order.getOrderStatus().equals("司机已出发") || order.getOrderStatus().equals("司机已到达")) {
-                            orderInformationList1.add(order);
-                        }
-                        break;
-                    case "已完成":
-                        if (order.getOrderStatus().equals("待审核") || order.getOrderStatus().equals("审核未通过") || order.getOrderStatus().equals("未结算") || order.getOrderStatus().equals("已结算")) {
-                            orderInformationList1.add(order);
-                        }
-                        break;
-                    case "已获积分":
-                        if (order.getOrderStatus().equals("已结算")) {
-                            orderInformationList1.add(order);
-                        }
-                        break;
-                    case "未获积分":
-                        if (!order.getOrderStatus().equals("已结算")) {
-                            orderInformationList1.add(order);
-                        }
-                        break;
-                    case "全部":
-                        orderInformationList1.add(order);
-                        break;
-                }
-            }
-        } else {
-            startPage();
-            return getDataTable(null);
-        }
         startPage();
-        return getDataTable(orderInformationList1);
+        List<OrderInformation> orderList = new ArrayList<>();
+        switch (orderInformation.getOrderStatus()) {
+            case "已派单":
+                orderList = orderInformationService.selectPersonalOrderByConditions(driverInformation.getDriverPhoneNumber(), minTransportTime, maxTransportTime, "已派单", null, null, null);
+                return getDataTable(orderList);
+            case "正在进行":
+                orderList = orderInformationService.selectPersonalOrderByConditions(driverInformation.getDriverPhoneNumber(), minTransportTime, maxTransportTime, "司机已出发", "司机已到达", null, null);
+                return getDataTable(orderList);
+            case "已完成":
+                orderList = orderInformationService.selectPersonalOrderByConditions(driverInformation.getDriverPhoneNumber(), minTransportTime, maxTransportTime, "未通过", "待审核", "未结算", "已结算");
+                return getDataTable(orderList);
+            case "已获积分":
+                orderList = orderInformationService.selectPersonalOrderByConditions(driverInformation.getDriverPhoneNumber(), minTransportTime, maxTransportTime, "已结算", null, null, null);
+                return getDataTable(orderList);
+            case "未获积分":
+                orderList = orderInformationService.selectPersonalOrderByConditions(driverInformation.getDriverPhoneNumber(), minTransportTime, maxTransportTime, "已派单", "司机已", "未", "待审核");
+                return getDataTable(orderList);
+            case "全部":
+                orderList = orderInformationService.selectAllByDriverPhoneNumber(driverInformation.getDriverPhoneNumber(), minTransportTime, maxTransportTime);
+                return getDataTable(orderList);
+            default:
+                return getDataTable(orderList);
+        }
     }
 
     @GetMapping("/getOrderFinishTime")

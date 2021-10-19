@@ -46,11 +46,11 @@ public class DriverInformation extends BaseEntity
 
     /** 已完成单数 */
     @Excel(name = "已完成单数")
-    private String driverCompleteOrderNumber;
+    private int driverCompleteOrderNumber;
 
     /** 本月完成单数 */
     @Excel(name = "本月完成单数")
-    private String driverCompleteOrderNumberMonthly;
+    private int driverCompleteOrderNumberMonthly;
 
     /** 等级 */
     @Excel(name = "等级")
@@ -119,21 +119,21 @@ public class DriverInformation extends BaseEntity
     {
         return carColor;
     }
-    public void setDriverCompleteOrderNumber(String driverCompleteOrderNumber) 
+    public void setDriverCompleteOrderNumber(int driverCompleteOrderNumber)
     {
         this.driverCompleteOrderNumber = driverCompleteOrderNumber;
     }
 
-    public String getDriverCompleteOrderNumber() 
+    public int getDriverCompleteOrderNumber()
     {
         return driverCompleteOrderNumber;
     }
-    public void setDriverCompleteOrderNumberMonthly(String driverCompleteOrderNumberMonthly) 
+    public void setDriverCompleteOrderNumberMonthly(int driverCompleteOrderNumberMonthly)
     {
         this.driverCompleteOrderNumberMonthly = driverCompleteOrderNumberMonthly;
     }
 
-    public String getDriverCompleteOrderNumberMonthly() 
+    public int getDriverCompleteOrderNumberMonthly()
     {
         return driverCompleteOrderNumberMonthly;
     }

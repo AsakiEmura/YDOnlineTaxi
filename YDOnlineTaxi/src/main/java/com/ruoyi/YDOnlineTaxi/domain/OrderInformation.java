@@ -70,6 +70,9 @@ public class OrderInformation extends BaseEntity
     @Excel(name = "超时时间")
     private Integer expireTime;
 
+    /** 司机手机号 */
+    private String driverPhoneNumber;
+
     public void setOrderId(String orderId) 
     {
         this.orderId = orderId;
@@ -187,6 +190,14 @@ public class OrderInformation extends BaseEntity
         this.expireTime = expireTime;
     }
 
+    public String getDriverPhoneNumber() {
+        return driverPhoneNumber;
+    }
+
+    public void setDriverPhoneNumber(String driverPhoneNumber) {
+        this.driverPhoneNumber = driverPhoneNumber;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
@@ -202,6 +213,7 @@ public class OrderInformation extends BaseEntity
             .append("note", getNote())
             .append("orderStatus", getOrderStatus())
             .append("refuseReason", getRefuseReason())
+            .append("driverPhoneNumber", getDriverPhoneNumber())
             .toString();
     }
 }

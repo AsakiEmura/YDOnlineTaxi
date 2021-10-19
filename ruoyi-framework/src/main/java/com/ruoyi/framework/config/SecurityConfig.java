@@ -121,6 +121,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
                 .antMatchers("/YDOnlineTaxi/OrderUserGuide/**").permitAll()
                 .antMatchers("/YDOnlineTaxi/DriverAccount/resetPwd").permitAll()
                 .antMatchers("/YDOnlineTaxi/Log/**").permitAll()
+                .antMatchers("/YDOnlineTaxi/AuditOrder/**").permitAll()
+                .antMatchers("/YDOnlineTaxi/feedback/**").permitAll()
                 // 除上面外的所有请求全部需要鉴权认证
                 .anyRequest().authenticated()
                 .and()

@@ -214,4 +214,14 @@ public class OrderInformationServiceImpl implements IOrderInformationService
     public List<OrderInformation> selectOrderByReceived(String[] status) {
         return orderInformationMapper.selectOrderByReceived(status);
     }
+
+    @Override
+    public List<OrderInformation> selectPersonalOrderByConditions(String driverPhoneNumber, String minTransportTime,String maxTransportTime,String likeOrderStatus1, String likeOrderStatus2, String likeOrderStatus3, String likeOrderStatus4) {
+        return orderInformationMapper.selectPersonalOrderByConditions(driverPhoneNumber,minTransportTime,maxTransportTime,likeOrderStatus1,likeOrderStatus2,likeOrderStatus3,likeOrderStatus4);
+    }
+
+    @Override
+    public List<OrderInformation> selectAllByDriverPhoneNumber(String driverPhoneNumber,String minTransportTime,String maxTransportTime) {
+        return orderInformationMapper.selectAllByDriverPhoneNumber(driverPhoneNumber,minTransportTime,maxTransportTime);
+    }
 }

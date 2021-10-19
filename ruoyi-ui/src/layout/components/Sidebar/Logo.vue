@@ -34,7 +34,7 @@ export default {
   methods:{
     /** 创建websocket连接*/
     initWebsocket() {
-      let wsUrl = "ws://" + "192.168.50.123" + ":9090/websocket/A"
+      let wsUrl = "ws://" + "106.14.126.147" + ":9090/websocket/A"
       try{
         this.webSocket = new WebSocket(wsUrl);
       }catch (e) {

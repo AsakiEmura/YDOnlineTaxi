@@ -169,4 +169,17 @@ public class DateUtil {
         map.put("maxTransportTime", maxTransportTime);
         return map;
     }
+
+    public static String changeTimeFormat(String dateTime){
+        dateTime = dateTime.replace("Z", " UTC");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS Z");
+        SimpleDateFormat defaultFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            Date time = format.parse(dateTime);
+            return defaultFormat.format(time);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

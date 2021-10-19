@@ -49,8 +49,8 @@
           <el-option label="外地往返" value="外地往返" />
         </el-select>
       </el-form-item>
-      <el-form-item label="用车类型" prop="catType">
-        <el-select v-model="queryParams.catType" placeholder="请选择用车类型" clearable size="small">
+      <el-form-item label="用车类型" prop="carType">
+        <el-select v-model="queryParams.carType" placeholder="请选择用车类型" clearable size="small">
           <el-option label="舒适型" value="舒适型" />
           <el-option label="豪华型" value="豪华型" />
           <el-option label="商务型" value="商务型" />
@@ -109,7 +109,7 @@
       <el-table-column label="出发地" align="center" prop="departure" />
       <el-table-column label="到达地" align="center" prop="destination" />
       <el-table-column label="需求类型" align="center" prop="requirementTypes" />
-      <el-table-column label="用车类型" align="center" prop="catType" />
+      <el-table-column label="用车类型" align="center" prop="carType" />
       <el-table-column label="额外订单积分" align="center" prop="extraOrderPoints" />
       <el-table-column label="备注" align="center" prop="notes" />
       <el-table-column label="拒绝理由" align="center" prop="refuseReason" />
@@ -164,8 +164,8 @@
         <el-form-item label="备注" prop="notes">
           <span>{{form.notes}}</span>
         </el-form-item>
-        <el-form-item label="用车类型" prop="catType">
-          <span>{{form.catType}}</span>
+        <el-form-item label="用车类型" prop="carType">
+          <span>{{form.carType}}</span>
         </el-form-item>
         <el-form-item label="用车时间" prop="transportTime">
           <span>{{form.transportTime}}</span>
@@ -202,8 +202,6 @@
 
 <script>
 import { listAudit_information, getAudit_information, delAudit_information, addAudit_information, updateAudit_information, exportAudit_information } from "@/api/YDOnlineTaxi/audit_information";
-import {updateOrderInformation} from "@/api/YDOnlineTaxi/OrderInformation";
-
 export default {
   name: "Audit_information",
   data() {
@@ -238,7 +236,7 @@ export default {
         extraOrderPoints: null,
         requirementTypes: null,
         notes: null,
-        catType: null,
+        carType: null,
         proofPhoto1: null,
         transportTime: null,
         proofPhoto2: null,
@@ -294,7 +292,7 @@ export default {
         extraOrderPoints: null,
         requirementTypes: null,
         notes: null,
-        catType: null,
+        carType: null,
         proofPhoto1: null,
         transportTime: null,
         proofPhoto2: null,

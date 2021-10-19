@@ -91,18 +91,6 @@
     <!--@mbg.generated-->
     update YDOnlineTaxi.arrival_audit_information
     <set>
-      <if test="extraOrderPoints != null">
-        extra_order_points = #{extraOrderPoints,jdbcType=INTEGER},
-      </if>
-      <if test="proofPhoto1 != null">
-        proof_photo1 = #{proofPhoto1,jdbcType=LONGVARCHAR},
-      </if>
-      <if test="proofPhoto2 != null">
-        proof_photo2 = #{proofPhoto2,jdbcType=LONGVARCHAR},
-      </if>
-      <if test="notes != null">
-        notes = #{notes,jdbcType=VARCHAR},
-      </if>
       <if test="refuseReason != null">
         refuse_reason = #{refuseReason,jdbcType=VARCHAR},
       </if>
@@ -115,10 +103,7 @@
   <update id="updateByPrimaryKey" parameterType="com.ruoyi.YDOnlineTaxi.domain.ArrivalAuditInformation">
     <!--@mbg.generated-->
     update YDOnlineTaxi.arrival_audit_information
-    set extra_order_points = #{extraOrderPoints,jdbcType=INTEGER},
-      proof_photo1 = #{proofPhoto1,jdbcType=LONGVARCHAR},
-      proof_photo2 = #{proofPhoto2,jdbcType=LONGVARCHAR},
-      notes = #{notes,jdbcType=VARCHAR},
+    set
       refuse_reason = #{refuseReason,jdbcType=VARCHAR},
       extra_points_status = #{extraPointsStatus,jdbcType=VARCHAR}
     where order_id = #{orderId,jdbcType=CHAR}

@@ -2,6 +2,8 @@ package com.ruoyi.YDOnlineTaxi.mapper;
 
 import com.ruoyi.YDOnlineTaxi.domain.ArrivalAuditInformation;
 
+import java.util.List;
+
 public interface ArrivalAuditInformationMapper {
     int deleteByPrimaryKey(String orderId);
 
@@ -9,7 +11,7 @@ public interface ArrivalAuditInformationMapper {
 
     int insertSelective(ArrivalAuditInformation record);
 
-    ArrivalAuditInformation selectByPrimaryKey(String orderId);
+    List<ArrivalAuditInformation> selectByPrimaryKey(String orderId);
 
     int updateByPrimaryKeySelective(ArrivalAuditInformation record);
 

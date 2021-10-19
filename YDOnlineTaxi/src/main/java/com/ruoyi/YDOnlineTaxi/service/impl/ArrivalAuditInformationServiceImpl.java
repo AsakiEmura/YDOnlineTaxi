@@ -5,6 +5,9 @@ import javax.annotation.Resource;
 import com.ruoyi.YDOnlineTaxi.mapper.ArrivalAuditInformationMapper;
 import com.ruoyi.YDOnlineTaxi.domain.ArrivalAuditInformation;
 import com.ruoyi.YDOnlineTaxi.service.ArrivalAuditInformationService;
+
+import java.util.List;
+
 @Service
 public class ArrivalAuditInformationServiceImpl implements ArrivalAuditInformationService{
 
@@ -27,7 +30,7 @@ public class ArrivalAuditInformationServiceImpl implements ArrivalAuditInformati
     }
 
     @Override
-    public ArrivalAuditInformation selectByPrimaryKey(String orderId) {
+    public List<ArrivalAuditInformation> selectByPrimaryKey(String orderId) {
         return arrivalAuditInformationMapper.selectByPrimaryKey(orderId);
     }
 

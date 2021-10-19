@@ -71,4 +71,12 @@ public interface OrderInformationMapper {
 
 
     List<OrderInformation> selectOrderByReceived(String[] status);
+
+    List<OrderInformation> selectPersonalOrderByConditions(@Param("driverPhoneNumber")String driverPhoneNumber,@Param("minTransportTime")String minTransportTime,@Param("maxTransportTime")String maxTransportTime,@Param("likeOrderStatus1")String likeOrderStatus1,@Param("likeOrderStatus2")String likeOrderStatus2,@Param("likeOrderStatus3")String likeOrderStatus3,@Param("likeOrderStatus4")String likeOrderStatus4);
+
+    List<OrderInformation> selectAllByDriverPhoneNumber(@Param("driverPhoneNumber")String driverPhoneNumber,@Param("minTransportTime")String minTransportTime,@Param("maxTransportTime")String maxTransportTime);
+
+
+
+
 }

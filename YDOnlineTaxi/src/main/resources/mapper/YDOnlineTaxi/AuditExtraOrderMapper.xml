@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.YDOnlineTaxi.mapper.AuditExtraOrderMapper">
+    
+    <resultMap type="com.ruoyi.YDOnlineTaxi.domain.AuditExtraOrder" id="AuditExtraOrderResult">
+        <result property="orderId"    column="order_id"    />
+        <result property="departure"    column="departure"    />
+        <result property="destination"    column="destination"    />
+        <result property="extraOrderPoints"    column="extra_order_points"    />
+        <result property="notes"    column="notes"    />
+        <result property="carType"    column="car_type"    />
+        <result property="requirementTypes"    column="requirement_types"    />
+        <result property="proofPhoto1"    column="proof_photo1"    />
+        <result property="proofPhoto2"    column="proof_photo2"    />
+        <result property="transportTime"    column="transport_time"    />
+        <result property="refuseReason"    column="refuse_reason"    />
+        <result property="extraPointsStatus"    column="extra_points_status"    />
+    </resultMap>
+
+    <sql id="selectAuditExtraOrderVo">
+        select order_id, departure, destination, extra_order_points, notes, car_type, requirement_types, proof_photo1, proof_photo2, transport_time, refuse_reason, extra_points_status from YDOnlineTaxi.audit_extra_order
+    </sql>
+
+    <select id="selectAuditExtraOrderList" parameterType="com.ruoyi.YDOnlineTaxi.domain.AuditExtraOrder" resultMap="AuditExtraOrderResult">
+        <include refid="selectAuditExtraOrderVo"/>
+        <where>  
+            <if test="departure != null  and departure != ''"> and departure = #{departure}</if>
+            <if test="destination != null  and destination != ''"> and destination = #{destination}</if>
+            <if test="extraOrderPoints != null "> and extra_order_points = #{extraOrderPoints}</if>
+            <if test="notes != null  and notes != ''"> and notes = #{notes}</if>
+            <if test="carType != null  and carType != ''"> and car_type = #{carType}</if>
+            <if test="requirementTypes != null  and requirementTypes != ''"> and requirement_types = #{requirementTypes}</if>
+            <if test="proofPhoto1 != null  and proofPhoto1 != ''"> and proof_photo1 = #{proofPhoto1}</if>
+            <if test="proofPhoto2 != null  and proofPhoto2 != ''"> and proof_photo2 = #{proofPhoto2}</if>
+            <if test="transportTime != null "> and transport_time = #{transportTime}</if>
+            <if test="refuseReason != null  and refuseReason != ''"> and refuse_reason = #{refuseReason}</if>
+            <if test="extraPointsStatus != null  and extraPointsStatus != ''"> and extra_points_status = #{extraPointsStatus}</if>
+        </where>
+    </select>
+    
+    <select id="selectAuditExtraOrderByOrderId" parameterType="String" resultMap="AuditExtraOrderResult">
+        <include refid="selectAuditExtraOrderVo"/>
+        where order_id = #{orderId}
+    </select>
+        
+    <insert id="insertAuditExtraOrder" parameterType="com.ruoyi.YDOnlineTaxi.domain.AuditExtraOrder">
+        insert into YDOnlineTaxi.audit_extra_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">order_id,</if>
+            <if test="departure != null">departure,</if>
+            <if test="destination != null">destination,</if>
+            <if test="extraOrderPoints != null">extra_order_points,</if>
+            <if test="notes != null">notes,</if>
+            <if test="carType != null">car_type,</if>
+            <if test="requirementTypes != null">requirement_types,</if>
+            <if test="proofPhoto1 != null">proof_photo1,</if>
+            <if test="proofPhoto2 != null">proof_photo2,</if>
+            <if test="transportTime != null">transport_time,</if>
+            <if test="refuseReason != null">refuse_reason,</if>
+            <if test="extraPointsStatus != null">extra_points_status,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">#{orderId},</if>
+            <if test="departure != null">#{departure},</if>
+            <if test="destination != null">#{destination},</if>
+            <if test="extraOrderPoints != null">#{extraOrderPoints},</if>
+            <if test="notes != null">#{notes},</if>
+            <if test="carType != null">#{carType},</if>
+            <if test="requirementTypes != null">#{requirementTypes},</if>
+            <if test="proofPhoto1 != null">#{proofPhoto1},</if>
+            <if test="proofPhoto2 != null">#{proofPhoto2},</if>
+            <if test="transportTime != null">#{transportTime},</if>
+            <if test="refuseReason != null">#{refuseReason},</if>
+            <if test="extraPointsStatus != null">#{extraPointsStatus},</if>
+         </trim>
+    </insert>
+
+    <update id="updateAuditExtraOrder" parameterType="com.ruoyi.YDOnlineTaxi.domain.AuditExtraOrder">
+        update YDOnlineTaxi.audit_extra_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="departure != null">departure = #{departure},</if>
+            <if test="destination != null">destination = #{destination},</if>
+            <if test="extraOrderPoints != null">extra_order_points = #{extraOrderPoints},</if>
+            <if test="notes != null">notes = #{notes},</if>
+            <if test="carType != null">car_type = #{carType},</if>
+            <if test="requirementTypes != null">requirement_types = #{requirementTypes},</if>
+            <if test="proofPhoto1 != null">proof_photo1 = #{proofPhoto1},</if>
+            <if test="proofPhoto2 != null">proof_photo2 = #{proofPhoto2},</if>
+            <if test="transportTime != null">transport_time = #{transportTime},</if>
+            <if test="refuseReason != null">refuse_reason = #{refuseReason},</if>
+            <if test="extraPointsStatus != null">extra_points_status = #{extraPointsStatus},</if>
+        </trim>
+        where order_id = #{orderId}
+    </update>
+
+    <delete id="deleteAuditExtraOrderByOrderId" parameterType="String">
+        delete from YDOnlineTaxi.audit_extra_order where order_id = #{orderId}
+    </delete>
+
+    <delete id="deleteAuditExtraOrderByOrderIds" parameterType="String">
+        delete from YDOnlineTaxi.audit_extra_order where order_id in
+        <foreach item="orderId" collection="array" open="(" separator="," close=")">
+            #{orderId}
+        </foreach>
+    </delete>
+</mapper>

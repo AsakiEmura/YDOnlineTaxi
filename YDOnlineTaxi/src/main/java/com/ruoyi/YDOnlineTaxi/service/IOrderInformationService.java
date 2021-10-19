@@ -1,6 +1,7 @@
 package com.ruoyi.YDOnlineTaxi.service;
 
 import com.ruoyi.YDOnlineTaxi.domain.OrderInformation;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -82,4 +83,8 @@ public interface IOrderInformationService
     List<OrderInformation> selectOrderByStatus(String status);
 
     List<OrderInformation> selectOrderByReceived(String[] status);
+
+    List<OrderInformation> selectPersonalOrderByConditions(String driverPhoneNumber, String minTransportTime, String maxTransportTime, String likeOrderStatus1, String likeOrderStatus2, String likeOrderStatus3, String likeOrderStatus4);
+
+    List<OrderInformation> selectAllByDriverPhoneNumber(String driverPhoneNumber,String minTransportTime,String maxTransportTime);
 }

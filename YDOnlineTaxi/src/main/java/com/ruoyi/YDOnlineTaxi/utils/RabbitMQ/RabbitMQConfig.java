@@ -1,8 +1,6 @@
 package com.ruoyi.YDOnlineTaxi.utils.RabbitMQ;
 
 
-import com.sun.org.slf4j.internal.Logger;
-import com.sun.org.slf4j.internal.LoggerFactory;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -31,8 +29,6 @@ import java.util.Map;
  */
 @Configuration
 public class RabbitMQConfig {
-
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Value("${spring.rabbitmq.host}")
     private String host;
