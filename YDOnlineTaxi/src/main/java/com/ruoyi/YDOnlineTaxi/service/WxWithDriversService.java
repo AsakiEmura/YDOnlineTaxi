@@ -22,4 +22,6 @@ public interface WxWithDriversService{
     public String selectMachineIdByPhoneNumber(String phoneNumber);
 
     public int countByPhoneNumber(String phoneNumber);
+
+    public boolean updateMachineIdByPhoneNumber(String machineId,String phoneNumber);
 }

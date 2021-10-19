@@ -41,17 +41,10 @@ public final class WxRabbitMQ {
         //获取对应等级的openid列表,并且次数减一
         List<String> machineIdList = wxWithDriversService.selectMachineIdByDriverLevel("王者");
         if (machineIdList != null) {
-            for (String openId : machineIdList) {
-                String machineIdDe = "";
-                try {
-                    machineIdDe = RSAEncrypt.decrypt(openId);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                if ("".equals(machineIdDe))
-                    return;
+
+            for (String machineId : machineIdList) {
                 List<String> registrationIds = new ArrayList<>();
-                registrationIds.add(machineIdDe);
+                registrationIds.add(machineId);
                 JPushUtils.sendToRegistrationId(registrationIds,"订单通知","订单通知","有新的订单导入,请到app查看详情");
             }
             logger.info("王者级司机已收到信息{}", msg);
@@ -68,17 +61,9 @@ public final class WxRabbitMQ {
         //获取对应等级的openid列表,并且次数减一
         List<String> machineIdList = wxWithDriversService.selectMachineIdByDriverLevel("钻石");
         if (machineIdList != null) {
-            for (String openId : machineIdList) {
-                String machineIdDe = "";
-                try {
-                    machineIdDe = RSAEncrypt.decrypt(openId);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                if ("".equals(machineIdDe))
-                    return;
+            for (String machineId : machineIdList) {
                 List<String> registrationIds = new ArrayList<>();
-                registrationIds.add(machineIdDe);
+                registrationIds.add(machineId);
                 JPushUtils.sendToRegistrationId(registrationIds,"订单通知","订单通知","有新的订单导入,请到app查看详情");
             }
             logger.info("钻石级司机已收到信息{}", msg);
@@ -96,17 +81,9 @@ public final class WxRabbitMQ {
         //获取对应等级的openid列表,并且次数减一
         List<String> machineIdList = wxWithDriversService.selectMachineIdByDriverLevel("黄金");
         if (machineIdList != null) {
-            for (String openId : machineIdList) {
-                String machineIdDe = "";
-                try {
-                    machineIdDe = RSAEncrypt.decrypt(openId);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                if ("".equals(machineIdDe))
-                    return;
+            for (String machineId : machineIdList) {
                 List<String> registrationIds = new ArrayList<>();
-                registrationIds.add(machineIdDe);
+                registrationIds.add(machineId);
                 JPushUtils.sendToRegistrationId(registrationIds,"订单通知","订单通知","有新的订单导入,请到app查看详情");
             }
             logger.info("黄金级司机已收到信息{}", msg);

@@ -173,4 +173,9 @@ public class DriverAccountServiceImpl implements IDriverAccountService
     public String selectMachineIdByPhoneNumber(String phoneNumber) {
         return driverAccountMapper.selectMachineIdByPhoneNumber(phoneNumber);
     }
+
+    @Override
+    public boolean updateMachineIdByPhoneNumber(String machineId, String phoneNumber) {
+        return driverAccountMapper.updateMachineIdByPhoneNumber(machineId,phoneNumber);
+    }
 }

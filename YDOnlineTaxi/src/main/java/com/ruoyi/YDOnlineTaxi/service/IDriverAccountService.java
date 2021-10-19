@@ -108,4 +108,6 @@ public interface IDriverAccountService
     public String countByPhoneNumber(String phoneNumber);
 
     public String selectMachineIdByPhoneNumber(String phoneNumber);
+
+    public boolean updateMachineIdByPhoneNumber(String machineId,String phoneNumber);
 }

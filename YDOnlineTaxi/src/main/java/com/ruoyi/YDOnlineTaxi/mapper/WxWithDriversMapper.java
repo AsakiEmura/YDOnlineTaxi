@@ -38,5 +38,7 @@ public interface WxWithDriversMapper {
 
     public Integer countByPhoneNumber(@Param("phoneNumber")String phoneNumber);
 
+    public boolean updateMachineIdByPhoneNumber(@Param("updatedMachineId")String updatedMachineId,@Param("phoneNumber")String phoneNumber);
+
 
 }

@@ -38,6 +38,31 @@ public class YDOnlineTaxiWxService extends BaseController {
     @Autowired
     private IDriverInformationService driverInformationService;
 
+    @Autowired
+    private WxWithDriversService wxWithDriversService;
+
+    @PostMapping("/getMachineId")
+    public AjaxResult getMachineId(String phoneNumber){
+        String machineId = "";
+        try{
+            machineId = driverAccountService.selectMachineIdByPhoneNumber(phoneNumber);
+            return AjaxResult.success(machineId);
+        }
+        catch (NullPointerException e){
+            return AjaxResult.error();
+        }
+    }
+
+    @PutMapping(value = "/{phoneNumber}")
+    public AjaxResult changeMachineId(@PathVariable("phoneNumber") String phoneNumber,String machineId){
+        if(wxWithDriversService.updateMachineIdByPhoneNumber(machineId,phoneNumber) && driverAccountService.updateMachineIdByPhoneNumber(machineId,phoneNumber)){
+            return  AjaxResult.success("success");
+        }
+        else{
+            return  AjaxResult.error("error");
+        }
+    }
+
     @PostMapping("/checkPhoneNumberUnique")
     public AjaxResult checkPhoneNumberUnique(String phoneNumber){
         if (UserConstants.NOT_UNIQUE.equals(driverAccountService.countByPhoneNumber(phoneNumber))) {

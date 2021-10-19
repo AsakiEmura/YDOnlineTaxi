@@ -167,12 +167,9 @@ public class DriverAccountController extends BaseController {
             wxWithDriversService.insert(wxWithDrivers);
             ponitsStatisticsService.insertPonitsStatistics(ponitsStatistics);
 
-            if(noticeAuditedUser(phoneNumber,"审核通过,请登录app查看.")){
-                return AjaxResult.success("审核操作成功");
-            }
-            else{
-                return AjaxResult.error("审核操作失败");
-            }
+            List<String> registrationId = new ArrayList<>();
+            registrationId.add(driverAccount.getMachineId());
+            JPushUtils.sendToRegistrationId(registrationId,"司机审核结果","司机审核结果","审核通过,请登录app查看.");
         }
         else if("审核不通过".equals(driverAccount.getStatus()))
         {
@@ -181,26 +178,7 @@ public class DriverAccountController extends BaseController {
         return AjaxResult.success("审核操作成功");
     }
 
-    public Boolean noticeAuditedUser(String phoneNumber,String text) throws IOException {
-        String machineId = driverAccountService.selectMachineIdByPhoneNumber(phoneNumber);
-        String machineIdDe = "";
-        try
-        {
-            machineIdDe = RSAEncrypt.decrypt(machineId);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        if ("".equals(machineIdDe))
-            return Boolean.FALSE;
-        else{
-            List<String> registrationIds = new ArrayList<>();
-            registrationIds.add(machineIdDe);
-            JPushUtils.sendToRegistrationId(registrationIds,"司机审核结果","司机审核结果",text);
-            return Boolean.TRUE;
-        }
-    }
+
 
     /**
      * 移出黑名单
@@ -252,19 +230,12 @@ public class DriverAccountController extends BaseController {
 
         DriverAccount reDriver = driverAccountService.selectAllByPhoneNumber(phoneNumber);
         String machineId = reDriver.getMachineId();
-        String name = reDriver.getDriverName();
         String idNumber = reDriver.getIdNumber();
-        String label = "您的申请被拒绝";
+        String label = "您的申请被拒绝,拒绝理由为: ";
 
-
-        String machineIdDE = "";
-        try {
-            machineIdDE = RSAEncrypt.decrypt(machineId);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        sendAuditRes.pushNotification(machineIdDE, name, idNumber, label, refuseReason);
+        List<String> registrationId = new ArrayList<>();
+        registrationId.add(machineId);
+        JPushUtils.sendToRegistrationId(registrationId,"司机审核结果","司机审核结果",label+refuseReason);
 
         driverAccountService.deleteDriverAccountByIdNumber(idNumber);
     }

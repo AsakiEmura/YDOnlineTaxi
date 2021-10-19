@@ -54,4 +54,9 @@ public class WxWithDriversServiceImpl implements WxWithDriversService{
     public int countByPhoneNumber(String phoneNumber) {
         return wxWithDriversMapper.countByPhoneNumber(phoneNumber);
     }
+
+    @Override
+    public boolean updateMachineIdByPhoneNumber(String machineId, String phoneNumber) {
+        return wxWithDriversMapper.updateMachineIdByPhoneNumber(machineId,phoneNumber);
+    }
 }

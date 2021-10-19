@@ -95,13 +95,16 @@ public interface DriverAccountMapper
      * @param status 账号审核状态
      * @return
      */
-    List<DriverAccount> selectAllByStatus(@Param("status")String status);
+    public List<DriverAccount> selectAllByStatus(@Param("status")String status);
 
     public DriverAccount selectAllByPhoneNumber(@Param("phoneNumber")String phoneNumber);
 
     public Integer countByPhoneNumber(@Param("phoneNumber")String phoneNumber);
 
-    String selectMachineIdByPhoneNumber(@Param("phoneNumber")String phoneNumber);
+    public String selectMachineIdByPhoneNumber(@Param("phoneNumber")String phoneNumber);
+
+    public boolean updateMachineIdByPhoneNumber(@Param("updatedMachineId")String updatedMachineId,@Param("phoneNumber")String phoneNumber);
+
 
 
 }
