@@ -14,7 +14,7 @@
     :disabled="true">
     </el-input>
     <div style="text-align: center; margin-top: 20px">
-        <el-button type="primary" @click="updataGuide()">修改</el-button>
+        <el-button type="primary" @click="updateGuide()">修改</el-button>
     </div>
     <el-dialog :title="title" :visible.sync="open" width="900px" append-to-body>
       <el-input
@@ -67,12 +67,12 @@ export default {
       });
     },
     //更新用户须知
-    updataGuide() {
+    updateGuide() {
       this.open = true;
     },
     /** 提交按钮 */
     submitForm() {
-      updateUserGuide(this.form).then(response => {
+      updateUserGuide(this.form.guide).then(response => {
         this.msgSuccess("修改成功");
         this.open = false;
         this.getGuide();

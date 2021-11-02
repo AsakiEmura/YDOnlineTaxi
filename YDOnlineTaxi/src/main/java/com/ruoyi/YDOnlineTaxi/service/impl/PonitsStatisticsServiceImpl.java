@@ -16,7 +16,7 @@ import com.ruoyi.YDOnlineTaxi.service.IPonitsStatisticsService;
 @Service
 public class PonitsStatisticsServiceImpl implements IPonitsStatisticsService 
 {
-    @Autowired
+    @Autowired(required = false)
     private PonitsStatisticsMapper ponitsStatisticsMapper;
 
     /**
@@ -89,5 +89,10 @@ public class PonitsStatisticsServiceImpl implements IPonitsStatisticsService
     public int deletePonitsStatisticsByDriverPhoneNumber(String driverPhoneNumber)
     {
         return ponitsStatisticsMapper.deletePonitsStatisticsByDriverPhoneNumber(driverPhoneNumber);
+    }
+
+    @Override
+    public int updateMonthPoints() {
+        return ponitsStatisticsMapper.updateMonthPoints();
     }
 }

@@ -11,7 +11,7 @@ export function getUserGuide() {
 // 修改订单信息
 export function updateUserGuide(data) {
   return request({
-    url: '/YDOnlineTaxi/OrderUserGuide/updataUserGuide',
+    url: '/YDOnlineTaxi/OrderUserGuide/updateUserGuide',
     method: 'post',
     data: data
   })

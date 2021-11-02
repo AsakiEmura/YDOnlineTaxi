@@ -98,3 +98,6 @@ mq:
   defaultExchange: topic # 默认交换器
   queue: YDOnlineTaxi # 队列名
   routeKey: queue_key # 路由key
+
+ruoyi:
+  profile: D:/ruoyi

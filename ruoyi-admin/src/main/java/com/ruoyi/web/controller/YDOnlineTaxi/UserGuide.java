@@ -2,9 +2,7 @@ package com.ruoyi.web.controller.YDOnlineTaxi;
 
 import com.ruoyi.common.core.redis.RedisCache;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,8 +37,8 @@ public class UserGuide {
         return "";
     }
 
-    @GetMapping("/updateUserGuide")
-    public Map<String, Object> updataUserGuide(String data) {
+    @PostMapping("/updateUserGuide")
+    public Map<String, Object> updateUserGuide(@RequestBody String data) {
         Map<String, Object> res = new HashMap<>();
         String guide;
         String key = "user";

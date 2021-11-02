@@ -1,5 +1,6 @@
 package com.ruoyi.YDOnlineTaxi.service;
 
+import com.ruoyi.YDOnlineTaxi.domain.DriverInformation;
 import com.ruoyi.YDOnlineTaxi.domain.OrderInformation;
 import org.apache.ibatis.annotations.Param;
 
@@ -76,13 +77,13 @@ public interface IOrderInformationService
 
     public String selectOrderStatusByOrderId(String orderId);
 
-    public List<OrderInformation> getOrderInformationListByConditions(String likeCarType1, String likeCarType2, String likeCarType3, String likeOrderStatus, String minTransportTime, String maxTransportTime, String requirementTypes);
+    public List<OrderInformation> getOrderInformationListByConditions(String likeCarType1, String likeCarType2, String likeCarType3, String likeOrderStatus, String minTransportTime, String maxTransportTime, String note);
 
     public OrderInformation selectAllByOrderIdAndTransportTimeBetween(String orderId, String minTransportTime, String maxTransportTime);
 
     List<OrderInformation> selectOrderByStatus(String status);
 
-    List<OrderInformation> selectOrderByReceived(String[] status);
+    List<OrderInformation> selectOrderByReceived(OrderInformation orderInformation,String[] status);
 
     List<OrderInformation> selectPersonalOrderByConditions(String driverPhoneNumber, String minTransportTime, String maxTransportTime, String likeOrderStatus1, String likeOrderStatus2, String likeOrderStatus3, String likeOrderStatus4);
 

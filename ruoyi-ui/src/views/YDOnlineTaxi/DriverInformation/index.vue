@@ -39,7 +39,10 @@
       </el-form-item>
       <el-form-item label="车型" prop="driverCarType">
         <el-select v-model="queryParams.driverCarType" placeholder="请选择车型" clearable size="small">
-          <el-option label="请选择字典生成" value="" />
+          <el-option label="舒适型" value="舒适型" />
+          <el-option label="豪华型" value="豪华型" />
+          <el-option label="商务型" value="商务型" />
+          <el-option label="豪华商务型" value="豪华商务型" />
         </el-select>
       </el-form-item>
       <el-form-item label="汽车型号" prop="carModel">
@@ -53,7 +56,9 @@
       </el-form-item>
       <el-form-item label="等级" prop="driverLevel">
         <el-select v-model="queryParams.driverLevel" placeholder="请选择等级" clearable size="small">
-          <el-option label="请选择字典生成" value="" />
+          <el-option label="黄金" value="黄金" />
+          <el-option label="钻石" value="钻石" />
+          <el-option label="王者" value="王者" />
         </el-select>
       </el-form-item>
       <el-form-item>

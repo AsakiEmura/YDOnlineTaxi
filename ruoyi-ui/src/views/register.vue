@@ -150,7 +150,7 @@ export default {
   justify-content: center;
   align-items: center;
   height: 100%;
-  background-image: url("../assets/images/login-background.jpg");
+  background-image: url("../assets/images/login_bg1.png");
   background-size: cover;
 }
 .title {
@@ -160,10 +160,11 @@ export default {
 }
 
 .register-form {
-  border-radius: 6px;
-  background-image: linear-gradient(to left bottom, #d7d2cc 20%, #070D41 90%);
+  border-radius: 15px;
+  background-image: linear-gradient(to top, #dfe9f3 0%, white 100%);
   width: 400px;
   padding: 25px 25px 5px 25px;
+  box-shadow: 0px 2px 20px rgba(0,0,0,0.3);
   .el-input {
     height: 38px;
     input {

@@ -9,6 +9,24 @@ export function listOrderInformation(query) {
   })
 }
 
+// 查询自定司机信息列表
+export function listDriverInformation(query) {
+  return request({
+    url: '/YDOnlineTaxi/DriverInformation/orderDriver',
+    method: 'get',
+    params: query
+  })
+}
+
+// 指定司机
+export function orderDriver(data) {
+  return request({
+    url: '/YDOnlineTaxi/OrderInformation/orderDriver',
+    method: 'put',
+    data: data
+  })
+}
+
 // 查询一种状态订单信息列表
 export function singleStatusList(data) {
   return request({
@@ -19,10 +37,11 @@ export function singleStatusList(data) {
 }
 
 // 查询已接单司机未出发司机已出发状态订单信息列表
-export function receivedListList() {
+export function receivedListList(query) {
   return request({
     url: '/YDOnlineTaxi/OrderInformation/receivedList',
     method: 'get',
+    params: query
   })
 }
 
@@ -34,10 +53,11 @@ export function settlement() {
 }
 
 // 查询审核结算订单信息列表
-export function auditSettlementList() {
+export function auditSettlementList(query) {
   return request({
     url: '/YDOnlineTaxi/OrderInformation/auditSettlementList',
     method: 'get',
+    params: query
   })
 }
 
@@ -69,7 +89,16 @@ export function addOrderInformation(data) {
 // 修改订单信息
 export function updateOrderInformation(data) {
   return request({
-    url: '/YDOnlineTaxi/OrderInformation',
+    url: '/YDOnlineTaxi/OrderInformation/',
+    method: 'put',
+    data: data
+  })
+}
+
+// 超时订单重新发布
+export function resetOrderStatus(data) {
+  return request({
+    url: '/YDOnlineTaxi/OrderInformation/resetOrderStatus',
     method: 'put',
     data: data
   })

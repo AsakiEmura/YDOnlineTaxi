@@ -5,54 +5,83 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.YDOnlineTaxi.mapper.OrderInformationMapper">
     <sql id="Base_Column_List">
         order_id,
-        departure,
-        destination,
-        transport_time,
-        requirement_types,
-        car_type,
+        passenger_property,
         passenger,
+        passenger_sex,
         passenger_phone,
+        flight_number,
+        creation_date,
+        transport_time,
+        departure,
+        intermediate_port,
+        destination,
+        car_type,
+        driver_information,
+        driver_base,
+        passenger_price,
+        parking_fees,
+        toll_fees,
         points,
         note,
         order_status,
-        refuse_reason,
         expire_time,
+        refuse_reason,
         driver_phone_number
     </sql>
     <resultMap type="com.ruoyi.YDOnlineTaxi.domain.OrderInformation" id="OrderInformationResult">
         <result property="orderId"    column="order_id"    />
-        <result property="departure"    column="departure"    />
-        <result property="destination"    column="destination"    />
-        <result property="transportTime"    column="transport_time"    />
-        <result property="requirementTypes"    column="requirement_types"    />
-        <result property="carType"    column="car_type"    />
+        <result property="passengerProperty"    column="passenger_property"    />
         <result property="passenger"    column="passenger"    />
+        <result property="passengerSex"    column="passenger_sex"    />
         <result property="passengerPhone"    column="passenger_phone"    />
+        <result property="flightNumber"    column="flight_number"    />
+        <result property="creationDate"    column="creation_date"    />
+        <result property="transportTime"    column="transport_time"    />
+        <result property="departure"    column="departure"    />
+        <result property="intermediatePort"    column="intermediate_port"    />
+        <result property="destination"    column="destination"    />
+        <result property="carType"    column="car_type"    />
+        <result property="driverInformation"    column="driver_information"    />
+        <result property="driverBase"    column="driver_base"    />
+        <result property="passengerPrice"    column="passenger_price"    />
+        <result property="parkingFees"    column="parking_fees"    />
+        <result property="tollFees"    column="toll_fees"    />
         <result property="points"    column="points"    />
         <result property="note"    column="note"    />
         <result property="orderStatus"    column="order_status"    />
-        <result property="refuseReason"    column="refuse_reason"    />
         <result property="expireTime"    column="expire_time"    />
+        <result property="refuseReason"    column="refuse_reason"    />
         <result property="driverPhoneNumber"    column="driver_phone_number"    />
     </resultMap>
 
     <sql id="selectOrderInformationVo">
-        select order_id, departure, destination, transport_time, requirement_types, car_type, passenger, passenger_phone, points, note, order_status, refuse_reason, expire_time, driver_phone_number from YDOnlineTaxi.order_information
+        select order_id, passenger_property, passenger, passenger_sex, passenger_phone, flight_number, creation_date, transport_time, departure, intermediate_port, destination, car_type, driver_information, driver_base, passenger_price, parking_fees, toll_fees, points, note, order_status, expire_time, refuse_reason, driver_phone_number from YDOnlineTaxi.order_information
     </sql>
 
     <select id="selectOrderInformationList" parameterType="com.ruoyi.YDOnlineTaxi.domain.OrderInformation" resultMap="OrderInformationResult">
         <include refid="selectOrderInformationVo"/>
         <where>
-            <if test="orderId != null  and orderId != ''"> and order_id = #{orderId}</if>
-            <if test="departure != null  and departure != ''"> and departure = #{departure}</if>
-            <if test="destination != null  and destination != ''"> and destination = #{destination}</if>
-            <if test="transportTime != null "> and transport_time like concat('%', #{transportTime}, '%')</if>
-            <if test="requirementTypes != null  and requirementTypes != ''"> and requirement_types = #{requirementTypes}</if>
-            <if test="carType != null  and carType != ''"> and car_type = #{carType}</if>
-            <if test="passenger != null  and passenger != ''"> and passenger = #{passenger}</if>
-            <if test="passengerPhone != null  and passengerPhone != ''"> and passenger_phone = #{passengerPhone}</if>
+            <if test="orderId != null  and orderId != ''"> and order_id like concat('%', #{orderId}, '%')</if>
+            <if test="passengerProperty != null  and passengerProperty != ''"> and passenger_property like concat('%', #{passengerProperty}, '%')</if>
+            <if test="passenger != null  and passenger != ''"> and passenger like concat('%', #{passenger}, '%')</if>
+            <if test="passengerSex != null  and passengerSex != ''"> and passenger_sex = #{passengerSex}</if>
+            <if test="passengerPhone != null  and passengerPhone != ''"> and passenger_phone like concat('%', #{passengerPhone}, '%')</if>
+            <if test="flightNumber != null  and flightNumber != ''"> and flight_number like concat('%', #{flightNumber}, '%')</if>
+            <if test="creationDate != null "> and creation_date &gt;=  #{creationDate}</if>
+            <if test="creationDate != null "> and creation_date &lt;=  date_sub(#{creationDate},interval -1 day)</if>
+            <if test="transportTime != null "> and transport_time &gt;= #{transportTime}</if>
+            <if test="transportTime != null "> and transport_time &lt;= date_sub(#{transportTime},interval -1 day)</if>
+            <if test="departure != null  and departure != ''"> and departure like concat('%', #{departure}, '%')</if>
+            <if test="intermediatePort != null  and intermediatePort != ''"> and intermediate_port like concat('%', #{intermediatePort}, '%')</if>
+            <if test="destination != null  and destination != ''"> and destination like concat('%', #{destination}, '%')</if>
+            <if test="carType != null  and carType != ''"> and car_type like concat('%', #{carType}, '%')</if>
+            <if test="driverInformation != null  and driverInformation != ''"> and driver_information like concat('%', #{driverInformation}, '%')</if>
+            <if test="driverBase != null "> and driver_base = #{driverBase}</if>
+            <if test="passengerPrice != null "> and passenger_price = #{passengerPrice}</if>
+            <if test="parkingFees != null "> and parking_fees = #{parkingFees}</if>
+            <if test="tollFees != null "> and toll_fees = #{tollFees}</if>
             <if test="points != null "> and points = #{points}</if>
-            <if test="orderStatus != null  and orderStatus != ''"> and order_status = #{orderStatus}</if>
+            <if test="note != null  and note != ''"> and note = #{note}</if>
         </where>
         order by transport_time
     </select>
@@ -66,34 +95,52 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         insert into YDOnlineTaxi.order_information
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="orderId != null">order_id,</if>
-            <if test="departure != null and departure != ''">departure,</if>
-            <if test="destination != null and destination != ''">destination,</if>
-            <if test="transportTime != null">transport_time,</if>
-            <if test="requirementTypes != null and requirementTypes != ''">requirement_types,</if>
-            <if test="carType != null and carType != ''">car_type,</if>
+            <if test="passengerProperty != null and passengerProperty != ''">passenger_property,</if>
             <if test="passenger != null and passenger != ''">passenger,</if>
+            <if test="passengerSex != null and passengerSex != ''">passenger_sex,</if>
             <if test="passengerPhone != null and passengerPhone != ''">passenger_phone,</if>
+            <if test="flightNumber != null">flight_number,</if>
+            <if test="creationDate != null">creation_date,</if>
+            <if test="transportTime != null">transport_time,</if>
+            <if test="departure != null and departure != ''">departure,</if>
+            <if test="intermediatePort != null">intermediate_port,</if>
+            <if test="destination != null and destination != ''">destination,</if>
+            <if test="carType != null and carType != ''">car_type,</if>
+            <if test="driverInformation != null">driver_information,</if>
+            <if test="driverBase != null">driver_base,</if>
+            <if test="passengerPrice != null">passenger_price,</if>
+            <if test="parkingFees != null">parking_fees,</if>
+            <if test="tollFees != null">toll_fees,</if>
             <if test="points != null">points,</if>
             <if test="note != null">note,</if>
             <if test="orderStatus != null and orderStatus != ''">order_status,</if>
-            <if test="refuseReason != null">refuse_reason,</if>
             <if test="expireTime != null">expire_time,</if>
+            <if test="refuseReason != null">refuse_reason,</if>
             <if test="driverPhoneNumber != null">driver_phone_number,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="orderId != null">#{orderId},</if>
-            <if test="departure != null and departure != ''">#{departure},</if>
-            <if test="destination != null and destination != ''">#{destination},</if>
-            <if test="transportTime != null">#{transportTime},</if>
-            <if test="requirementTypes != null and requirementTypes != ''">#{requirementTypes},</if>
-            <if test="carType != null and carType != ''">#{carType},</if>
+            <if test="passengerProperty != null and passengerProperty != ''">#{passengerProperty},</if>
             <if test="passenger != null and passenger != ''">#{passenger},</if>
+            <if test="passengerSex != null and passengerSex != ''">#{passengerSex},</if>
             <if test="passengerPhone != null and passengerPhone != ''">#{passengerPhone},</if>
+            <if test="flightNumber != null">#{flightNumber},</if>
+            <if test="creationDate != null">#{creationDate},</if>
+            <if test="transportTime != null">#{transportTime},</if>
+            <if test="departure != null and departure != ''">#{departure},</if>
+            <if test="intermediatePort != null">#{intermediatePort},</if>
+            <if test="destination != null and destination != ''">#{destination},</if>
+            <if test="carType != null and carType != ''">#{carType},</if>
+            <if test="driverInformation != null">#{driverInformation},</if>
+            <if test="driverBase != null">#{driverBase},</if>
+            <if test="passengerPrice != null">#{passengerPrice},</if>
+            <if test="parkingFees != null">#{parkingFees},</if>
+            <if test="tollFees != null">#{tollFees},</if>
             <if test="points != null">#{points},</if>
             <if test="note != null">#{note},</if>
             <if test="orderStatus != null and orderStatus != ''">#{orderStatus},</if>
-            <if test="refuseReason != null">#{refuseReason},</if>
             <if test="expireTime != null">#{expireTime},</if>
+            <if test="refuseReason != null">#{refuseReason},</if>
             <if test="driverPhoneNumber != null">#{driverPhoneNumber},</if>
          </trim>
     </insert>
@@ -101,19 +148,28 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <update id="updateOrderInformation" parameterType="com.ruoyi.YDOnlineTaxi.domain.OrderInformation">
         update YDOnlineTaxi.order_information
         <trim prefix="SET" suffixOverrides=",">
-            <if test="departure != null and departure != ''">departure = #{departure},</if>
-            <if test="destination != null and destination != ''">destination = #{destination},</if>
-            <if test="transportTime != null">transport_time = #{transportTime},</if>
-            <if test="requirementTypes != null and requirementTypes != ''">requirement_types = #{requirementTypes},</if>
-            <if test="carType != null and carType != ''">car_type = #{carType},</if>
+            <if test="passengerProperty != null and passengerProperty != ''">passenger_property = #{passengerProperty},</if>
             <if test="passenger != null and passenger != ''">passenger = #{passenger},</if>
+            <if test="passengerSex != null and passengerSex != ''">passenger_sex = #{passengerSex},</if>
             <if test="passengerPhone != null and passengerPhone != ''">passenger_phone = #{passengerPhone},</if>
+            <if test="flightNumber != null">flight_number = #{flightNumber},</if>
+            <if test="creationDate != null">creation_date = #{creationDate},</if>
+            <if test="transportTime != null">transport_time = #{transportTime},</if>
+            <if test="departure != null and departure != ''">departure = #{departure},</if>
+            <if test="intermediatePort != null">intermediate_port = #{intermediatePort},</if>
+            <if test="destination != null and destination != ''">destination = #{destination},</if>
+            <if test="carType != null and carType != ''">car_type = #{carType},</if>
+            <if test="driverInformation != null">driver_information = #{driverInformation},</if>
+            <if test="driverBase != null">driver_base = #{driverBase},</if>
+            <if test="passengerPrice != null">passenger_price = #{passengerPrice},</if>
+            <if test="parkingFees != null">parking_fees = #{parkingFees},</if>
+            <if test="tollFees != null">toll_fees = #{tollFees},</if>
             <if test="points != null">points = #{points},</if>
             <if test="note != null">note = #{note},</if>
             <if test="orderStatus != null and orderStatus != ''">order_status = #{orderStatus},</if>
-            <if test="refuseReason != null">refuse_reason = #{refuseReason},</if>
             <if test="expireTime != null">expire_time = #{expireTime},</if>
-            <if test="driverPhoneNumber != null and driverPhoneNumber != ''">driver_phone_number = #{driverPhoneNumber},</if>
+            <if test="refuseReason != null">refuse_reason = #{refuseReason},</if>
+            <if test="driverPhoneNumber != null">driver_phone_number = #{driverPhoneNumber},</if>
         </trim>
         where order_id = #{orderId}
     </update>
@@ -158,7 +214,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             order_status = #{likeOrderStatus}
             <if test="minTransportTime != null and minTransportTime != ''"><![CDATA[and DATE_FORMAT(transport_time,'%Y-%m-%d %H:%i:%s') >= DATE_FORMAT(#{minTransportTime},'%Y-%m-%d %H:%i:%s')]]></if>
             <if test="maxTransportTime != null and maxTransportTime != ''"><![CDATA[and DATE_FORMAT(transport_time,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{maxTransportTime},'%Y-%m-%d %H:%i:%s')]]></if>
-            <if test="requirementTypes != null and requirementTypes != ''">and requirement_types=#{requirementTypes}</if>
+            <if test="note != null and note != ''">and note=#{note}</if>
             )
         </where>
         order by transport_time,points desc
@@ -184,12 +240,31 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </where>
     </select>
 
-    <select id="selectOrderByReceived" parameterType="java.util.List" resultMap="OrderInformationResult">
-        select *
-        from YDOnlineTaxi.order_information
+    <select id="selectOrderByReceived" parameterType="com.ruoyi.YDOnlineTaxi.domain.OrderInformation" resultMap="OrderInformationResult">
+        <include refid="selectOrderInformationVo"/>
         <where>
+            <if test="orderInformation.orderId != null  and orderInformation.orderId != ''"> and order_id like concat('%', #{orderInformation.orderId}, '%')</if>
+            <if test="orderInformation.passengerProperty != null  and orderInformation.passengerProperty != ''"> and passenger_property like concat('%', #{orderInformation.passengerProperty}, '%')</if>
+            <if test="orderInformation.passenger != null  and orderInformation.passenger != ''"> and passenger like concat('%', #{orderInformation.passenger}, '%')</if>
+            <if test="orderInformation.passengerSex != null  and orderInformation.passengerSex != ''"> and passenger_sex = #{orderInformation.passengerSex}</if>
+            <if test="orderInformation.passengerPhone != null  and orderInformation.passengerPhone != ''"> and passenger_phone like concat('%', #{orderInformation.passengerPhone}, '%')</if>
+            <if test="orderInformation.flightNumber != null  and orderInformation.flightNumber != ''"> and flight_number like concat('%', #{orderInformation.flightNumber}, '%')</if>
+            <if test="orderInformation.creationDate != null "> and creation_date like concat('%', #{orderInformation.creationDate}, '%')</if>
+            <if test="orderInformation.transportTime != null "> and transport_time like concat('%', #{orderInformation.transportTime}, '%')</if>
+            <if test="orderInformation.departure != null  and orderInformation.departure != ''"> and departure like concat('%', #{orderInformation.departure}, '%')</if>
+            <if test="orderInformation.intermediatePort != null  and orderInformation.intermediatePort != ''"> and intermediate_port like concat('%', #{orderInformation.intermediatePort}, '%')</if>
+            <if test="orderInformation.destination != null  and orderInformation.destination != ''"> and destination like concat('%', #{orderInformation.destination}, '%')</if>
+            <if test="orderInformation.carType != null  and orderInformation.carType != ''"> and car_type like concat('%', #{orderInformation.carType}, '%')</if>
+            <if test="orderInformation.driverInformation != null  and orderInformation.driverInformation != ''"> and driver_information like concat('%', #{orderInformation.driverInformation}, '%')</if>
+            <if test="orderInformation.driverBase != null "> and driver_base = #{orderInformation.driverBase}</if>
+            <if test="orderInformation.passengerPrice != null "> and passenger_price = #{orderInformation.passengerPrice}</if>
+            <if test="orderInformation.parkingFees != null "> and parking_fees = #{orderInformation.parkingFees}</if>
+            <if test="orderInformation.tollFees != null "> and toll_fees = #{orderInformation.tollFees}</if>
+            <if test="orderInformation.points != null "> and points = #{orderInformation.points}</if>
+            <if test="orderInformation.note != null  and orderInformation.note != ''"> and note = #{orderInformation.note}</if>
+            and
             order_status in
-            <foreach collection="array" open="(" separator="," close=")" item="status" index="index">
+            <foreach collection="status" open="(" separator="," close=")" item="status" index="index">
                 #{status}
             </foreach>
         </where>
@@ -207,7 +282,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="minTransportTime != null and minTransportTime != ''">
                 <![CDATA[and DATE_FORMAT(transport_time,'%Y-%m-%d %H:%i:%s') >= DATE_FORMAT(#{minTransportTime},'%Y-%m-%d %H:%i:%s')]]></if>
             <if test="maxTransportTime != null and maxTransportTime != ''">
-                <![CDATA[and DATE_FORMAT(transport_time,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{maxTransportTime},'%Y-%m-%d]]>%H:%i:%s')</if>
+                <![CDATA[and DATE_FORMAT(transport_time,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{maxTransportTime},'%Y-%m-%d %H:%i:%s')]]></if>
             )
             and
             (

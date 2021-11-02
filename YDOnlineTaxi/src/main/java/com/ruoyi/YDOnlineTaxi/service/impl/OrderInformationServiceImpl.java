@@ -1,6 +1,7 @@
 package com.ruoyi.YDOnlineTaxi.service.impl;
 
 import com.ruoyi.YDOnlineTaxi.constant.enums.OrderStatus;
+import com.ruoyi.YDOnlineTaxi.domain.DriverInformation;
 import com.ruoyi.YDOnlineTaxi.domain.OrderInformation;
 import com.ruoyi.YDOnlineTaxi.mapper.OrderInformationMapper;
 import com.ruoyi.YDOnlineTaxi.service.IOrderInformationService;
@@ -201,8 +202,8 @@ public class OrderInformationServiceImpl implements IOrderInformationService
     }
 
     @Override
-    public List<OrderInformation> getOrderInformationListByConditions(String likeCarType1, String likeCarType2, String likeCarType3, String likeOrderStatus, String minTransportTime, String maxTransportTime, String requirementTypes) {
-        return orderInformationMapper.getOrderInformationListByConditions(likeCarType1, likeCarType2, likeCarType3, likeOrderStatus, minTransportTime, maxTransportTime, requirementTypes);
+    public List<OrderInformation> getOrderInformationListByConditions(String likeCarType1, String likeCarType2, String likeCarType3, String likeOrderStatus, String minTransportTime, String maxTransportTime, String note) {
+        return orderInformationMapper.getOrderInformationListByConditions(likeCarType1, likeCarType2, likeCarType3, likeOrderStatus, minTransportTime, maxTransportTime, note);
     }
 
     @Override
@@ -211,8 +212,8 @@ public class OrderInformationServiceImpl implements IOrderInformationService
     }
 
     @Override
-    public List<OrderInformation> selectOrderByReceived(String[] status) {
-        return orderInformationMapper.selectOrderByReceived(status);
+    public List<OrderInformation> selectOrderByReceived(OrderInformation orderInformation,String[] status) {
+        return orderInformationMapper.selectOrderByReceived(orderInformation,status);
     }
 
     @Override

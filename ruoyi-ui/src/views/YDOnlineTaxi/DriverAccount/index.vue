@@ -64,7 +64,7 @@
             type="text"
             icon="el-icon-edit"
             @click="Audit(scope.row)"
-            v-hasPermi="['YDOnlineTaxi:DriverAccount:edit']"
+            v-hasPermi="['YDOnlineTaxi:DriverAccount:audit']"
           >审核
           </el-button>
         </template>

@@ -1,9 +1,11 @@
 package com.ruoyi.web.controller.YDOnlineTaxi;
 
 import com.rabbitmq.client.Channel;
+import com.ruoyi.YDOnlineTaxi.domain.OrderDetails;
 import com.ruoyi.YDOnlineTaxi.domain.OrderInformation;
 import com.ruoyi.YDOnlineTaxi.domain.WxWithDrivers;
 import com.ruoyi.YDOnlineTaxi.service.IOrderInformationService;
+import com.ruoyi.YDOnlineTaxi.service.OrderDetailsService;
 import com.ruoyi.YDOnlineTaxi.service.WxWithDriversService;
 import com.ruoyi.YDOnlineTaxi.utils.JPushUtils;
 import com.ruoyi.YDOnlineTaxi.utils.RSAEncrypt;
@@ -31,6 +33,9 @@ public final class WxRabbitMQ {
 
     @Autowired
     private RabbitMQProducer rabbitMQProducer;
+
+    @Autowired
+    private OrderDetailsService orderDetailsService;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -96,32 +101,42 @@ public final class WxRabbitMQ {
 
     @RabbitListener(queues = RabbitMQConfig.DELAY_QUEUE_NAME_DEAD)
     public void consumerDead(Message message, Channel channel) throws IOException {
-        //获取对应等级的openid列表,并且次数减一
         String orderId = new String(message.getBody());
         OrderInformation orderInformation = orderInformationService.selectOrderInformationByOrderId(orderId);
-        //获取订单当前状态
-        String orderStatus = orderInformation.getOrderStatus();
-        //待派单,已重新派,已超时单代表当前已超时
-        if (orderStatus.equals("待派单") || orderStatus.equals("已超时")) {
-            orderInformation.setOrderStatus("已超时");
-            if (orderInformation.getExpireTime() >= 30) {
-                orderInformation.setExpireTime(orderInformation.getExpireTime() + 1);
-            } else {
-                orderInformation.setExpireTime(30);
+        if(orderInformation == null)
+        {
+            OrderDetails orderDetails = orderDetailsService.selectByPrimaryKey(orderId);
+            if (orderDetails != null) {
+                orderDetailsService.deleteByPrimaryKey(orderId);
             }
-            orderInformationService.updateOrderInformation(orderInformation);
             channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
-            rabbitMQProducer.sendMsg(RabbitMQConfig.DELAY_EXCHANGE_NAME_EXPIRED, RabbitMQConfig.DELAY_ROUTINGKEY_NAME_EXPIRED, orderId, 60 * 1000);
-        } else if (orderStatus.equals("重新派单")) {
-            orderInformation.setOrderStatus("待派单");
-            orderInformation.setExpireTime(0);
-            orderInformationService.updateOrderInformation(orderInformation);
-            channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
-            rabbitMQProducer.sendMsg(RabbitMQConfig.DELAY_EXCHANGE_NAME, RabbitMQConfig.DELAY_ROUTINGKEY_NAME_DEAD, orderId, 40 * 60 * 1000);
-        } else {
-            orderInformation.setExpireTime(0);
-            orderInformationService.updateOrderInformation(orderInformation);
-            channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+            return;
+        }
+        else{
+            //获取订单当前状态
+            String orderStatus = orderInformation.getOrderStatus();
+            //待派单,已重新派,已超时单代表当前已超时
+            if (orderStatus.equals("待派单") || orderStatus.equals("已超时")) {
+                orderInformation.setOrderStatus("已超时");
+                if (orderInformation.getExpireTime() >= 30) {
+                    orderInformation.setExpireTime(orderInformation.getExpireTime() + 1);
+                } else {
+                    orderInformation.setExpireTime(30);
+                }
+                orderInformationService.updateOrderInformation(orderInformation);
+                channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+                rabbitMQProducer.sendMsg(RabbitMQConfig.DELAY_EXCHANGE_NAME_EXPIRED, RabbitMQConfig.DELAY_ROUTINGKEY_NAME_EXPIRED, orderId, 60 * 1000);
+            } else if (orderStatus.equals("重新派单")) {
+                orderInformation.setOrderStatus("待派单");
+                orderInformation.setExpireTime(0);
+                orderInformationService.updateOrderInformation(orderInformation);
+                channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+                rabbitMQProducer.sendMsg(RabbitMQConfig.DELAY_EXCHANGE_NAME, RabbitMQConfig.DELAY_ROUTINGKEY_NAME_DEAD, orderId, 40 * 60 * 1000);
+            } else {
+                orderInformation.setExpireTime(0);
+                orderInformationService.updateOrderInformation(orderInformation);
+                channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+            }
         }
     }
 }

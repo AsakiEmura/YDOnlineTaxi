@@ -53,7 +53,13 @@
           <el-option label="舒适型" value="舒适型" />
           <el-option label="豪华型" value="豪华型" />
           <el-option label="商务型" value="商务型" />
-          <el-option label="豪华商务型" value="豪华商务型" />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="订单状态" prop="carType">
+        <el-select v-model="queryParams.orderStatus" placeholder="请选择订单状态" clearable size="small">
+          <el-option label="已派单" value="已派单" />
+          <el-option label="司机已出发" value="司机已出发" />
+          <el-option label="司机已到达" value="司机已到达" />
         </el-select>
       </el-form-item>
       <el-form-item label="乘客称呼" prop="passenger">
@@ -114,16 +120,6 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="info"
-          plain
-          icon="el-icon-upload2"
-          size="mini"
-          @click="handleImport"
-          v-hasPermi="['system:user:import']"
-        >导入</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
           type="warning"
           plain
           icon="el-icon-download"
@@ -135,35 +131,6 @@
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
-    <!-- 用户导入对话框 -->
-    <el-dialog :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body>
-      <el-upload
-        ref="upload"
-        :limit="1"
-        accept=".xlsx, .xls"
-        :headers="upload.headers"
-        :action="upload.url + '?updateSupport=' + upload.updateSupport"
-        :disabled="upload.isUploading"
-        :on-progress="handleFileUploadProgress"
-        :on-success="handleFileSuccess"
-        :auto-upload="false"
-        drag
-      >
-        <i class="el-icon-upload"></i>
-        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-        <div class="el-upload__tip text-center" slot="tip">
-          <div class="el-upload__tip" slot="tip">
-            <el-checkbox v-model="upload.updateSupport" /> 是否更新已经存在的订单数据
-          </div>
-          <span>仅允许导入xls、xlsx格式文件。</span>
-          <el-link type="primary" :underline="false" style="font-size:12px;vertical-align: baseline;" @click="importTemplate">下载模板</el-link>
-        </div>
-      </el-upload>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitFileForm">确 定</el-button>
-        <el-button @click="upload.open = false">取 消</el-button>
-      </div>
-    </el-dialog>
 
     <el-table v-loading="loading" :data="OrderInformationList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
@@ -195,6 +162,14 @@
           <el-button
             size="mini"
             type="text"
+            icon="el-icon-edit"
+            @click="orderDriver(scope.row)"
+            v-hasPermi="['YDOnlineTaxi:OrderInformation:edit']"
+            v-if="scope.row.orderStatus === '已派单' || scope.row.orderStatus === '未出发' || scope.row.orderStatus === '待派单' || scope.row.orderStatus === '已超时'"
+          >指定司机</el-button>
+          <el-button
+            size="mini"
+            type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['YDOnlineTaxi:OrderInformation:remove']"
@@ -210,6 +185,42 @@
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
+
+    <!-- 添加或修改订单信息对话框 -->
+    <el-dialog :title="title" :visible.sync="order_open" width="500px" append-to-body>
+      <span>手 机 号 ：&ensp; </span>
+      <el-select id="phoneId" v-model="phoneNumber_temp"
+                 filterable
+                 placeholder="请选择"
+                 @change = "phoneGetName()"
+      >
+        <el-option
+          v-for="item in options"
+          :key="item.value"
+          :label="item.value"
+          :value="item.value" >
+        </el-option>
+      </el-select>
+      <div style="margin-top: 20px">
+        <span>{{"司机姓名："}}</span>
+        <el-select v-model="driverName_temp"
+                   filterable
+                   placeholder="请选择"
+                   @change = "nameGetPhone()"
+        >
+          <el-option
+            v-for="item in options"
+            :key="item.label"
+            :label="item.label"
+            :value="item.label">
+          </el-option>
+        </el-select>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="orderDriverSubmit">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
 
     <!-- 添加或修改订单信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
@@ -273,7 +284,7 @@ import {
   updateOrderInformation,
   exportOrderInformation,
   importTemplate,
-  singleStatusList, receivedListList
+  singleStatusList, receivedListList, listDriverInformation, orderDriver
 } from "@/api/YDOnlineTaxi/OrderInformation";
 import { getToken } from "@/utils/auth";
 
@@ -281,6 +292,12 @@ export default {
   name: "OrderInformation",
   data() {
     return {
+      //指定司机
+      orderId_temp: null,
+      driverName_temp: null,
+      phoneNumber_temp: null,
+      order_open: false,
+      options: [],
       // 遮罩层
       loading: true,
       // 导出遮罩层
@@ -306,30 +323,24 @@ export default {
         pageNum: 1,
         pageSize: 10,
         orderId: null,
-        departure: null,
-        destination: null,
-        transportTime: null,
-        requirementTypes: null,
-        carType: null,
+        passengerProperty: null,
         passenger: null,
+        passengerSex: null,
         passengerPhone: null,
+        flightNumber: null,
+        creationDate: null,
+        transportTime: null,
+        departure: null,
+        intermediatePort: null,
+        destination: null,
+        carType: null,
+        driverInformation: null,
+        driverBase: null,
+        passengerPrice: null,
+        parkingFees: null,
+        tollFees: null,
         points: null,
-        orderStatus: null,
-      },
-      // 用户导入参数
-      upload: {
-        // 是否显示弹出层（用户导入）
-        open: false,
-        // 弹出层标题（用户导入）
-        title: "",
-        // 是否禁用上传
-        isUploading: false,
-        // 是否更新已经存在的用户数据
-        updateSupport: 0,
-        // 设置上传的请求头部
-        headers: { Authorization: "Bearer " + getToken() },
-        // 上传的地址
-        url: process.env.VUE_APP_BASE_API + "/YDOnlineTaxi/OrderInformation/importData"
+        note: null,
       },
       // 表单参数
       form: {},
@@ -372,7 +383,7 @@ export default {
     /** 查询订单信息列表 */
     getList() {
       this.loading = true;
-      receivedListList().then(response => {
+      receivedListList(this.queryParams).then(response => {
         this.OrderInformationList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -381,6 +392,7 @@ export default {
     // 取消按钮
     cancel() {
       this.open = false;
+      this.order_open = false;
       this.reset();
     },
     // 表单重置
@@ -417,12 +429,6 @@ export default {
       this.single = selection.length!==1
       this.multiple = !selection.length
     },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加订单信息";
-    },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
@@ -432,6 +438,54 @@ export default {
         this.open = true;
         this.title = "修改订单信息";
       });
+    },
+    /** 手机号动态锁定姓名 */
+    phoneGetName(){
+      for(let i=0;i<this.options.length;i++){
+        if(this.phoneNumber_temp === this.options[i].value){
+          this.driverName_temp = this.options[i].label;
+        }
+      }
+    },
+    /** 姓名动态锁定手机号 */
+    nameGetPhone(){
+      for(let i=0;i<this.options.length;i++){
+        if(this.driverName_temp === this.options[i].label){
+          this.phoneNumber_temp = this.options[i].value;
+        }
+      }
+    },
+    /** 指定司机操作 */
+    orderDriver(row) {
+      this.reset();
+      this.orderId_temp = row.orderId || this.ids
+      listDriverInformation().then(response => {
+        this.options = [];
+        for(let i=0; i<response.length;i++){
+          let data = {
+            value: response[i].driverPhoneNumber,
+            label: response[i].driverName
+          }
+          this.options.push(data);
+        }
+        this.order_open = true;
+        this.title = "指定司机";
+      });
+    },
+    /** 提交按钮 */
+    orderDriverSubmit() {
+      let data = {
+        orderId: this.orderId_temp,
+        phoneNumber: this.phoneNumber_temp
+      }
+      orderDriver(data).then(response => {
+        this.msgSuccess("修改成功");
+        this.order_open = false;
+        this.getList();
+      });
+      this.driverName_temp = null;
+      this.phoneNumber_temp = null;
+      this.orderId_temp = null;
     },
     /** 提交按钮 */
     submitForm() {
@@ -474,33 +528,6 @@ export default {
         this.download(response.msg);
         this.exportLoading = false;
       }).catch(() => {});
-    },
-    /** 导入按钮操作 */
-    handleImport() {
-      this.upload.title = "订单导入";
-      this.upload.open = true;
-    },
-    // 文件上传中处理
-    handleFileUploadProgress(event, file, fileList) {
-      this.upload.isUploading = true;
-    },
-    // 文件上传成功处理
-    handleFileSuccess(response, file, fileList) {
-      this.upload.open = false;
-      this.upload.isUploading = false;
-      this.$refs.upload.clearFiles();
-      this.$alert(response.msg, "导入结果", { dangerouslyUseHTMLString: true });
-      this.getList();
-    },
-    // 提交上传文件
-    submitFileForm() {
-      this.$refs.upload.submit();
-    },
-    /** 下载模板操作 */
-    importTemplate() {
-      importTemplate().then(response => {
-        this.download(response.msg);
-      });
     },
   }
 };

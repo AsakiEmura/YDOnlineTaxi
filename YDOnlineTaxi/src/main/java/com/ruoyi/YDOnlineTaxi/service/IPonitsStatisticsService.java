@@ -58,4 +58,6 @@ public interface IPonitsStatisticsService
      * @return 结果
      */
     public int deletePonitsStatisticsByDriverPhoneNumber(String driverPhoneNumber);
+
+    public int updateMonthPoints();
 }

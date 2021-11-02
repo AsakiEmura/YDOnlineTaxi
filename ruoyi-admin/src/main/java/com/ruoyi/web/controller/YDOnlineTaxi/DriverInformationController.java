@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * 司机线上账户信息
 Controller
- * 
+ *
  * @author ruoyi
  * @date 2021-09-08
  */
@@ -43,6 +43,18 @@ public class DriverInformationController extends BaseController
         startPage();
         List<DriverInformation> list = driverInformationService.selectDriverInformationList(driverInformation);
         return getDataTable(list);
+    }
+
+    /**
+     * 查询司机线上账户信息列表
+     */
+    //TODO(修改权限字符)
+    @PreAuthorize("@ss.hasPermi('YDOnlineTaxi:DriverInformation:list')")
+    @GetMapping("/orderDriver")
+    public List<DriverInformation> orderDriver(DriverInformation driverInformation)
+    {
+        startPage();
+        return driverInformationService.selectDriverInformationList(driverInformation);
     }
 
     /**

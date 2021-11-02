@@ -53,7 +53,7 @@
           <el-option label="舒适型" value="舒适型" />
           <el-option label="豪华型" value="豪华型" />
           <el-option label="商务型" value="商务型" />
-          <el-option label="豪华商务型" value="豪华商务型" />
+
         </el-select>
       </el-form-item>
       <el-form-item label="订单状态" prop="carType">
@@ -278,9 +278,10 @@
             :src="item"
             :preview-src-list="extra_form.proofPhoto"
           />
-          <el-form-item label="备注" prop="notes">
-            <span>{{extra_form.notes[index]}}</span>
-          </el-form-item>
+
+        </el-form-item>
+        <el-form-item label="备注" prop="notes" v-for="(item, index) in extra_form.notes">
+          <span>{{extra_form.notes[index]}}</span>
         </el-form-item>
         <el-form-item label="审核结果" prop="refuseReason">
           <el-select v-model="extra_form.extraPointsStatus" placeholder="请指定申请结果"  size="small">
@@ -347,15 +348,24 @@ export default {
         pageNum: 1,
         pageSize: 10,
         orderId: null,
-        departure: null,
-        destination: null,
-        transportTime: null,
-        requirementTypes: null,
-        carType: null,
+        passengerProperty: null,
         passenger: null,
+        passengerSex: null,
         passengerPhone: null,
+        flightNumber: null,
+        creationDate: null,
+        transportTime: null,
+        departure: null,
+        intermediatePort: null,
+        destination: null,
+        carType: null,
+        driverInformation: null,
+        driverBase: null,
+        passengerPrice: null,
+        parkingFees: null,
+        tollFees: null,
         points: null,
-        orderStatus: null,
+        note: null,
       },
       // 表单参数
       form: {},
@@ -403,10 +413,11 @@ export default {
     /** 查询订单信息列表 */
     getList() {
       this.loading = true;
-      auditSettlementList().then(async (response) => {
+      auditSettlementList(this.queryParams).then(async (response) => {
         this.OrderInformationList = response.rows;
         this.total = response.total;
         //判断是否有额外订单信息
+
         for (let i = 0; i < this.OrderInformationList.length; i++) {
           this.OrderInformationList[i].flag = !!(await this.haveExtraPoints(this.OrderInformationList[i].orderId));
         }

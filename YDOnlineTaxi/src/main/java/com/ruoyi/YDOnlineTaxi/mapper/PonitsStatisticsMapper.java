@@ -1,4 +1,5 @@
 package com.ruoyi.YDOnlineTaxi.mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import com.ruoyi.YDOnlineTaxi.domain.PonitsStatistics;
@@ -58,4 +59,8 @@ public interface PonitsStatisticsMapper
      * @return 结果
      */
     public int deletePonitsStatisticsByDriverPhoneNumbers(String[] driverPhoneNumbers);
+
+    public int updateMonthPoints();
+
+
 }

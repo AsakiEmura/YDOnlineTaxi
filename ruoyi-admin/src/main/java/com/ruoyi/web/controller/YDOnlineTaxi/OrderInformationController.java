@@ -5,7 +5,6 @@ import com.ruoyi.YDOnlineTaxi.domain.OrderDetails;
 import com.ruoyi.YDOnlineTaxi.domain.OrderInformation;
 import com.ruoyi.YDOnlineTaxi.domain.PonitsStatistics;
 import com.ruoyi.YDOnlineTaxi.service.*;
-import com.ruoyi.YDOnlineTaxi.service.OrderDetailsService;
 import com.ruoyi.YDOnlineTaxi.utils.RabbitMQ.Producer.RabbitMQProducer;
 import com.ruoyi.YDOnlineTaxi.utils.RabbitMQ.RabbitMQConfig;
 import com.ruoyi.common.annotation.Log;
@@ -17,17 +16,18 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.ServletUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.framework.web.service.TokenService;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import static com.ruoyi.YDOnlineTaxi.utils.JPushUtils.sendToRegistrationId;
 
 /**
  * 订单信息Controller
@@ -56,6 +56,9 @@ public class OrderInformationController extends BaseController {
     @Autowired
     private RabbitMQProducer rabbitMQProducer;
 
+    @Autowired
+    private IDriverAccountService driverAccountService;
+
     /**
      * 查询订单信息列表
      */
@@ -80,14 +83,14 @@ public class OrderInformationController extends BaseController {
      * 查询多个订单信息列表
      */
     @GetMapping("/receivedList")
-    public TableDataInfo receivedList() {
+    public TableDataInfo receivedList(OrderInformation orderInformation) {
         startPage();
         String[] status = {
                 "已派单",
                 "司机已出发",
                 "司机已到达"
         };
-        List<OrderInformation> list = orderInformationService.selectOrderByReceived(status);
+        List<OrderInformation> list = orderInformationService.selectOrderByReceived(orderInformation,status);
         return getDataTable(list);
     }
 
@@ -95,7 +98,7 @@ public class OrderInformationController extends BaseController {
      * 查询待审核已结算未结算订单信息列表
      */
     @GetMapping("/auditSettlementList")
-    public TableDataInfo auditSettlementList()
+    public TableDataInfo auditSettlementList(OrderInformation orderInformation)
     {
         startPage();
         String[] status = {
@@ -103,7 +106,7 @@ public class OrderInformationController extends BaseController {
                 "未通过",
                 "未结算"
         };
-        List<OrderInformation> list = orderInformationService.selectOrderByReceived(status);
+        List<OrderInformation> list = orderInformationService.selectOrderByReceived(orderInformation,status);
         return getDataTable(list);
     }
 
@@ -114,6 +117,47 @@ public class OrderInformationController extends BaseController {
     public AjaxResult arrival_information(@PathVariable("orderId") String orderId)
     {
         return AjaxResult.success(orderDetailsService.selectByPrimaryKey(orderId));
+    }
+
+    /**
+     * 指派司机
+     */
+    @PutMapping("/orderDriver")
+    public AjaxResult orderDriver(@RequestBody Map<String, Object> data)
+    {
+        try{
+            String orderId = data.get("orderId").toString();
+            String phoneNumber = data.get("phoneNumber").toString();
+            DriverInformation driverInformation = driverInformationService.selectDriverInformationByDriverPhoneNumber(phoneNumber);
+            OrderDetails orderDetails = orderDetailsService.selectByPrimaryKey(orderId);
+
+            orderDetails.setDriverName(driverInformation.getDriverName());
+            orderDetails.setDriverPhoneNumber(driverInformation.getDriverPhoneNumber());
+            orderDetails.setDriverCarId(driverInformation.getDriverCarId());
+            SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd hh:mm");
+            Date date = new Date();
+            df.format(date);
+            orderDetails.setOrderTookTime(date);
+            orderDetailsService.updateByPrimaryKey(orderDetails);
+
+            OrderInformation orderInformation = orderInformationService.selectOrderInformationByOrderId(orderId);
+            orderInformation.setOrderStatus("已派单");
+            orderInformation.setExpireTime(0);
+            orderInformation.setDriverPhoneNumber(phoneNumber);
+            orderInformationService.updateOrderInformation(orderInformation);
+
+            List<String> registrationIds = new ArrayList<>();
+            String machineId = driverAccountService.selectMachineIdByPhoneNumber(phoneNumber);
+            registrationIds.add(machineId);
+            sendToRegistrationId(registrationIds,
+                    "您有一个指定订单",
+                    "您有一个指定订单",
+                    "您有一个指定订单，订单编号为：" + orderId);
+
+            return AjaxResult.success();
+        }catch (Exception e){
+            return AjaxResult.error(e.toString());
+        }
     }
 
     /**
@@ -170,7 +214,9 @@ public class OrderInformationController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('YDOnlineTaxi:OrderInformation:query')")
     @GetMapping(value = "/{orderId}")
-    public AjaxResult getInfo(@PathVariable("orderId") String orderId) {
+    public AjaxResult getInfo(@PathVariable("orderId") String orderId)
+    {
+
         return AjaxResult.success(orderInformationService.selectOrderInformationByOrderId(orderId));
     }
 
@@ -180,9 +226,26 @@ public class OrderInformationController extends BaseController {
     @PreAuthorize("@ss.hasPermi('YDOnlineTaxi:OrderInformation:add')")
     @Log(title = "订单信息", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody OrderInformation orderInformation) {
-
+    public AjaxResult add(@RequestBody OrderInformation orderInformation)
+    {
+        rabbitMQProducer.sendMsg(RabbitMQConfig.DELAY_EXCHANGE_NAME, RabbitMQConfig.DELAY_ROUTINGKEY_NAME_K, "有少量订单导入,请到程序内查看", 0);
+        rabbitMQProducer.sendMsg(RabbitMQConfig.DELAY_EXCHANGE_NAME, RabbitMQConfig.DELAY_ROUTINGKEY_NAME_D, "有少量订单导入,请到程序内查看", 20 * 1000);
+        rabbitMQProducer.sendMsg(RabbitMQConfig.DELAY_EXCHANGE_NAME, RabbitMQConfig.DELAY_ROUTINGKEY_NAME_G, "有少量订单导入,请到程序内查看", 40 * 1000);
         return toAjax(orderInformationService.insertOrderInformation(orderInformation));
+    }
+
+    /**
+     * 重新发布
+     */
+    @PreAuthorize("@ss.hasPermi('YDOnlineTaxi:OrderInformation:edit')")
+    @Log(title = "超时订单重新发布", businessType = BusinessType.UPDATE)
+    @PutMapping("/resetOrderStatus")
+    public AjaxResult resetOrderStatus(@RequestBody OrderInformation orderInformation)
+    {
+        rabbitMQProducer.sendMsg(RabbitMQConfig.DELAY_EXCHANGE_NAME, RabbitMQConfig.DELAY_ROUTINGKEY_NAME_K, "有少量订单导入,请到程序内查看", 0);
+        rabbitMQProducer.sendMsg(RabbitMQConfig.DELAY_EXCHANGE_NAME, RabbitMQConfig.DELAY_ROUTINGKEY_NAME_D, "有少量订单导入,请到程序内查看", 20 * 1000);
+        rabbitMQProducer.sendMsg(RabbitMQConfig.DELAY_EXCHANGE_NAME, RabbitMQConfig.DELAY_ROUTINGKEY_NAME_G, "有少量订单导入,请到程序内查看", 40 * 1000);
+        return toAjax(orderInformationService.updateOrderInformation(orderInformation));
     }
 
     /**
@@ -191,7 +254,8 @@ public class OrderInformationController extends BaseController {
     @PreAuthorize("@ss.hasPermi('YDOnlineTaxi:OrderInformation:edit')")
     @Log(title = "订单信息", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody OrderInformation orderInformation) {
+    public AjaxResult edit(@RequestBody OrderInformation orderInformation)
+    {
         return toAjax(orderInformationService.updateOrderInformation(orderInformation));
     }
 
@@ -201,9 +265,34 @@ public class OrderInformationController extends BaseController {
     @PreAuthorize("@ss.hasPermi('YDOnlineTaxi:OrderInformation:remove')")
     @Log(title = "订单信息", businessType = BusinessType.DELETE)
     @DeleteMapping("/{orderIds}")
-    public AjaxResult remove(@PathVariable String[] orderIds) {
-
-        return toAjax(orderInformationService.deleteOrderInformationByOrderIds(orderIds));
+    public AjaxResult remove(@PathVariable String[] orderIds)
+    {
+        try
+        {
+            String tempId = null;
+            orderInformationService.deleteOrderInformationByOrderIds(orderIds);
+            try
+            {
+                for(String orderId:orderIds)
+                {
+                    orderDetailsService.deleteByPrimaryKey(orderId);
+                    tempId = orderId;
+                }
+                return AjaxResult.success();
+            }
+            catch (Exception e)
+            {
+                AjaxResult.error("此预约号的订单删除失败: "+tempId);
+            }
+        }
+        catch (Exception e)
+        {
+            return AjaxResult.error();
+        }
+        finally
+        {
+            return AjaxResult.success();
+        }
     }
 
     @GetMapping("/importTemplate")
@@ -231,9 +320,9 @@ public class OrderInformationController extends BaseController {
                 rabbitMQProducer.sendMsg(RabbitMQConfig.DELAY_EXCHANGE_NAME, RabbitMQConfig.DELAY_ROUTINGKEY_NAME_DEAD, order.getOrderId(), 40 * 60 * 1000);
             }
 
-            rabbitMQProducer.sendMsg(RabbitMQConfig.DELAY_EXCHANGE_NAME, RabbitMQConfig.DELAY_ROUTINGKEY_NAME_K, "有大量订单导入,请到小程序查看", 0);
-            rabbitMQProducer.sendMsg(RabbitMQConfig.DELAY_EXCHANGE_NAME, RabbitMQConfig.DELAY_ROUTINGKEY_NAME_D, "有大量订单导入,请到小程序查看", 5 * 60 * 1000);
-            rabbitMQProducer.sendMsg(RabbitMQConfig.DELAY_EXCHANGE_NAME, RabbitMQConfig.DELAY_ROUTINGKEY_NAME_G, "有大量订单导入,请到小程序查看", 10 * 60 * 1000);
+            rabbitMQProducer.sendMsg(RabbitMQConfig.DELAY_EXCHANGE_NAME, RabbitMQConfig.DELAY_ROUTINGKEY_NAME_K, "有大量订单导入,请到程序内查看", 0);
+            rabbitMQProducer.sendMsg(RabbitMQConfig.DELAY_EXCHANGE_NAME, RabbitMQConfig.DELAY_ROUTINGKEY_NAME_D, "有大量订单导入,请到程序内查看", 5 * 60 * 1000);
+            rabbitMQProducer.sendMsg(RabbitMQConfig.DELAY_EXCHANGE_NAME, RabbitMQConfig.DELAY_ROUTINGKEY_NAME_G, "有大量订单导入,请到程序内查看", 10 * 60 * 1000);
 
             return AjaxResult.success(message);
         } catch (Exception e) {

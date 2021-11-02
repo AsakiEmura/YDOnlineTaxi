@@ -54,7 +54,7 @@
           <el-option label="舒适型" value="舒适型" />
           <el-option label="豪华型" value="豪华型" />
           <el-option label="商务型" value="商务型" />
-          <el-option label="豪华商务型" value="豪华商务型" />
+
         </el-select>
       </el-form-item>
       <el-form-item label="用车时间" prop="transportTime">

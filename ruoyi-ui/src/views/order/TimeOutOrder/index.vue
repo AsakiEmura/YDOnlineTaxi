@@ -53,7 +53,7 @@
           <el-option label="舒适型" value="舒适型" />
           <el-option label="豪华型" value="豪华型" />
           <el-option label="商务型" value="商务型" />
-          <el-option label="豪华商务型" value="豪华商务型" />
+
         </el-select>
       </el-form-item>
       <el-form-item label="乘客称呼" prop="passenger">
@@ -184,6 +184,14 @@
           <el-button
             size="mini"
             type="text"
+            icon="el-icon-edit"
+            @click="orderDriver(scope.row)"
+            v-hasPermi="['YDOnlineTaxi:OrderInformation:edit']"
+            v-if="scope.row.orderStatus === '已派单' || scope.row.orderStatus === '未出发' || scope.row.orderStatus === '待派单' || scope.row.orderStatus === '已超时'"
+          >指定司机</el-button>
+          <el-button
+            size="mini"
+            type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['YDOnlineTaxi:OrderInformation:remove']"
@@ -212,11 +220,22 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item label="需求类型" prop="requirementTypes">
-          <el-input v-model="form.requirementTypes" placeholder="请输入需求类型" />
+          <el-select v-model="form.requirementTypes" placeholder="请输入需求类型">
+            <el-option label="接站" value="接站" />
+            <el-option label="送站" value="送站" />
+            <el-option label="市内单程" value="市内单程" />
+            <el-option label="市内往返" value="市内往返" />
+            <el-option label="半包" value="半包" />
+            <el-option label="全包" value="全包" />
+            <el-option label="外地单程" value="外地单程" />
+            <el-option label="外地往返" value="外地往返" />
+          </el-select>
         </el-form-item>
         <el-form-item label="用车类型" prop="carType">
           <el-select v-model="form.carType" placeholder="请选择用车类型">
-            <el-option label="请选择字典生成" value="" />
+            <el-option label="舒适型" value="舒适型" />
+            <el-option label="豪华型" value="豪华型" />
+            <el-option label="商务型" value="商务型" />
           </el-select>
         </el-form-item>
         <el-form-item label="积分" prop="points">
@@ -231,6 +250,42 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!-- 添加或修改订单信息对话框 -->
+    <el-dialog :title="title" :visible.sync="order_open" width="500px" append-to-body>
+      <span>手 机 号 ：&ensp; </span>
+      <el-select id="phoneId" v-model="phoneNumber_temp"
+                 filterable
+                 placeholder="请选择"
+                 @change = "phoneGetName()"
+      >
+        <el-option
+          v-for="item in options"
+          :key="item.value"
+          :label="item.value"
+          :value="item.value" >
+        </el-option>
+      </el-select>
+      <div style="margin-top: 20px">
+        <span>{{"司机姓名："}}</span>
+        <el-select v-model="driverName_temp"
+                   filterable
+                   placeholder="请选择"
+                   @change = "nameGetPhone()"
+        >
+          <el-option
+            v-for="item in options"
+            :key="item.label"
+            :label="item.label"
+            :value="item.label">
+          </el-option>
+        </el-select>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="orderDriverSubmit">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -239,11 +294,11 @@ import {
   listOrderInformation,
   getOrderInformation,
   delOrderInformation,
-  addOrderInformation,
-  updateOrderInformation,
+  resetOrderStatus,
   exportOrderInformation,
   importTemplate,
-  singleStatusList
+  listDriverInformation,
+  orderDriver
 } from "@/api/YDOnlineTaxi/OrderInformation";
 import { getToken } from "@/utils/auth";
 
@@ -251,6 +306,12 @@ export default {
   name: "OrderInformation",
   data() {
     return {
+      //指定司机
+      orderId_temp: null,
+      driverName_temp: null,
+      phoneNumber_temp: null,
+      order_open: false,
+      options: [],
       // 遮罩层
       loading: true,
       // 导出遮罩层
@@ -276,15 +337,24 @@ export default {
         pageNum: 1,
         pageSize: 10,
         orderId: null,
-        departure: null,
-        destination: null,
-        transportTime: null,
-        requirementTypes: null,
-        carType: null,
+        passengerProperty: null,
         passenger: null,
+        passengerSex: null,
         passengerPhone: null,
+        flightNumber: null,
+        creationDate: null,
+        transportTime: null,
+        departure: null,
+        intermediatePort: null,
+        destination: null,
+        carType: null,
+        driverInformation: null,
+        driverBase: null,
+        passengerPrice: null,
+        parkingFees: null,
+        tollFees: null,
         points: null,
-        orderStatus: null,
+        note: null,
       },
       // 用户导入参数
       upload: {
@@ -342,10 +412,8 @@ export default {
     /** 查询订单信息列表 */
     getList() {
       this.loading = true;
-      let temp = {
-        status: "已超时"
-      }
-      singleStatusList(temp).then(response => {
+      this.queryParams.orderStatus = "已超时"
+      listOrderInformation(this.queryParams).then(response => {
         this.OrderInformationList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -354,6 +422,7 @@ export default {
     // 取消按钮
     cancel() {
       this.open = false;
+      this.order_open = false;
       this.reset();
     },
     // 表单重置
@@ -390,11 +459,53 @@ export default {
       this.single = selection.length!==1
       this.multiple = !selection.length
     },
-    /** 新增按钮操作 */
-    handleAdd() {
+    /** 手机号动态锁定姓名 */
+    phoneGetName(){
+      for(let i=0;i<this.options.length;i++){
+        if(this.phoneNumber_temp === this.options[i].value){
+          this.driverName_temp = this.options[i].label;
+        }
+      }
+    },
+    /** 姓名动态锁定手机号 */
+    nameGetPhone(){
+      for(let i=0;i<this.options.length;i++){
+        if(this.driverName_temp === this.options[i].label){
+          this.phoneNumber_temp = this.options[i].value;
+        }
+      }
+    },
+    /** 指定司机操作 */
+    orderDriver(row) {
       this.reset();
-      this.open = true;
-      this.title = "添加订单信息";
+      this.orderId_temp = row.orderId || this.ids
+      listDriverInformation().then(response => {
+        this.options = [];
+        for(let i=0; i<response.length;i++){
+          let data = {
+            value: response[i].driverPhoneNumber,
+            label: response[i].driverName
+          }
+          this.options.push(data);
+        }
+        this.order_open = true;
+        this.title = "指定司机";
+      });
+    },
+    /** 提交按钮 */
+    orderDriverSubmit() {
+      let data = {
+        orderId: this.orderId_temp,
+        phoneNumber: this.phoneNumber_temp
+      }
+      orderDriver(data).then(response => {
+        this.msgSuccess("修改成功");
+        this.order_open = false;
+        this.getList();
+      });
+      this.driverName_temp = null;
+      this.phoneNumber_temp = null;
+      this.orderId_temp = null;
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -411,7 +522,7 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           this.form.orderStatus = "待审核";
-          updateOrderInformation(this.form).then(response => {
+          resetOrderStatus(this.form).then(response => {
             this.msgSuccess("修改成功");
             this.open = false;
             this.getList();

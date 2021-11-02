@@ -93,20 +93,19 @@ public class AuditOrderController extends BaseController {
     }
 
     @PostMapping("/UploadEvidence")
-    public AjaxResult UploadEvidence(String orderId,
-                                     int extraPoints,
-                                     MultipartFile photoOne,
-                                     String reason) throws IOException {
-        try {
+    public AjaxResult UploadEvidence(String orderId, int extraPoints, MultipartFile photoOne, String reason) throws IOException {
+        try
+        {
             ArrivalAuditInformation arrivalAuditInformation = new ArrivalAuditInformation();
             // 上传文件路径
             String photoOnePath = RuoYiConfig.getUploadPath();
             // 上传并返回新文件名称
             String photoOneName = FileUploadUtils.upload(photoOnePath, photoOne);
+            String url = serverConfig.getUrl() + photoOneName;
 
             arrivalAuditInformation.setOrderId(orderId);
             arrivalAuditInformation.setExtraOrderPoints(extraPoints);
-            arrivalAuditInformation.setProofPhoto1(photoOneName);
+            arrivalAuditInformation.setProofPhoto1(url);
             arrivalAuditInformation.setNotes(reason);
             arrivalAuditInformation.setExtraPointsStatus("待审核");
 

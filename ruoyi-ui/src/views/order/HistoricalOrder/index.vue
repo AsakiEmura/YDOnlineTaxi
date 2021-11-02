@@ -53,7 +53,7 @@
           <el-option label="舒适型" value="舒适型" />
           <el-option label="豪华型" value="豪华型" />
           <el-option label="商务型" value="商务型" />
-          <el-option label="豪华商务型" value="豪华商务型" />
+
         </el-select>
       </el-form-item>
       <el-form-item label="乘客称呼" prop="passenger">
@@ -194,11 +194,22 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item label="需求类型" prop="requirementTypes">
-          <el-input v-model="form.requirementTypes" placeholder="请输入需求类型" />
+          <el-select v-model="form.requirementTypes" placeholder="请输入需求类型">
+            <el-option label="接站" value="接站" />
+            <el-option label="送站" value="送站" />
+            <el-option label="市内单程" value="市内单程" />
+            <el-option label="市内往返" value="市内往返" />
+            <el-option label="半包" value="半包" />
+            <el-option label="全包" value="全包" />
+            <el-option label="外地单程" value="外地单程" />
+            <el-option label="外地往返" value="外地往返" />
+          </el-select>
         </el-form-item>
         <el-form-item label="用车类型" prop="carType">
           <el-select v-model="form.carType" placeholder="请选择用车类型">
-            <el-option label="请选择字典生成" value="" />
+            <el-option label="舒适型" value="舒适型" />
+            <el-option label="豪华型" value="豪华型" />
+            <el-option label="商务型" value="商务型" />
           </el-select>
         </el-form-item>
         <el-form-item label="积分" prop="points">
@@ -258,15 +269,24 @@ export default {
         pageNum: 1,
         pageSize: 10,
         orderId: null,
-        departure: null,
-        destination: null,
-        transportTime: null,
-        requirementTypes: null,
-        carType: null,
+        passengerProperty: null,
         passenger: null,
+        passengerSex: null,
         passengerPhone: null,
+        flightNumber: null,
+        creationDate: null,
+        transportTime: null,
+        departure: null,
+        intermediatePort: null,
+        destination: null,
+        carType: null,
+        driverInformation: null,
+        driverBase: null,
+        passengerPrice: null,
+        parkingFees: null,
+        tollFees: null,
         points: null,
-        orderStatus: null,
+        note: null,
       },
       // 用户导入参数
       upload: {
@@ -324,10 +344,8 @@ export default {
     /** 查询订单信息列表 */
     getList() {
       this.loading = true;
-      let temp = {
-        status: "已结算"
-      }
-      singleStatusList(temp).then(response => {
+      this.queryParams.orderStatus = "已结算"
+      listOrderInformation(this.queryParams).then(response => {
         this.OrderInformationList = response.rows;
         this.total = response.total;
         this.loading = false;

@@ -63,24 +63,24 @@ public class YDOnlineTaxiDispatchOrder extends BaseController {
         switch (driverInformation.getDriverCarType()) {
             case "舒适型":
                 orderInformation.setCarType("舒适型");
-                return orderInformationService.getOrderInformationListByConditions(orderInformation.getCarType(), null, null, orderStatus, minTransportTime, maxTransportTime, orderInformation.getRequirementTypes());
+                return orderInformationService.getOrderInformationListByConditions(orderInformation.getCarType(), null, null, orderStatus, minTransportTime, maxTransportTime, orderInformation.getNote());
             case "商务型":
                 if (orderInformation.getCarType() != null) {
-                    return orderInformationService.getOrderInformationListByConditions(orderInformation.getCarType(), null, null, orderStatus, minTransportTime, maxTransportTime, orderInformation.getRequirementTypes());
+                    return orderInformationService.getOrderInformationListByConditions(orderInformation.getCarType(), null, null, orderStatus, minTransportTime, maxTransportTime, orderInformation.getNote());
                 } else {
-                    return orderInformationService.getOrderInformationListByConditions("舒适型", "商务型", null, orderStatus, minTransportTime, maxTransportTime, orderInformation.getRequirementTypes());
+                    return orderInformationService.getOrderInformationListByConditions("舒适型", "商务型", null, orderStatus, minTransportTime, maxTransportTime, orderInformation.getNote());
                 }
             case "豪华型":
                 if (orderInformation.getCarType() != null) {
-                    return orderInformationService.getOrderInformationListByConditions(orderInformation.getCarType(), null, null, orderStatus, minTransportTime, maxTransportTime, orderInformation.getRequirementTypes());
+                    return orderInformationService.getOrderInformationListByConditions(orderInformation.getCarType(), null, null, orderStatus, minTransportTime, maxTransportTime, orderInformation.getNote());
                 } else {
-                    return orderInformationService.getOrderInformationListByConditions("舒适型", "豪华型", null, orderStatus, minTransportTime, maxTransportTime, orderInformation.getRequirementTypes());
+                    return orderInformationService.getOrderInformationListByConditions("舒适型", "豪华型", null, orderStatus, minTransportTime, maxTransportTime, orderInformation.getNote());
                 }
             case "豪华商务型":
                 if (orderInformation.getCarType() != null) {
-                    return orderInformationService.getOrderInformationListByConditions(orderInformation.getCarType(), null, null, orderStatus, minTransportTime, maxTransportTime, orderInformation.getRequirementTypes());
+                    return orderInformationService.getOrderInformationListByConditions(orderInformation.getCarType(), null, null, orderStatus, minTransportTime, maxTransportTime, orderInformation.getNote());
                 } else {
-                    return orderInformationService.getOrderInformationListByConditions("舒适型", "豪华型", "商务型", orderStatus, minTransportTime, maxTransportTime, orderInformation.getRequirementTypes());
+                    return orderInformationService.getOrderInformationListByConditions("舒适型", "豪华型", "商务型", orderStatus, minTransportTime, maxTransportTime, orderInformation.getNote());
                 }
             default:
                 return null;
