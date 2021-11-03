@@ -1,9 +1,7 @@
 package com.ruoyi.web.controller.YDOnlineTaxi;
 
-import com.ruoyi.YDOnlineTaxi.domain.DriverInformation;
-import com.ruoyi.YDOnlineTaxi.domain.OrderDetails;
-import com.ruoyi.YDOnlineTaxi.domain.OrderInformation;
-import com.ruoyi.YDOnlineTaxi.domain.RewardsPunishmentsLog;
+import com.ruoyi.YDOnlineTaxi.domain.*;
+import com.ruoyi.YDOnlineTaxi.service.IFinancialStatisticsService;
 import com.ruoyi.YDOnlineTaxi.service.IOrderInformationService;
 import com.ruoyi.YDOnlineTaxi.service.IRewardsPunishmentsLogService;
 import com.ruoyi.YDOnlineTaxi.service.OrderDetailsService;
@@ -21,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -40,6 +39,9 @@ public class YDOnlineTaxiDispatchOrder extends BaseController {
 
     @Autowired
     private IRewardsPunishmentsLogService rewardsPunishmentsLogService;
+
+    @Autowired
+    private IFinancialStatisticsService financialStatisticsService;
 
     public Boolean getOrderStatus(OrderInformation orderInformation) {
         String orderStatus = orderInformationService.selectOrderStatusByOrderId(orderInformation.getOrderId());
@@ -139,6 +141,7 @@ public class YDOnlineTaxiDispatchOrder extends BaseController {
                     order.setOrderTookTime(new Date());
 
                     orderInformation.setOrderStatus("已派单");
+                    orderInformation.setDriverInformation(driverInformation.SimpleToString());
 
                     orderDetailsService.updateByPrimaryKeySelective(order);
                     orderInformationService.updateOrderInformation(orderInformation);
@@ -218,9 +221,30 @@ public class YDOnlineTaxiDispatchOrder extends BaseController {
             case "全部":
                 orderList = orderInformationService.selectAllByDriverPhoneNumber(driverInformation.getDriverPhoneNumber(), minTransportTime, maxTransportTime);
                 return getDataTable(orderList);
+            case "财务统计":
+                List<FinancialStatistics> doneOrderList;
+                doneOrderList = financialStatisticsService.selectAllByConditions(driverInformation.getDriverPhoneNumber(),minTransportTime,maxTransportTime);
+                return getDataTable(doneOrderList);
             default:
                 return getDataTable(orderList);
         }
+    }
+
+    @GetMapping("/getPersonalPoints")
+    public BigDecimal getIntegralObtainedWithinSpecifiedPeriod(DriverInformation driverInformation, OrderInformation orderInformation, Integer year, Integer month, Integer day) {
+        Map<String, String> map = DateUtil.getIntervalDate(year, month, day);
+        String minTransportTime = map.get("minTransportTime");
+        String maxTransportTime = map.get("maxTransportTime");
+
+        List<FinancialStatistics> doneOrderList;
+        doneOrderList = financialStatisticsService.selectAllByConditions(driverInformation.getDriverPhoneNumber(), minTransportTime, maxTransportTime);
+
+        BigDecimal total = BigDecimal.ZERO;
+        for(FinancialStatistics order : doneOrderList)
+        {
+            total = total .add(order.getAccountsPayable());
+        }
+        return total;
     }
 
     @GetMapping("/getOrderFinishTime")

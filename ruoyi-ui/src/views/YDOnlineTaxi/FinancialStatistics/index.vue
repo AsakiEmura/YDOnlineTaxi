@@ -1,55 +1,17 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="司机姓名
-" prop="driverName">
+      <el-form-item label="预约号" prop="orderId">
         <el-input
-          v-model="queryParams.driverName"
-          placeholder="请输入司机姓名
-"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="手机号" prop="driverPhoneNumber">
-        <el-input
-          v-model="queryParams.driverPhoneNumber"
-          placeholder="请输入手机号"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="总收入" prop="totalIncome">
-        <el-input
-          v-model="queryParams.totalIncome"
-          placeholder="请输入总收入"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="月收入" prop="monthIncome">
-        <el-input
-          v-model="queryParams.monthIncome"
-          placeholder="请输入月收入"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="未支付" prop="unpaidRemuneration">
-        <el-input
-          v-model="queryParams.unpaidRemuneration"
-          placeholder="请输入未支付报酬"
+          v-model="queryParams.orderId"
+          placeholder="请输入预约号"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item>
-	    <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
@@ -62,24 +24,107 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['YDOnlineTaxi:FinancialStatistics:add']"
+          v-hasPermi="['FinancialStatistics:FinancialStatistics:add']"
         >新增</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="success"
+          plain
+          icon="el-icon-edit"
+          size="mini"
+          :disabled="single"
+          @click="handleUpdate"
+          v-hasPermi="['FinancialStatistics:FinancialStatistics:edit']"
+        >修改</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="danger"
+          plain
+          icon="el-icon-delete"
+          size="mini"
+          :disabled="multiple"
+          @click="handleDelete"
+          v-hasPermi="['FinancialStatistics:FinancialStatistics:remove']"
+        >删除</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="info"
+          plain
+          icon="el-icon-upload2"
+          size="mini"
+          @click="handleImport"
+          v-hasPermi="['YDOnlineTaxi:OrderInformation:import']"
+        >导入</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="warning"
+          plain
+          icon="el-icon-download"
+          size="mini"
+          :loading="exportLoading"
+          @click="handleExport"
+          v-hasPermi="['FinancialStatistics:FinancialStatistics:export']"
+        >导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table
-      v-loading="loading"
-      :data="FinancialStatisticsList"
-      row-key="monthIncome"
-      default-expand-all
-      :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
-    >
-      <el-table-column label="司机姓名
-" align="center" prop="driverName" />
-      <el-table-column label="总收入" align="center" prop="totalIncome" />
-      <el-table-column label="月收入" align="center" prop="monthIncome" />
-      <el-table-column label="未支付报酬" align="center" prop="unpaidRemuneration" />
+    <!-- 用户导入对话框 -->
+    <el-dialog :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body>
+      <el-upload
+        ref="upload"
+        :limit="1"
+        accept=".xlsx, .xls"
+        :headers="upload.headers"
+        :action="upload.url + '?updateSupport=' + upload.updateSupport"
+        :disabled="upload.isUploading"
+        :on-progress="handleFileUploadProgress"
+        :on-success="handleFileSuccess"
+        :auto-upload="false"
+        drag
+      >
+        <i class="el-icon-upload"></i>
+        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        <div class="el-upload__tip text-center" slot="tip">
+          <div class="el-upload__tip" slot="tip">
+            <el-checkbox v-model="upload.updateSupport" /> 是否更新已经存在的订单数据
+          </div>
+          <span>仅允许导入xls、xlsx格式文件。</span>
+          <el-link type="primary" :underline="false" style="font-size:12px;vertical-align: baseline;" @click="importTemplate">下载模板</el-link>
+        </div>
+      </el-upload>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitFileForm">确 定</el-button>
+        <el-button @click="upload.open = false">取 消</el-button>
+      </div>
+    </el-dialog>
+
+    <el-table v-loading="loading" :data="FinancialStatisticsList" @selection-change="handleSelectionChange">
+      <el-table-column type="selection" width="55" align="center" />
+      <el-table-column label="预约号" align="center" prop="orderId" />
+      <el-table-column label="客人姓名" align="center" prop="passenger" />
+      <el-table-column label="联系方式" align="center" prop="passengerPhone" />
+      <el-table-column label="时间" align="center" prop="dateOf" width="180">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.dateOf, '{y}-{m}-{d} {h}:{i}') }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="上车地点" align="center" prop="departure" />
+      <el-table-column label="下车地点" align="center" prop="destination" />
+      <el-table-column label="车型" align="center" prop="carType" />
+      <el-table-column label="司机信息" align="center" prop="driverInformation" />
+      <el-table-column label="司机基价" align="center" prop="driverBase" />
+      <el-table-column label="合同价" align="center" prop="contractPrice" />
+      <el-table-column label="停车费" align="center" prop="parkingFees" />
+      <el-table-column label="已收款" align="center" prop="receivedCash" />
+      <el-table-column label="应付司机" align="center" prop="accountsPayable" />
+      <el-table-column label="应收客户" align="center" prop="accountsReceivable" />
+      <el-table-column label="利润" align="center" prop="profits" />
+      <el-table-column label="行程类型" align="center" prop="tripType" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -87,42 +132,91 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['YDOnlineTaxi:FinancialStatistics:edit']"
+            v-hasPermi="['FinancialStatistics:FinancialStatistics:edit']"
           >修改</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-plus"
-            @click="handleAdd(scope.row)"
-            v-hasPermi="['YDOnlineTaxi:FinancialStatistics:add']"
-          >新增</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['YDOnlineTaxi:FinancialStatistics:remove']"
+            v-hasPermi="['FinancialStatistics:FinancialStatistics:remove']"
           >删除</el-button>
         </template>
       </el-table-column>
     </el-table>
 
+    <pagination
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
+    />
+
     <!-- 添加或修改财务统计对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="司机姓名
-" prop="driverName">
-          <el-input v-model="form.driverName" placeholder="请输入司机姓名
-" />
+        <el-form-item label="客人姓名" prop="passenger">
+          <el-input v-model="form.passenger" placeholder="请输入客人姓名" />
         </el-form-item>
-        <el-form-item label="总收入" prop="totalIncome">
-          <treeselect v-model="form.totalIncome" :options="FinancialStatisticsOptions" :normalizer="normalizer" placeholder="请选择总收入" />
+        <el-form-item label="联系方式" prop="passengerPhone">
+          <el-input v-model="form.passengerPhone" placeholder="请输入联系方式" />
         </el-form-item>
-        <el-form-item label="月收入" prop="monthIncome">
-          <el-input v-model="form.monthIncome" placeholder="请输入月收入" />
+        <el-form-item label="日期" prop="creationDate">
+          <el-date-picker clearable size="small"
+            v-model="form.creationDate"
+            type="date"
+            value-format="yyyy-MM-dd"
+            placeholder="选择日期">
+          </el-date-picker>
         </el-form-item>
-        <el-form-item label="未支付报酬" prop="unpaidRemuneration">
-          <el-input v-model="form.unpaidRemuneration" placeholder="请输入未支付报酬" />
+        <el-form-item label="时间" prop="dateOf">
+          <el-date-picker clearable size="small"
+            v-model="form.dateOf"
+            type="date"
+            value-format="yyyy-MM-dd"
+            placeholder="选择时间">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="上车地点" prop="departure">
+          <el-input v-model="form.departure" placeholder="请输入上车地点" />
+        </el-form-item>
+        <el-form-item label="下车地点" prop="destination">
+          <el-input v-model="form.destination" placeholder="请输入下车地点" />
+        </el-form-item>
+        <el-form-item label="车型" prop="carType">
+          <el-select v-model="form.carType" placeholder="请选择车型">
+            <el-option label="请选择字典生成" value="" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="司机信息" prop="driverInformation">
+          <el-input v-model="form.driverInformation" placeholder="请输入司机信息" />
+        </el-form-item>
+        <el-form-item label="司机基价" prop="driverBase">
+          <el-input v-model="form.driverBase" placeholder="请输入司机基价" />
+        </el-form-item>
+        <el-form-item label="合同价" prop="contractPrice">
+          <el-input v-model="form.contractPrice" placeholder="请输入合同价" />
+        </el-form-item>
+        <el-form-item label="停车费" prop="parkingFees">
+          <el-input v-model="form.parkingFees" placeholder="请输入停车费" />
+        </el-form-item>
+        <el-form-item label="已收款" prop="receivedCash">
+          <el-input v-model="form.receivedCash" placeholder="请输入已收款" />
+        </el-form-item>
+        <el-form-item label="应付司机" prop="accountsPayable">
+          <el-input v-model="form.accountsPayable" placeholder="请输入应付司机" />
+        </el-form-item>
+        <el-form-item label="应收客户" prop="accountsReceivable">
+          <el-input v-model="form.accountsReceivable" placeholder="请输入应收客户" />
+        </el-form-item>
+        <el-form-item label="利润" prop="profits">
+          <el-input v-model="form.profits" placeholder="请输入利润" />
+        </el-form-item>
+        <el-form-item label="行程类型" prop="tripType">
+          <el-select v-model="form.tripType" placeholder="请选择行程类型">
+            <el-option label="请选择字典生成" value="" />
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -135,46 +229,109 @@
 
 <script>
 import { listFinancialStatistics, getFinancialStatistics, delFinancialStatistics, addFinancialStatistics, updateFinancialStatistics, exportFinancialStatistics } from "@/api/YDOnlineTaxi/FinancialStatistics";
-import Treeselect from "@riophae/vue-treeselect";
-import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+import {getToken} from "@/utils/auth";
+import {importTemplate} from "@/api/YDOnlineTaxi/FinancialStatistics";
 
 export default {
   name: "FinancialStatistics",
-  components: {
-    Treeselect
-  },
   data() {
     return {
       // 遮罩层
       loading: true,
+      // 导出遮罩层
+      exportLoading: false,
+      // 选中数组
+      ids: [],
+      // 非单个禁用
+      single: true,
+      // 非多个禁用
+      multiple: true,
       // 显示搜索条件
       showSearch: true,
+      // 总条数
+      total: 0,
       // 财务统计表格数据
       FinancialStatisticsList: [],
-      // 财务统计树选项
-      FinancialStatisticsOptions: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
       open: false,
       // 查询参数
       queryParams: {
-        driverName: null,
-        driverPhoneNumber: null,
-        totalIncome: null,
-        monthIncome: null,
-        unpaidRemuneration: null
+        pageNum: 1,
+        pageSize: 10,
+        orderId: null,
+      },
+      // 用户导入参数
+      upload: {
+        // 是否显示弹出层（用户导入）
+        open: false,
+        // 弹出层标题（用户导入）
+        title: "",
+        // 是否禁用上传
+        isUploading: false,
+        // 是否更新已经存在的用户数据
+        updateSupport: 0,
+        // 设置上传的请求头部
+        headers: { Authorization: "Bearer " + getToken() },
+        // 上传的地址
+        url: process.env.VUE_APP_BASE_API + "/YDOnlineTaxi/FinancialStatistics/importData"
       },
       // 表单参数
       form: {},
       // 表单校验
       rules: {
-        driverName: [
-          { required: true, message: "司机姓名不能为空", trigger: "blur" }
+        orderId: [
+          { required: true, message: "预约号不能为空", trigger: "blur" }
         ],
-        driverPhoneNumber: [
-          { required: true, message: "手机号不能为空", trigger: "blur" }
+        passenger: [
+          { required: true, message: "客人姓名不能为空", trigger: "blur" }
         ],
+        passengerPhone: [
+          { required: true, message: "联系方式不能为空", trigger: "blur" }
+        ],
+        creationDate: [
+          { required: true, message: "日期不能为空", trigger: "blur" }
+        ],
+        dateOf: [
+          { required: true, message: "时间不能为空", trigger: "blur" }
+        ],
+        departure: [
+          { required: true, message: "上车地点不能为空", trigger: "blur" }
+        ],
+        destination: [
+          { required: true, message: "下车地点不能为空", trigger: "blur" }
+        ],
+        carType: [
+          { required: true, message: "车型不能为空", trigger: "change" }
+        ],
+        driverInformation: [
+          { required: true, message: "司机信息不能为空", trigger: "blur" }
+        ],
+        driverBase: [
+          { required: true, message: "司机基价不能为空", trigger: "blur" }
+        ],
+        contractPrice: [
+          { required: true, message: "合同价不能为空", trigger: "blur" }
+        ],
+        parkingFees: [
+          { required: true, message: "停车费不能为空", trigger: "blur" }
+        ],
+        receivedCash: [
+          { required: true, message: "已收款不能为空", trigger: "blur" }
+        ],
+        accountsPayable: [
+          { required: true, message: "应付司机不能为空", trigger: "blur" }
+        ],
+        accountsReceivable: [
+          { required: true, message: "应收客户不能为空", trigger: "blur" }
+        ],
+        profits: [
+          { required: true, message: "利润不能为空", trigger: "blur" }
+        ],
+        tripType: [
+          { required: true, message: "行程类型不能为空", trigger: "change" }
+        ]
       }
     };
   },
@@ -186,28 +343,10 @@ export default {
     getList() {
       this.loading = true;
       listFinancialStatistics(this.queryParams).then(response => {
-        this.FinancialStatisticsList = this.handleTree(response.data, "monthIncome", "totalIncome");
+        this.FinancialStatisticsList = response.rows;
+        console.log(this.FinancialStatisticsList);
+        this.total = response.total;
         this.loading = false;
-      });
-    },
-    /** 转换财务统计数据结构 */
-    normalizer(node) {
-      if (node.children && !node.children.length) {
-        delete node.children;
-      }
-      return {
-        id: node.monthIncome,
-        label: node.driverName,
-        children: node.children
-      };
-    },
-	/** 查询财务统计下拉树结构 */
-    getTreeselect() {
-      listFinancialStatistics().then(response => {
-        this.FinancialStatisticsOptions = [];
-        const data = { monthIncome: 0, driverName: '顶级节点', children: [] };
-        data.children = this.handleTree(response.data, "monthIncome", "totalIncome");
-        this.FinancialStatisticsOptions.push(data);
       });
     },
     // 取消按钮
@@ -218,16 +357,29 @@ export default {
     // 表单重置
     reset() {
       this.form = {
-        driverName: null,
-        driverPhoneNumber: null,
-        totalIncome: null,
-        monthIncome: null,
-        unpaidRemuneration: null
+        orderId: null,
+        passenger: null,
+        passengerPhone: null,
+        creationDate: null,
+        dateOf: null,
+        departure: null,
+        destination: null,
+        carType: null,
+        driverInformation: null,
+        driverBase: null,
+        contractPrice: null,
+        parkingFees: null,
+        receivedCash: null,
+        accountsPayable: null,
+        accountsReceivable: null,
+        profits: null,
+        tripType: null
       };
       this.resetForm("form");
     },
     /** 搜索按钮操作 */
     handleQuery() {
+      this.queryParams.pageNum = 1;
       this.getList();
     },
     /** 重置按钮操作 */
@@ -235,26 +387,23 @@ export default {
       this.resetForm("queryForm");
       this.handleQuery();
     },
+    // 多选框选中数据
+    handleSelectionChange(selection) {
+      this.ids = selection.map(item => item.orderId)
+      this.single = selection.length!==1
+      this.multiple = !selection.length
+    },
     /** 新增按钮操作 */
-    handleAdd(row) {
+    handleAdd() {
       this.reset();
-      this.getTreeselect();
-      if (row != null && row.monthIncome) {
-        this.form.totalIncome = row.monthIncome;
-      } else {
-        this.form.totalIncome = 0;
-      }
       this.open = true;
       this.title = "添加财务统计";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      this.getTreeselect();
-      if (row != null) {
-        this.form.totalIncome = row.monthIncome;
-      }
-      getFinancialStatistics(row.driverPhoneNumber).then(response => {
+      const orderId = row.orderId || this.ids
+      getFinancialStatistics(orderId).then(response => {
         this.form = response.data;
         this.open = true;
         this.title = "修改财务统计";
@@ -264,7 +413,7 @@ export default {
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          if (this.form.driverPhoneNumber != null) {
+          if (this.form.orderId != null) {
             updateFinancialStatistics(this.form).then(response => {
               this.msgSuccess("修改成功");
               this.open = false;
@@ -282,17 +431,60 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      this.$confirm('是否确认删除财务统计编号为"' + row.driverPhoneNumber + '"的数据项?', "警告", {
+      const orderIds = row.orderId || this.ids;
+      this.$confirm('是否确认删除财务统计编号为"' + orderIds + '"的数据项?', "警告", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning"
         }).then(function() {
-          return delFinancialStatistics(row.driverPhoneNumber);
+          return delFinancialStatistics(orderIds);
         }).then(() => {
           this.getList();
           this.msgSuccess("删除成功");
         }).catch(() => {});
-    }
+    },
+    /** 导出按钮操作 */
+    handleExport() {
+      const queryParams = this.queryParams;
+      this.$confirm('是否确认导出所有财务统计数据项?', "警告", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }).then(() => {
+          this.exportLoading = true;
+          return exportFinancialStatistics(queryParams);
+        }).then(response => {
+          this.download(response.msg);
+          this.exportLoading = false;
+        }).catch(() => {});
+    },
+    /** 导入按钮操作 */
+    handleImport() {
+      this.upload.title = "订单导入";
+      this.upload.open = true;
+    },
+    // 文件上传中处理
+    handleFileUploadProgress(event, file, fileList) {
+      this.upload.isUploading = true;
+    },
+    // 文件上传成功处理
+    handleFileSuccess(response, file, fileList) {
+      this.upload.open = false;
+      this.upload.isUploading = false;
+      this.$refs.upload.clearFiles();
+      this.$alert(response.msg, "导入结果", { dangerouslyUseHTMLString: true });
+      this.getList();
+    },
+    // 提交上传文件
+    submitFileForm() {
+      this.$refs.upload.submit();
+    },
+    /** 下载模板操作 */
+    importTemplate() {
+      importTemplate().then(response => {
+        this.download(response.msg);
+      });
+    },
   }
 };
 </script>

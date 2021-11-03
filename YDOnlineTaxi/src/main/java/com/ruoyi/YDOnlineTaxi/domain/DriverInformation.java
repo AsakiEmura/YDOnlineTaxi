@@ -162,4 +162,8 @@ public class DriverInformation extends BaseEntity
             .append("driverLevel", getDriverLevel())
             .toString();
     }
+
+    public String SimpleToString(){
+        return getDriverName() + " " + getDriverCarId() + "" + getDriverPhoneNumber();
+    }
 }

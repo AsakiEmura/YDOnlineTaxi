@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.YDOnlineTaxi.mapper.FinancialStatisticsMapper">
+    <sql id="Base_Column_List">
+        order_id,
+        passenger,
+        passenger_phone,
+        creation_date,
+        date_of,
+        departure,
+        destination,
+        car_type,
+        driver_information,
+        driver_base,
+        contract_price,
+        parking_fees,
+        received_cash,
+        accounts_payable,
+        accounts_receivable,
+        profits,
+        trip_type,
+        driver_phone_number
+    </sql>
+    <sql id="selectReconciliationVo">
+        select order_id, passenger, passenger_phone, creation_date, date_of, departure, destination, car_type, driver_information, driver_base,  parking_fees, received_cash, accounts_payable, trip_type from YDOnlineTaxi.financial_statistics
+    </sql>
+    
+    <resultMap type="com.ruoyi.YDOnlineTaxi.domain.FinancialStatistics" id="FinancialStatisticsResult">
+        <result property="orderId"    column="order_id"    />
+        <result property="passenger"    column="passenger"    />
+        <result property="passengerPhone"    column="passenger_phone"    />
+        <result property="creationDate"    column="creation_date"    />
+        <result property="dateOf"    column="date_of"    />
+        <result property="departure"    column="departure"    />
+        <result property="destination"    column="destination"    />
+        <result property="carType"    column="car_type"    />
+        <result property="driverInformation"    column="driver_information"    />
+        <result property="driverBase"    column="driver_base"    />
+        <result property="contractPrice"    column="contract_price"    />
+        <result property="parkingFees"    column="parking_fees"    />
+        <result property="receivedCash"    column="received_cash"    />
+        <result property="accountsPayable"    column="accounts_payable"    />
+        <result property="accountsReceivable"    column="accounts_receivable"    />
+        <result property="profits"    column="profits"    />
+        <result property="tripType"    column="trip_type"    />
+        <result property="driverPhoneNumber"    column="driver_phone_number"    />
+    </resultMap>
+
+    <sql id="selectFinancialStatisticsVo">
+        select order_id, passenger, passenger_phone, creation_date, date_of, departure, destination, car_type, driver_information, driver_base, contract_price, parking_fees, received_cash, accounts_payable, accounts_receivable, profits, trip_type, driver_phone_number from YDOnlineTaxi.financial_statistics
+    </sql>
+
+    <select id="selectFinancialStatisticsList" parameterType="com.ruoyi.YDOnlineTaxi.domain.FinancialStatistics" resultMap="FinancialStatisticsResult">
+        <include refid="selectFinancialStatisticsVo"/>
+        <where>  
+            <if test="orderId != null  and orderId != ''"> and order_id like concat('%', #{orderId}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectFinancialStatisticsByOrderId" parameterType="String" resultMap="FinancialStatisticsResult">
+        <include refid="selectFinancialStatisticsVo"/>
+        where order_id = #{orderId}
+    </select>
+        
+    <insert id="insertFinancialStatistics" parameterType="com.ruoyi.YDOnlineTaxi.domain.FinancialStatistics">
+        insert into YDOnlineTaxi.financial_statistics
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderId != null and orderId != ''">order_id,</if>
+            <if test="passenger != null and passenger != ''">passenger,</if>
+            <if test="passengerPhone != null and passengerPhone != ''">passenger_phone,</if>
+            <if test="creationDate != null">creation_date,</if>
+            <if test="dateOf != null">date_of,</if>
+            <if test="departure != null and departure != ''">departure,</if>
+            <if test="destination != null and destination != ''">destination,</if>
+            <if test="carType != null and carType != ''">car_type,</if>
+            <if test="driverInformation != null and driverInformation != ''">driver_information,</if>
+            <if test="driverBase != null">driver_base,</if>
+            <if test="contractPrice != null">contract_price,</if>
+            <if test="parkingFees != null">parking_fees,</if>
+            <if test="receivedCash != null">received_cash,</if>
+            <if test="accountsPayable != null">accounts_payable,</if>
+            <if test="accountsReceivable != null">accounts_receivable,</if>
+            <if test="profits != null">profits,</if>
+            <if test="tripType != null and tripType != ''">trip_type,</if>
+            <if test="driverPhoneNumber != null and driverPhoneNumber != ''">driver_phone_number,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderId != null and orderId != ''">#{orderId},</if>
+            <if test="passenger != null and passenger != ''">#{passenger},</if>
+            <if test="passengerPhone != null and passengerPhone != ''">#{passengerPhone},</if>
+            <if test="creationDate != null">#{creationDate},</if>
+            <if test="dateOf != null">#{dateOf},</if>
+            <if test="departure != null and departure != ''">#{departure},</if>
+            <if test="destination != null and destination != ''">#{destination},</if>
+            <if test="carType != null and carType != ''">#{carType},</if>
+            <if test="driverInformation != null and driverInformation != ''">#{driverInformation},</if>
+            <if test="driverBase != null">#{driverBase},</if>
+            <if test="contractPrice != null">#{contractPrice},</if>
+            <if test="parkingFees != null">#{parkingFees},</if>
+            <if test="receivedCash != null">#{receivedCash},</if>
+            <if test="accountsPayable != null">#{accountsPayable},</if>
+            <if test="accountsReceivable != null">#{accountsReceivable},</if>
+            <if test="profits != null">#{profits},</if>
+            <if test="tripType != null and tripType != ''">#{tripType},</if>
+            <if test="driverPhoneNumber != null and driverPhoneNumber != ''">#{driverPhoneNumber},</if>
+         </trim>
+    </insert>
+
+    <update id="updateFinancialStatistics" parameterType="com.ruoyi.YDOnlineTaxi.domain.FinancialStatistics">
+        update YDOnlineTaxi.financial_statistics
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="passenger != null and passenger != ''">passenger = #{passenger},</if>
+            <if test="passengerPhone != null and passengerPhone != ''">passenger_phone = #{passengerPhone},</if>
+            <if test="creationDate != null">creation_date = #{creationDate},</if>
+            <if test="dateOf != null">date_of = #{dateOf},</if>
+            <if test="departure != null and departure != ''">departure = #{departure},</if>
+            <if test="destination != null and destination != ''">destination = #{destination},</if>
+            <if test="carType != null and carType != ''">car_type = #{carType},</if>
+            <if test="driverInformation != null and driverInformation != ''">driver_information = #{driverInformation},</if>
+            <if test="driverBase != null">driver_base = #{driverBase},</if>
+            <if test="contractPrice != null">contract_price = #{contractPrice},</if>
+            <if test="parkingFees != null">parking_fees = #{parkingFees},</if>
+            <if test="receivedCash != null">received_cash = #{receivedCash},</if>
+            <if test="accountsPayable != null">accounts_payable = #{accountsPayable},</if>
+            <if test="accountsReceivable != null">accounts_receivable = #{accountsReceivable},</if>
+            <if test="profits != null">profits = #{profits},</if>
+            <if test="tripType != null and tripType != ''">trip_type = #{tripType},</if>
+            <if test="driverPhoneNumber != null and driverPhoneNumber != ''">driver_phone_number = #{driverPhoneNumber},</if>
+        </trim>
+        where order_id = #{orderId}
+    </update>
+
+    <delete id="deleteFinancialStatisticsByOrderId" parameterType="String">
+        delete from YDOnlineTaxi.financial_statistics where order_id = #{orderId}
+    </delete>
+
+    <delete id="deleteFinancialStatisticsByOrderIds" parameterType="String">
+        delete from YDOnlineTaxi.financial_statistics where order_id in
+        <foreach item="orderId" collection="array" open="(" separator="," close=")">
+            #{orderId}
+        </foreach>
+    </delete>
+
+<!--auto generated by MybatisCodeHelper on 2021-11-03-->
+    <select id="selectAllByConditions" resultMap="FinancialStatisticsResult">
+        <include refid="selectReconciliationVo"/>
+        where driver_phone_number=#{driverPhoneNumber}
+        <if test="minTime != null and minTime != ''">
+            <![CDATA[and DATE_FORMAT(date_of,'%Y-%m-%d %H:%i:%s') >= DATE_FORMAT(#{minTime},'%Y-%m-%d %H:%i:%s')]]></if>
+        <if test="maxTime != null and maxTime != ''">
+            <![CDATA[and DATE_FORMAT(date_of,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{maxTime},'%Y-%m-%d]]>%H:%i:%s')</if>
+    </select>
+</mapper>

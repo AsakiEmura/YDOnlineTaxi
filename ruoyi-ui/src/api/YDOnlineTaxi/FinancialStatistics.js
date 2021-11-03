@@ -10,9 +10,9 @@ export function listFinancialStatistics(query) {
 }
 
 // 查询财务统计详细
-export function getFinancialStatistics(driverPhoneNumber) {
+export function getFinancialStatistics(orderId) {
   return request({
-    url: '/YDOnlineTaxi/FinancialStatistics/' + driverPhoneNumber,
+    url: '/YDOnlineTaxi/FinancialStatistics/' + orderId,
     method: 'get'
   })
 }
@@ -36,9 +36,9 @@ export function updateFinancialStatistics(data) {
 }
 
 // 删除财务统计
-export function delFinancialStatistics(driverPhoneNumber) {
+export function delFinancialStatistics(orderId) {
   return request({
-    url: '/YDOnlineTaxi/FinancialStatistics/' + driverPhoneNumber,
+    url: '/YDOnlineTaxi/FinancialStatistics/' + orderId,
     method: 'delete'
   })
 }
@@ -49,5 +49,13 @@ export function exportFinancialStatistics(query) {
     url: '/YDOnlineTaxi/FinancialStatistics/export',
     method: 'get',
     params: query
+  })
+}
+
+// 下载用户导入模板
+export function importTemplate() {
+  return request({
+    url: '/YDOnlineTaxi/FinancialStatistics/importTemplate',
+    method: 'get'
   })
 }
