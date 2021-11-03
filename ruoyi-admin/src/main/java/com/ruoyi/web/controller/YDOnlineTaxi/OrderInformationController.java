@@ -163,7 +163,7 @@ public class OrderInformationController extends BaseController {
     /**
      * 一键结算
      */
-    @PutMapping("/settlement")
+    @PutMapping("settlement")
     public AjaxResult settlement()
     {
         try{
@@ -178,8 +178,8 @@ public class OrderInformationController extends BaseController {
                 long tempHour = date.getTime()-orderDetails.getOrderFinishTime().getTime()/(60*60*1000);
                 if(tempHour > 24){
                     PonitsStatistics ponitsStatistics = ponitsStatisticsService.selectPonitsStatisticsByDriverPhoneNumber(orderDetails.getDriverPhoneNumber());
-                    ponitsStatistics.setTotalPoints(orderInformation.getPoints() + ponitsStatistics.getTotalPoints());
-                    ponitsStatistics.setMonthPoints(orderInformation.getPoints() + ponitsStatistics.getMonthPoints());
+                    ponitsStatistics.setTotalPoints(orderInformation.getDriverBase() + ponitsStatistics.getTotalPoints());
+                    ponitsStatistics.setMonthPoints(orderInformation.getDriverBase() + ponitsStatistics.getMonthPoints());
                     ponitsStatisticsService.updatePonitsStatistics(ponitsStatistics);
 
                     DriverInformation driverInformation =(driverInformationService.selectDriverInformationByDriverPhoneNumber(orderDetails.getDriverPhoneNumber()));

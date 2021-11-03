@@ -25,6 +25,14 @@ export function getArrival_Audit_information(orderId) {
   })
 }
 
+export function getHaveExtraNumber(orderId) {
+  return request({
+    url: '/YDOnlineTaxi/AuditOrder/getHaveExtraNumber',
+    method: 'put',
+    data: orderId
+  })
+}
+
 // 修改额外积分申请信息
 export function updateAudit_information(data) {
   return request({

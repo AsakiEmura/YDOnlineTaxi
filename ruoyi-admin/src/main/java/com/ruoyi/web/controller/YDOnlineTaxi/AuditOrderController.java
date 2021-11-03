@@ -56,6 +56,16 @@ public class AuditOrderController extends BaseController {
         return arrivalAuditInformationService.selectByPrimaryKey(orderId);
     }
 
+
+    /**
+     * 获取这个订单待审核额外积分申请个数
+     */
+    @PutMapping("/getHaveExtraNumber")
+    public List<ArrivalAuditInformation> getHaveExtraNumber(String orderId)
+    {
+        return arrivalAuditInformationService.selectByPrimaryKeyHaveExtraNumber(orderId);
+    }
+
     /**
      * 审核结果消息发送和更新
      */
@@ -66,7 +76,7 @@ public class AuditOrderController extends BaseController {
             OrderInformation orderInformation = orderInformationService.selectOrderInformationByOrderId(arrivalAuditInformation.getOrderId());
             String phoneNumber = orderDetailsService.selectByPrimaryKey(arrivalAuditInformation.getOrderId()).getDriverPhoneNumber();
             String openId = driverAccountService.selectAllByPhoneNumber(phoneNumber).getMachineId();
-            openId = RSAEncrypt.decrypt(openId);
+//            openId = RSAEncrypt.decrypt(openId);
 
             List<String> registrationIds = new ArrayList<>();
             registrationIds.add(openId);
@@ -74,15 +84,25 @@ public class AuditOrderController extends BaseController {
                 return AjaxResult.success();
             }
             else if("审核不通过".equals(arrivalAuditInformation.getExtraPointsStatus())){
+                arrivalAuditInformationService.updateByPrimaryKey(arrivalAuditInformation);
                 sendToRegistrationId(registrationIds,"额外积分申请","额外积分申请","您的额外积分申请被拒绝");
                 arrivalAuditInformationService.deleteByPrimaryKey(arrivalAuditInformation.getOrderId());
                 return AjaxResult.success("操作成功");
             }
             else if("审核通过".equals(arrivalAuditInformation.getExtraPointsStatus())){
-                orderInformation.setPoints((int) (orderInformation.getPoints() + arrivalAuditInformation.getExtraOrderPoints()));
+                List<ArrivalAuditInformation> arrivalAuditList = arrivalAuditInformationService.selectByPrimaryKeyHaveExtraNumber(arrivalAuditInformation.getOrderId());
+                for (ArrivalAuditInformation auditInformation : arrivalAuditList) {
+                    if ("停车积分".equals(auditInformation.getNotes())) {
+                        orderInformation.setParkingFees(orderInformation.getParkingFees() + auditInformation.getExtraOrderPoints());
+                    } else if ("高速积分".equals(auditInformation.getNotes())) {
+                        orderInformation.setTollFees(orderInformation.getTollFees() + auditInformation.getExtraOrderPoints());
+                    }
+                }
+                orderInformation.setDriverBase(orderInformation.getParkingFees() + orderInformation.getTollFees() + orderInformation.getPassengerPrice());
                 orderInformationService.updateOrderInformation(orderInformation);
+                arrivalAuditInformationService.updateByPrimaryKey(arrivalAuditInformation);
                 sendToRegistrationId(registrationIds,"额外积分申请","额外积分申请","您的额外积分申请已通过");
-                arrivalAuditInformationService.deleteByPrimaryKey(arrivalAuditInformation.getOrderId());
+//                arrivalAuditInformationService.deleteByPrimaryKey(arrivalAuditInformation.getOrderId());
                 return AjaxResult.success("操作成功");
             }else {
                 return AjaxResult.error();

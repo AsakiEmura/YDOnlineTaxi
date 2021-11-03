@@ -82,6 +82,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="tollFees != null "> and toll_fees = #{tollFees}</if>
             <if test="points != null "> and points = #{points}</if>
             <if test="note != null  and note != ''"> and note = #{note}</if>
+            <if test="orderStatus != null  and orderStatus != ''"> and order_status = #{orderStatus}</if>
         </where>
         order by transport_time
     </select>

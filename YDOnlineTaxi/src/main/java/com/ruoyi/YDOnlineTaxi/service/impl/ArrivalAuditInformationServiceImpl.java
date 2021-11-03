@@ -35,6 +35,11 @@ public class ArrivalAuditInformationServiceImpl implements ArrivalAuditInformati
     }
 
     @Override
+    public List<ArrivalAuditInformation> selectByPrimaryKeyHaveExtraNumber(String orderId) {
+        return arrivalAuditInformationMapper.selectByPrimaryKeyHaveExtraNumber(orderId);
+    }
+
+    @Override
     public int updateByPrimaryKeySelective(ArrivalAuditInformation record) {
         return arrivalAuditInformationMapper.updateByPrimaryKeySelective(record);
     }

@@ -117,60 +117,46 @@
         </el-select>
       </el-form-item>
       <el-form-item label="司机积分" prop="driverBase">
-        <el-input-number
+        <el-input
           v-model="queryParams.driverBase"
+          placeholder="请输入司机积分"
           oninput="value=value.replace(/^(0+)|[^\d]+/g,'')"
-          :precision="0"
-          :min="0"
-          :step="1"
-
           clearable
-
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="客户积分" prop="passengerPrice">
-        <el-input-number
+        <el-input
           v-model="queryParams.passengerPrice"
+          placeholder="请输入客户积分"
           oninput="value=value.replace(/^(0+)|[^\d]+/g,'')"
-          :precision="0"
-          :step="1"
-          :min="0"
-
           clearable
-
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="停车积分" prop="parkingFees">
-        <el-input-number
+        <el-input
           v-model="queryParams.parkingFees"
+          placeholder="请输入停车积分"
           oninput="value=value.replace(/^(0+)|[^\d]+/g,'')"
-          :precision="0"
-          :step="1"
-          :min="0"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="高速积分" prop="tollFees">
-        <el-input-number
+        <el-input
           v-model="queryParams.tollFees"
+          placeholder="请输入高速积分"
           oninput="value=value.replace(/^(0+)|[^\d]+/g,'')"
-          :precision="0"
-          :step="1"
-          :min="0"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="积分已入" prop="points">
-        <el-input-number
+        <el-input
           v-model="queryParams.points"
+          placeholder="请输入高速积分"
           oninput="value=value.replace(/^(0+)|[^\d]+/g,'')"
-          :precision="0"
-          :step="1"
-          :min="0"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -326,59 +312,6 @@
       </el-table-column>
     </el-table>
 
-    <!-- 添加或修改订单信息对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="出发地" prop="departure">
-          <el-input v-model="form.departure" placeholder="请输入出发地" />
-        </el-form-item>
-        <el-form-item label="到达地" prop="destination">
-          <el-input v-model="form.destination" placeholder="请输入到达地" />
-        </el-form-item>
-        <el-form-item label="用车时间" prop="transportTime">
-          <el-date-picker clearable
-                          v-model="form.transportTime"
-                          type="date"
-                          value-format="yyyy-MM-dd"
-                          placeholder="选择用车时间">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="需求类型" prop="requirementTypes">
-          <el-select v-model="form.requirementTypes" placeholder="请选择需求类型" clearable >
-            <el-option label="半包" value="半包" />
-            <el-option label="全包" value="全包" />
-            <el-option label="接站" value="接站" />
-            <el-option label="送站" value="送站" />
-            <el-option label="接机" value="接机" />
-            <el-option label="送机" value="送机" />
-            <el-option label="市内单程" value="市内单程" />
-            <el-option label="市内往返" value="市内往返" />
-            <el-option label="外地单程" value="外地单程" />
-            <el-option label="外地往返" value="外地往返" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="用车类型" prop="carType">
-          <span>{{form.carType}}</span>
-        </el-form-item>
-        <el-form-item label="乘客称呼" prop="passenger">
-          <span>{{form.passenger}}</span>
-        </el-form-item>
-        <el-form-item label="乘客手机" prop="passengerPhone">
-          <span>{{form.passengerPhone}}</span>
-        </el-form-item>
-        <el-form-item label="积分" prop="points">
-          <el-input v-model="form.points" placeholder="请输入积分" />
-        </el-form-item>
-        <el-form-item label="订单备注" prop="note">
-          <el-input v-model="form.note" type="textarea" placeholder="请输入内容" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
-      </div>
-    </el-dialog>
-
     <pagination
       v-show="total>0"
       :total="total"
@@ -474,7 +407,7 @@
       </div>
     </el-dialog>
 
-    <!-- 添加或修改订单信息对话框 -->
+    <!-- 指派司机 -->
     <el-dialog :title="title" :visible.sync="order_open" width="500px" append-to-body>
       <span>手 机 号 ：&ensp; </span>
       <el-select id="phoneId" v-model="phoneNumber_temp"
@@ -521,7 +454,9 @@ import {
   updateOrderInformation,
   exportOrderInformation,
   importTemplate,
-  singleStatusList, listDriverInformation, orderDriver
+  singleStatusList,
+  listDriverInformation,
+  orderDriver
 } from "@/api/YDOnlineTaxi/OrderInformation";
 import { getToken } from "@/utils/auth";
 
@@ -561,6 +496,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         orderId: null,
+        orderStatus: null,
         passengerProperty: null,
         passenger: null,
         passengerSex: null,
@@ -710,14 +646,23 @@ export default {
     reset() {
       this.form = {
         orderId: null,
-        departure: null,
-        destination: null,
-        transportTime: null,
-        requirementTypes: null,
-        carType: null,
+        passengerProperty: null,
         passenger: null,
+        passengerSex: null,
         passengerPhone: null,
-        points: null,
+        flightNumber: null,
+        creationDate: null,
+        transportTime: null,
+        departure: null,
+        intermediatePort: null,
+        destination: null,
+        carType: null,
+        driverInformation: null,
+        driverBase: undefined,
+        passengerPrice: undefined,
+        parkingFees: undefined,
+        tollFees: undefined,
+        points: undefined,
         note: null,
         orderStatus: null,
         refuseReason: null

@@ -2,11 +2,9 @@ package com.ruoyi.web.controller.YDOnlineTaxi;
 
 import com.ruoyi.YDOnlineTaxi.domain.DriverAccount;
 import com.ruoyi.YDOnlineTaxi.domain.DriverInformation;
+import com.ruoyi.YDOnlineTaxi.domain.OrderDetails;
 import com.ruoyi.YDOnlineTaxi.domain.PonitsStatistics;
-import com.ruoyi.YDOnlineTaxi.service.IDriverAccountService;
-import com.ruoyi.YDOnlineTaxi.service.IDriverInformationService;
-import com.ruoyi.YDOnlineTaxi.service.IPonitsStatisticsService;
-import com.ruoyi.YDOnlineTaxi.service.WxWithDriversService;
+import com.ruoyi.YDOnlineTaxi.service.*;
 import com.ruoyi.YDOnlineTaxi.utils.RabbitMQ.RabbitMQConfig;
 import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.constant.UserConstants;
@@ -20,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,6 +34,10 @@ public class YDOnlineTaxiWxService extends BaseController {
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
+
+    @Autowired(required = false)
+    private OrderDetailsService orderDetailsService;
+
 
     @Autowired
     private IPonitsStatisticsService ponitsStatisticsService;
@@ -276,6 +280,29 @@ public class YDOnlineTaxiWxService extends BaseController {
             return AjaxResult.error("notExist");
         } else {
             return AjaxResult.success("exist");
+        }
+    }
+
+    /**
+     * 完成时间超过24h
+     */
+    @PutMapping("/getTimeFlag")
+    public boolean getTimeFlag(String orderId)
+    {
+        try{
+            SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd hh:mm");
+            Date date = new Date();
+            df.format(date);
+
+            OrderDetails orderDetails = orderDetailsService.selectByPrimaryKey(orderId);
+            long now = date.getTime();
+            long finish = orderDetails.getOrderFinishTime().getTime();
+            long tempHour = (now-finish)/(60*60*1000);
+
+            return tempHour > 24;
+        }catch (Exception e){
+            System.out.println(e.toString());
+            return false;
         }
     }
 }

@@ -13,6 +13,8 @@ public interface ArrivalAuditInformationService{
 
     List<ArrivalAuditInformation> selectByPrimaryKey(String orderId);
 
+    List<ArrivalAuditInformation> selectByPrimaryKeyHaveExtraNumber(String orderId);
+
     int updateByPrimaryKeySelective(ArrivalAuditInformation record);
 
     int updateByPrimaryKey(ArrivalAuditInformation record);
