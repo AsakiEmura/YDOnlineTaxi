@@ -26,7 +26,7 @@
         />
       </el-form-item>
       <el-form-item label="性别" prop="passengerSex">
-        <el-select v-model="form.passengerSex" placeholder="请选择性别">
+        <el-select v-model="queryParams.passengerSex" placeholder="请选择性别">
           <el-option label="女" value="女" />
           <el-option label="男" value="男" />
         </el-select>
@@ -103,7 +103,7 @@
         />
       </el-form-item>
       <el-form-item label="备注" prop="note">
-        <el-select v-model="form.requirementTypes" placeholder="请选择需求类型">
+        <el-select v-model="queryParams.note" placeholder="请选择需求类型">
           <el-option label="半包" value="半包" />
           <el-option label="全包" value="全包" />
           <el-option label="接站" value="接站" />
@@ -344,11 +344,21 @@
           <el-form-item label="航班号" prop="flightNumber">
             <el-input v-model="form.flightNumber" placeholder="请输入航班号" />
           </el-form-item>
+        <el-form-item label="日期" prop="creationDate">
+          <el-date-picker clearable
+                          v-model="form.creationDate"
+                          format="yyyy-MM-dd"
+                          type="date"
+                          value-format="yyyy-MM-dd HH:mm"
+                          placeholder="选择出发时间">
+          </el-date-picker>
+        </el-form-item>
           <el-form-item label="出发时间" prop="transportTime">
             <el-date-picker clearable
                             v-model="form.transportTime"
-                            type="date"
-                            value-format="yyyy-MM-dd"
+                            format="yyyy-MM-dd HH:mm"
+                            type="datetime"
+                            value-format="yyyy-MM-dd HH:mm"
                             placeholder="选择出发时间">
             </el-date-picker>
           </el-form-item>

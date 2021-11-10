@@ -144,6 +144,7 @@ public class OrderInformationController extends BaseController {
             orderInformation.setOrderStatus("已派单");
             orderInformation.setExpireTime(0);
             orderInformation.setDriverPhoneNumber(phoneNumber);
+            orderInformation.setDriverInformation(driverInformation.SimpleToString());
             orderInformationService.updateOrderInformation(orderInformation);
 
             List<String> registrationIds = new ArrayList<>();

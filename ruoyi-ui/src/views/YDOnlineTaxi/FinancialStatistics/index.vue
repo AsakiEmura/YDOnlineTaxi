@@ -24,7 +24,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['FinancialStatistics:FinancialStatistics:add']"
+          v-hasPermi="['YDOnlineTaxi:FinancialStatistics:add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -35,7 +35,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['FinancialStatistics:FinancialStatistics:edit']"
+          v-hasPermi="['YDOnlineTaxi:FinancialStatistics:edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -46,7 +46,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['FinancialStatistics:FinancialStatistics:remove']"
+          v-hasPermi="['YDOnlineTaxi:FinancialStatistics:remove']"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -56,7 +56,7 @@
           icon="el-icon-upload2"
           size="mini"
           @click="handleImport"
-          v-hasPermi="['YDOnlineTaxi:OrderInformation:import']"
+          v-hasPermi="['YDOnlineTaxi:FinancialStatistics:import']"
         >导入</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -67,7 +67,7 @@
           size="mini"
           :loading="exportLoading"
           @click="handleExport"
-          v-hasPermi="['FinancialStatistics:FinancialStatistics:export']"
+          v-hasPermi="['YDOnlineTaxi:FinancialStatistics:export']"
         >导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
@@ -132,14 +132,14 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['FinancialStatistics:FinancialStatistics:edit']"
+            v-hasPermi="['YDOnlineTaxi:FinancialStatistics:edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['FinancialStatistics:FinancialStatistics:remove']"
+            v-hasPermi="['YDOnlineTaxi:FinancialStatistics:remove']"
           >删除</el-button>
         </template>
       </el-table-column>
