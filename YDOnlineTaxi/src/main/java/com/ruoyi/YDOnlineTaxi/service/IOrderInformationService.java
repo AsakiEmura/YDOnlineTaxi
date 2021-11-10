@@ -87,5 +87,7 @@ public interface IOrderInformationService
 
     List<OrderInformation> selectPersonalOrderByConditions(String driverPhoneNumber, String minTransportTime, String maxTransportTime, String likeOrderStatus1, String likeOrderStatus2, String likeOrderStatus3, String likeOrderStatus4);
 
-    List<OrderInformation> selectAllByDriverPhoneNumber(String driverPhoneNumber,String minTransportTime,String maxTransportTime);
+    List<OrderInformation> selectAllByDriverPhoneNumber(String driverPhoneNumber, String minTransportTime, String maxTransportTime);
+
+    List<String> selectOrderId();
 }

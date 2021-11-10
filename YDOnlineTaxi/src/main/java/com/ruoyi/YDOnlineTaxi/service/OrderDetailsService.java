@@ -24,6 +24,8 @@ public interface OrderDetailsService {
     List<OrderDetails> selectAllByDriverPhoneNumber(String driverPhoneNumber);
 
     List<String> selectOrderIdByDriverPhoneNumber(String driverPhoneNumber);
+
+    List<String> selectOrderId();
 }
 
 

@@ -58,4 +58,9 @@ public class OrderDetailsServiceImpl implements OrderDetailsService {
     public List<String> selectOrderIdByDriverPhoneNumber(String driverPhoneNumber) {
         return orderDetailsMapper.selectOrderIdByDriverPhoneNumber(driverPhoneNumber);
     }
+
+    @Override
+    public List<String> selectOrderId() {
+        return orderDetailsMapper.selectOrderId();
+    }
 }

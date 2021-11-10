@@ -378,9 +378,6 @@
               <el-option label="商务型" value="商务型" />
             </el-select>
           </el-form-item>
-          <el-form-item label="司机信息" prop="driverInformation">
-            <el-input v-model="form.driverInformation" placeholder="请输入司机信息" />
-          </el-form-item>
           <el-form-item label="司机积分" prop="driverBase">
             <el-input v-model="form.driverBase" placeholder="请输入司机积分" />
           </el-form-item>
@@ -392,9 +389,6 @@
           </el-form-item>
           <el-form-item label="高速积分" prop="tollFees">
             <el-input v-model="form.tollFees" placeholder="请输入高速积分" />
-          </el-form-item>
-          <el-form-item label="积分已入" prop="points">
-            <el-input v-model="form.points" placeholder="请输入积分已入" />
           </el-form-item>
           <el-form-item label="备注" prop="note">
             <el-select v-model="form.requirementTypes" placeholder="请选择需求类型">
@@ -557,9 +551,6 @@ export default {
         passengerSex: [
           { required: true, message: "性别不能为空", trigger: "blur" }
         ],
-        passengerPhone: [
-          { required: true, message: "联系方式不能为空", trigger: "blur" }
-        ],
         transportTime: [
           { required: true, message: "出发时间不能为空", trigger: "blur" }
         ],
@@ -716,19 +707,11 @@ export default {
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          if (this.form.orderId != null) {
-            updateOrderInformation(this.form).then(response => {
-              this.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addOrderInformation(this.form).then(response => {
-              this.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
-          }
+          addOrderInformation(this.form).then(response => {
+            this.msgSuccess("新增成功");
+            this.open = false;
+            this.getList();
+          });
         }
       });
     },

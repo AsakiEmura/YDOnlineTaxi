@@ -232,6 +232,10 @@ public class OrderInformationController extends BaseController {
         rabbitMQProducer.sendMsg(RabbitMQConfig.DELAY_EXCHANGE_NAME, RabbitMQConfig.DELAY_ROUTINGKEY_NAME_K, "有少量订单导入,请到程序内查看", 0);
         rabbitMQProducer.sendMsg(RabbitMQConfig.DELAY_EXCHANGE_NAME, RabbitMQConfig.DELAY_ROUTINGKEY_NAME_D, "有少量订单导入,请到程序内查看", 20 * 1000);
         rabbitMQProducer.sendMsg(RabbitMQConfig.DELAY_EXCHANGE_NAME, RabbitMQConfig.DELAY_ROUTINGKEY_NAME_G, "有少量订单导入,请到程序内查看", 40 * 1000);
+        //order details入库
+        OrderDetails orderDetails = new OrderDetails();
+        orderDetails.setOrderId(orderInformation.getOrderId());
+        orderDetailsService.insert(orderDetails);
         return toAjax(orderInformationService.insertOrderInformation(orderInformation));
     }
 

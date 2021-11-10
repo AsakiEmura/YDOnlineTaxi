@@ -2,9 +2,11 @@ package com.ruoyi.YDOnlineTaxi.service.impl;
 
 import com.ruoyi.YDOnlineTaxi.constant.enums.OrderStatus;
 import com.ruoyi.YDOnlineTaxi.domain.DriverInformation;
+import com.ruoyi.YDOnlineTaxi.domain.OrderDetails;
 import com.ruoyi.YDOnlineTaxi.domain.OrderInformation;
 import com.ruoyi.YDOnlineTaxi.mapper.OrderInformationMapper;
 import com.ruoyi.YDOnlineTaxi.service.IOrderInformationService;
+import com.ruoyi.YDOnlineTaxi.service.OrderDetailsService;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.uuid.UUID;
@@ -28,6 +30,8 @@ public class OrderInformationServiceImpl implements IOrderInformationService
 
     @Autowired(required = false)
     private OrderInformationMapper orderInformationMapper;
+
+    private OrderDetailsService orderDetailsService;
 
     /**
      * 查询订单信息
@@ -133,6 +137,10 @@ public class OrderInformationServiceImpl implements IOrderInformationService
                         order.setCreateBy(operName);
                         order.setTransportTime(order.getTransportTime());
                         order.setOrderStatus(OrderStatus.WAIT_DISPATCHED.toString());
+                        OrderDetails orderDetails = new OrderDetails();
+                        orderDetails.setOrderId(order.getOrderId());
+
+                        orderDetailsService.insert(orderDetails);
                         this.insertOrderInformation(order);
                         successNum++;
                         successMsg.append("<br/>" + successNum + "、订单信息 " + order.getOrderId() + " 导入成功");
@@ -158,6 +166,10 @@ public class OrderInformationServiceImpl implements IOrderInformationService
                     order.setCreateBy(operName);
                     order.setOrderStatus(OrderStatus.WAIT_DISPATCHED.toString());
                     order.setTransportTime(order.getTransportTime());
+                    OrderDetails orderDetails = new OrderDetails();
+                    orderDetails.setOrderId(order.getOrderId());
+
+                    orderDetailsService.insert(orderDetails);
                     this.insertOrderInformation(order);
                     successNum++;
                     successMsg.append("<br/>" + successNum + "、订单信息 " + order.getOrderId() + " 导入成功");
@@ -175,7 +187,7 @@ public class OrderInformationServiceImpl implements IOrderInformationService
         if (failureNum > 0)
         {
             failureMsg.insert(0, "很抱歉，导入失败！共 " + failureNum + " 条数据格式不正确，错误如下：");
-            throw new ServiceException(failureMsg.toString());
+            return failureMsg.toString();
         }
         else
         {
@@ -224,5 +236,10 @@ public class OrderInformationServiceImpl implements IOrderInformationService
     @Override
     public List<OrderInformation> selectAllByDriverPhoneNumber(String driverPhoneNumber,String minTransportTime,String maxTransportTime) {
         return orderInformationMapper.selectAllByDriverPhoneNumber(driverPhoneNumber,minTransportTime,maxTransportTime);
+    }
+
+    @Override
+    public List<String> selectOrderId() {
+        return orderInformationMapper.selectOrderId();
     }
 }

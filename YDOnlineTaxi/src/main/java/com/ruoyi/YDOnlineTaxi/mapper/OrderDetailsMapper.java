@@ -59,4 +59,8 @@ public interface OrderDetailsMapper {
     List<OrderDetails> selectAllByDriverPhoneNumber(@Param("driverPhoneNumber") String driverPhoneNumber);
 
     List<String> selectOrderIdByDriverPhoneNumber(@Param("driverPhoneNumber") String driverPhoneNumber);
+
+    List<String> selectOrderId();
+
+
 }
