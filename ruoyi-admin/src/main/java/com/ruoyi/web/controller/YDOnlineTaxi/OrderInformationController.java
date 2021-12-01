@@ -217,8 +217,8 @@ public class OrderInformationController extends BaseController {
     @GetMapping(value = "/{orderId}")
     public AjaxResult getInfo(@PathVariable("orderId") String orderId)
     {
-
-        return AjaxResult.success(orderInformationService.selectOrderInformationByOrderId(orderId));
+        OrderInformation orderInformation = orderInformationService.selectOrderInformationByOrderId(orderId);
+        return AjaxResult.success(orderInformation);
     }
 
     /**

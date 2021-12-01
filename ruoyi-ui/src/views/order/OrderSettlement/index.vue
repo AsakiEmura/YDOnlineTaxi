@@ -290,6 +290,9 @@
         <el-form-item label="订单完成时间" prop="transportTime">
           <span>{{arrival_form.orderFinishTime}}</span>
         </el-form-item>
+        <el-form-item label="路上用时" prop="transportTime">
+          <span>{{arrival_form.allTime}}</span>
+        </el-form-item>
         <el-form-item label="乘客称呼" prop="passenger">
           <span>{{form.departure}}</span>
         </el-form-item>
@@ -378,23 +381,19 @@
 </template>
 
 <script>
-import {
-  getOrderInformation,
-  delOrderInformation,
-  updateOrderInformation,
-  exportOrderInformation,
-  importTemplate,
-  singleStatusList, auditSettlementList, settlement, getArrival_information
-} from "@/api/YDOnlineTaxi/OrderInformation";
-import { getToken } from "@/utils/auth";
-import {
-  getArrival_Audit_information,
-  getAudit_information,
-  updateExtraOrder,
-} from "@/api/YDOnlineTaxi/audit_information";
-import {getHaveExtraNumber} from "../../../api/YDOnlineTaxi/audit_information";
+  import {
+    auditSettlementList,
+    delOrderInformation,
+    exportOrderInformation,
+    getArrival_information,
+    getOrderInformation,
+    settlement,
+    updateOrderInformation
+  } from "@/api/YDOnlineTaxi/OrderInformation";
+  import {getArrival_Audit_information, updateExtraOrder,} from "@/api/YDOnlineTaxi/audit_information";
+  import {getHaveExtraNumber} from "../../../api/YDOnlineTaxi/audit_information";
 
-export default {
+  export default {
   name: "OrderInformation",
   data() {
     return {
@@ -410,7 +409,7 @@ export default {
       multiple: true,
       currentKey:false,
       // 显示搜索条件
-      showSearch: true,
+      showSearch: false,
       // 总条数
       total: 0,
       // 订单信息表格数据
@@ -500,7 +499,7 @@ export default {
     /** 查询订单信息列表 */
     getList() {
       this.loading = true;
-      console.log(this.queryParams);
+      // console.log(this.queryParams);
       auditSettlementList(this.queryParams).then(async (response) => {
 
         this.OrderInformationList = response.rows;
@@ -554,7 +553,8 @@ export default {
         departureTime: null,
         arrivalLocation: null,
         arrivalRime: null,
-        orderFinishTime: null
+        orderFinishTime: null,
+        allTime: null
       };
       this.extra_form = {
         orderId: null,
@@ -590,18 +590,24 @@ export default {
       const orderId = row.orderId || this.ids
       getOrderInformation(orderId).then(response => {
         this.form = response.data;
-        this.form.transportTime = String(this.form.transportTime)
+        getArrival_information(orderId).then(response => {
+          this.arrival_form = response.data;
+          this.arrival_form.arrivalRime = this.arrival_form.arrivalRime.substr(0,10) + " " + this.arrival_form.arrivalRime.substr(11,5)
+          this.arrival_form.departureTime = this.arrival_form.departureTime.substr(0,10) + " " + this.arrival_form.departureTime.substr(11,5)
+          this.arrival_form.orderTookTime = this.arrival_form.orderTookTime.substr(0,10) + " " + this.arrival_form.orderTookTime.substr(11,5)
+          this.arrival_form.orderFinishTime = this.arrival_form.orderFinishTime.substr(0,10) + " " + this.arrival_form.orderFinishTime.substr(11,5)
+          this.open = true;
+          this.title = "审核订单";
+
+          //结束时间
+          let end_date = new Date(this.arrival_form.orderFinishTime.replace(/-/g,"/"));//将字符串转化为时间
+          //开始时间
+          let sta_date = new Date(response.data.transportTime.replace(/-/g,"/"));
+          let num = (end_date-sta_date)/(1000*3600);//求出两个时间的时间差，这个是天数
+          //转化为整天（小于零的话剧不用转了）
+          this.arrival_form.allTime = parseInt(num).toString() + "时";
+        })
       });
-      getArrival_information(orderId).then(response => {
-        this.arrival_form = response.data;
-        console.log(this.arrival_form.arrivalRime)
-        this.arrival_form.arrivalRime = this.arrival_form.arrivalRime.substr(0,10) + " " + this.arrival_form.arrivalRime.substr(11,5)
-        this.arrival_form.departureTime = this.arrival_form.departureTime.substr(0,10) + " " + this.arrival_form.departureTime.substr(11,5)
-        this.arrival_form.orderTookTime = this.arrival_form.orderTookTime.substr(0,10) + " " + this.arrival_form.orderTookTime.substr(11,5)
-        this.arrival_form.orderFinishTime = this.arrival_form.orderFinishTime.substr(0,10) + " " + this.arrival_form.orderFinishTime.substr(11,5)
-        this.open = true;
-        this.title = "审核订单";
-      })
     },
     /** 判断是否存在额外积分*/
     async haveExtraPoints(orderId){
@@ -618,9 +624,6 @@ export default {
     getExtraPointData(row) {
       this.reset();
       const orderId = row.orderId || this.ids
-      // getAudit_information(orderId).then(response => {
-      //   console.log(response)
-      // })
       getArrival_Audit_information(orderId).then(response => {
         if(response.length === 0){
           this.$confirm('该订单已不存在额外积分申请', "提示", {

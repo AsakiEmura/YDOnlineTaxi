@@ -258,6 +258,14 @@
           <el-button
             size="mini"
             type="text"
+            icon="el-icon-edit"
+            @click="handleUpdate(scope.row)"
+            :disabled="scope.row.flag"
+            v-hasPermi="['YDOnlineTaxi:OrderInformation:edit']"
+          >查看详情</el-button>
+          <el-button
+            size="mini"
+            type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['YDOnlineTaxi:OrderInformation:remove']"
@@ -274,41 +282,68 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改订单信息对话框 -->
+    <!-- 查看详情 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="form" :model="form" label-width="120px">
+        <el-form-item label="司机手机号" prop="departure">
+          <span>{{arrival_form.driverPhoneNumber}}</span>
+        </el-form-item>
+        <el-form-item label="司机姓名" prop="departure">
+          <span>{{arrival_form.driverName}}</span>
+        </el-form-item>
+        <el-form-item label="司机车牌号" prop="departure">
+          <span>{{arrival_form.driverCarId}}</span>
+        </el-form-item>
+        <el-form-item label="司机出发地" prop="departure">
+          <span>{{arrival_form.departureLocation}}</span>
+        </el-form-item>
+        <el-form-item label="实际接客地点" prop="departure">
+          <span>{{arrival_form.arrivalLocation}}</span>
+        </el-form-item>
+        <el-form-item label="去接客出发时间" prop="departure">
+          <span>{{arrival_form.departureTime}}</span>
+        </el-form-item>
+        <el-form-item label="接客后出发时间" prop="departure">
+          <span>{{arrival_form.arrivalRime}}</span>
+        </el-form-item>
+        <el-form-item label="订单完成时间" prop="transportTime">
+          <span>{{arrival_form.orderFinishTime}}</span>
+        </el-form-item>
+        <el-form-item label="路上用时" prop="transportTime">
+          <span>{{arrival_form.allTime}}</span>
+        </el-form-item>
+        <el-form-item label="乘客称呼" prop="passenger">
+          <span>{{form.departure}}</span>
+        </el-form-item>
+        <el-form-item label="乘客手机号" prop="passengerPhone">
+          <span>{{form.passengerPhone}}</span>
+        </el-form-item>
+        <el-form-item label="乘客出发地" prop="departure">
+          <span>{{form.departure}}</span>
+        </el-form-item>
+        <el-form-item label="乘客到达地" prop="destination">
+          <span>{{form.destination}}</span>
+        </el-form-item>
         <el-form-item label="用车时间" prop="transportTime">
-          <el-date-picker clearable size="small"
-            v-model="form.transportTime"
-            type="date"
-            value-format="yyyy-MM-dd"
-            placeholder="选择用车时间">
-          </el-date-picker>
+          <span>{{form.transportTime}}</span>
         </el-form-item>
         <el-form-item label="需求类型" prop="requirementTypes">
-          <el-select v-model="form.requirementTypes" placeholder="请输入需求类型">
-            <el-option label="接站" value="接站" />
-            <el-option label="送站" value="送站" />
-            <el-option label="市内单程" value="市内单程" />
-            <el-option label="市内往返" value="市内往返" />
-            <el-option label="半包" value="半包" />
-            <el-option label="全包" value="全包" />
-            <el-option label="外地单程" value="外地单程" />
-            <el-option label="外地往返" value="外地往返" />
-          </el-select>
+          <span>{{form.requirementTypes}}</span>
         </el-form-item>
         <el-form-item label="用车类型" prop="carType">
-          <el-select v-model="form.carType" placeholder="请选择用车类型">
-            <el-option label="舒适型" value="舒适型" />
-            <el-option label="豪华型" value="豪华型" />
-            <el-option label="商务型" value="商务型" />
-          </el-select>
+          <span>{{form.carType}}</span>
         </el-form-item>
-        <el-form-item label="积分" prop="points">
-          <el-input v-model="form.points" placeholder="请输入积分" />
+        <el-form-item label="订单积分" prop="driverBase">
+          <span>{{form.points}}</span>
         </el-form-item>
         <el-form-item label="订单备注" prop="note">
-          <el-input v-model="form.note" type="textarea" placeholder="请输入内容" />
+          <span>{{form.note}}</span>
+        </el-form-item>
+        <el-form-item label="审核结果" prop="refuseReason">
+          <span>{{form.orderStatus}}</span>
+        </el-form-item>
+        <el-form-item label="拒绝理由" prop="note" v-if="form.orderStatus==='未通过'">
+          <span>{{form.refuseReason}}</span>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -331,6 +366,7 @@ import {
   singleStatusList
 } from "@/api/YDOnlineTaxi/OrderInformation";
 import { getToken } from "@/utils/auth";
+import {getArrival_information} from "../../../api/YDOnlineTaxi/OrderInformation";
 
 export default {
   name: "OrderInformation",
@@ -346,8 +382,9 @@ export default {
       single: true,
       // 非多个禁用
       multiple: true,
+      currentKey:false,
       // 显示搜索条件
-      showSearch: true,
+      showSearch: false,
       // 总条数
       total: 0,
       // 订单信息表格数据
@@ -398,6 +435,8 @@ export default {
       },
       // 表单参数
       form: {},
+      //订单详细情况表单
+      arrival_form: {},
       // 表单校验
       rules: {
         orderId: [
@@ -483,6 +522,19 @@ export default {
         orderStatus: null,
         refuseReason: null
       };
+      this.arrival_form = {
+        orderId: null,
+        driverName: null,
+        driverPhoneNumber: null,
+        driverCarId: null,
+        departureLocation: null,
+        departureTime: null,
+        arrivalLocation: null,
+        arrivalRime: null,
+        orderFinishTime: null,
+        allTime: null
+      };
+      this.resetForm("arrival_form");
       this.resetForm("form");
     },
     /** 搜索按钮操作 */
@@ -513,29 +565,30 @@ export default {
       const orderId = row.orderId || this.ids
       getOrderInformation(orderId).then(response => {
         this.form = response.data;
-        this.open = true;
-        this.title = "修改订单信息";
+        let goTime = response.data.transportTime;
+
+        getArrival_information(orderId).then(response => {
+          this.arrival_form = response.data;
+          this.arrival_form.arrivalRime = this.arrival_form.arrivalRime.substr(0,10) + " " + this.arrival_form.arrivalRime.substr(11,5)
+          this.arrival_form.departureTime = this.arrival_form.departureTime.substr(0,10) + " " + this.arrival_form.departureTime.substr(11,5)
+          this.arrival_form.orderTookTime = this.arrival_form.orderTookTime.substr(0,10) + " " + this.arrival_form.orderTookTime.substr(11,5)
+          this.arrival_form.orderFinishTime = this.arrival_form.orderFinishTime.substr(0,10) + " " + this.arrival_form.orderFinishTime.substr(11,5)
+          this.open = true;
+          this.title = "审核订单";
+
+          //结束时间
+          let end_date = new Date(this.arrival_form.orderFinishTime.replace(/-/g,"/"));//将字符串转化为时间
+          //开始时间
+          let sta_date = new Date(goTime.replace(/-/g,"/"));
+          let num = (end_date-sta_date)/(1000*3600);//求出两个时间的时间差，这个是天数
+          //转化为整天（小于零的话剧不用转了）
+          this.arrival_form.allTime = parseInt(num).toString() + "时";
+        })
       });
     },
     /** 提交按钮 */
     submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.orderId != null) {
-            updateOrderInformation(this.form).then(response => {
-              this.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addOrderInformation(this.form).then(response => {
-              this.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
-          }
-        }
-      });
+      this.cancel()
     },
     /** 删除按钮操作 */
     handleDelete(row) {

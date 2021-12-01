@@ -207,7 +207,7 @@
     <el-table v-loading="loading" :data="OrderInformationList" @selection-change="handleSelectionChange" :key="currentKey">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="预约号" align="center" prop="orderId" />
-      <el-table-column label="订单状态" align="center" prop="orderStatus" />
+      <el-table-column label="司机状态" align="center" prop="orderStatus" />
       <el-table-column label="客户属性" align="center" prop="passengerProperty" />
       <el-table-column label="客户姓名" align="center" prop="passenger" />
       <el-table-column label="性别" align="center" prop="passengerSex" />
@@ -394,7 +394,7 @@ export default {
       // 非多个禁用
       multiple: true,
       // 显示搜索条件
-      showSearch: true,
+      showSearch: false,
       // 总条数
       total: 0,
       // 订单信息表格数据
@@ -479,7 +479,18 @@ export default {
     getList() {
       this.loading = true;
       receivedListList(this.queryParams).then(response => {
-        this.OrderInformationList = response.rows;
+        console.log(response.rows)
+        let data = [];
+        for(let i=0;i<response.rows.length;i++){
+          data[i] = response.rows[i];
+          if(response.rows[i].orderStatus === "已派单"){
+            data[i].orderStatus = "司机未出发";
+          }
+          else if(response.rows[i].orderStatus === "司机已到达"){
+            data[i].orderStatus = "司机进行中";
+          }
+        }
+        this.OrderInformationList = data;
         this.total = response.total;
         this.loading = false;
       });
