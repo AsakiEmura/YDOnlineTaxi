@@ -60,10 +60,10 @@ public class SysLoginService
     {
         boolean captchaOnOff = configService.selectCaptchaOnOff();
         // 验证码开关
-        if (captchaOnOff)
-        {
-            validateCaptcha(username, code, uuid);
-        }
+//        if (captchaOnOff)
+//        {
+//            validateCaptcha(username, code, uuid);
+//        }
         // 用户验证
         Authentication authentication = null;
         try

@@ -271,7 +271,7 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改订单信息对话框 -->
+    <!-- 指定司机 -->
     <el-dialog :title="title" :visible.sync="order_open" width="500px" append-to-body>
       <span>手 机 号 ：&ensp; </span>
       <el-select id="phoneId" v-model="phoneNumber_temp"
@@ -317,10 +317,11 @@
           <el-input v-model="form.destination" placeholder="请输入到达地" />
         </el-form-item>
         <el-form-item label="用车时间" prop="transportTime">
-          <el-date-picker clearable size="small"
+          <el-date-picker clearable
                           v-model="form.transportTime"
-                          type="date"
-                          value-format="yyyy-MM-dd"
+                          format="yyyy-MM-dd HH:mm"
+                          type="datetime"
+                          value-format="yyyy-MM-dd HH:mm"
                           placeholder="选择用车时间">
           </el-date-picker>
         </el-form-item>

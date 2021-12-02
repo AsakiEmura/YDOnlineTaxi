@@ -45,6 +45,9 @@ public class AuditExtraOrderController extends BaseController
     @Autowired
     private OrderDetailsService orderDetailsService;
 
+    @Autowired
+    private ArrivalAuditInformationService arrivalAuditInformationService;
+
     /**
      * 查询额外积分申请列表
      */
@@ -108,29 +111,40 @@ public class AuditExtraOrderController extends BaseController
     @PreAuthorize("@ss.hasPermi('YDOnlineTaxi:audit_information:edit')")
     @Log(title = " 到达审核信息 ", businessType = BusinessType.UPDATE)
     @PutMapping("/audit")
-    public AjaxResult edit(@RequestBody AuditExtraOrder auditExtraOrder)
+    public AjaxResult audit(ArrivalAuditInformation arrivalAuditInformation)
     {
         try {
-            OrderInformation orderInformation = orderInformationService.selectOrderInformationByOrderId(auditExtraOrder.getOrderId());
-            String phoneNumber = orderDetailsService.selectByPrimaryKey(auditExtraOrder.getOrderId()).getDriverPhoneNumber();
+            OrderInformation orderInformation = orderInformationService.selectOrderInformationByOrderId(arrivalAuditInformation.getOrderId());
+            String phoneNumber = orderDetailsService.selectByPrimaryKey(arrivalAuditInformation.getOrderId()).getDriverPhoneNumber();
             String openId = driverAccountService.selectAllByPhoneNumber(phoneNumber).getMachineId();
-            openId = RSAEncrypt.decrypt(openId);
+//            openId = RSAEncrypt.decrypt(openId);
 
             List<String> registrationIds = new ArrayList<>();
             registrationIds.add(openId);
-            if("待审核".equals(auditExtraOrder.getExtraPointsStatus())){
+            if("待审核".equals(arrivalAuditInformation.getExtraPointsStatus())){
                 return AjaxResult.success();
             }
-            else if("审核不通过".equals(auditExtraOrder.getExtraPointsStatus())){
+            else if("审核不通过".equals(arrivalAuditInformation.getExtraPointsStatus())){
+                arrivalAuditInformationService.updateByPrimaryKey(arrivalAuditInformation);
                 sendToRegistrationId(registrationIds,"额外积分申请","额外积分申请","您的额外积分申请被拒绝");
-                return toAjax(auditExtraOrderService.updateAuditExtraOrder(auditExtraOrder));
+                arrivalAuditInformationService.deleteByPrimaryKey(arrivalAuditInformation.getOrderId());
+                return AjaxResult.success("操作成功");
             }
-            else if("审核通过".equals(auditExtraOrder.getExtraPointsStatus())){
-                orderInformation.setPoints((int) (orderInformation.getPoints() + auditExtraOrder.getExtraOrderPoints()));
+            else if("审核通过".equals(arrivalAuditInformation.getExtraPointsStatus())){
+                List<ArrivalAuditInformation> arrivalAuditList = arrivalAuditInformationService.selectByPrimaryKeyHaveExtraNumber(arrivalAuditInformation.getOrderId());
+                for (ArrivalAuditInformation auditInformation : arrivalAuditList) {
+                    if ("停车积分".equals(auditInformation.getNotes())) {
+                        orderInformation.setParkingFees(orderInformation.getParkingFees() + auditInformation.getExtraOrderPoints());
+                    } else if ("高速积分".equals(auditInformation.getNotes())) {
+                        orderInformation.setTollFees(orderInformation.getTollFees() + auditInformation.getExtraOrderPoints());
+                    }
+                }
+                orderInformation.setDriverBase(orderInformation.getParkingFees() + orderInformation.getTollFees() + orderInformation.getPassengerPrice());
                 orderInformationService.updateOrderInformation(orderInformation);
-
+                arrivalAuditInformationService.updateByPrimaryKey(arrivalAuditInformation);
                 sendToRegistrationId(registrationIds,"额外积分申请","额外积分申请","您的额外积分申请已通过");
-                return toAjax(auditExtraOrderService.updateAuditExtraOrder(auditExtraOrder));
+//                arrivalAuditInformationService.deleteByPrimaryKey(arrivalAuditInformation.getOrderId());
+                return AjaxResult.success("操作成功");
             }else {
                 return AjaxResult.error();
             }

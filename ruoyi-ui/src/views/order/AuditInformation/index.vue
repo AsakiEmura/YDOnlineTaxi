@@ -176,12 +176,6 @@
             :limit="1"
           />
         </el-form-item>
-<!--        <el-form-item label="证明照片2">-->
-<!--          <imageUpload-->
-<!--            v-model="form.proofPhoto2"-->
-<!--            :limit="1"-->
-<!--          />-->
-<!--        </el-form-item>-->
         <el-form-item label="审核结果" prop="refuseReason">
           <el-select v-model="form.extraPointsStatus" placeholder="请指定申请结果" clearable size="small">
             <el-option label="审核通过" value="审核通过" />
@@ -201,7 +195,7 @@
 </template>
 
 <script>
-import { listAudit_information, getAudit_information, delAudit_information, addAudit_information, updateAudit_information, exportAudit_information } from "@/api/YDOnlineTaxi/audit_information";
+import { listAudit_information, getAudit_information, delAudit_information, updateAudit_information, exportAudit_information } from "@/api/YDOnlineTaxi/audit_information";
 export default {
   name: "Audit_information",
   data() {

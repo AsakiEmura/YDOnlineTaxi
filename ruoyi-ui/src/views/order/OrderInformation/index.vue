@@ -263,11 +263,11 @@
       <el-table-column label="性别" align="center" prop="passengerSex" />
       <el-table-column label="联系方式" align="center" prop="passengerPhone" />
       <el-table-column label="航班号" align="center" prop="flightNumber" />
-      <el-table-column label="日期" align="center" prop="creationDate" width="180">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.creationDate, '{y}-{m}-{d} {h}:{i}') }}</span>
-        </template>
-      </el-table-column>
+<!--      <el-table-column label="日期" align="center" prop="creationDate" width="180">-->
+<!--        <template slot-scope="scope">-->
+<!--          <span>{{ parseTime(scope.row.creationDate, '{y}-{m}-{d} {h}:{i}') }}</span>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <el-table-column label="出发时间" align="center" prop="transportTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.transportTime, '{y}-{m}-{d} {h}:{i}') }}</span>
@@ -344,15 +344,15 @@
           <el-form-item label="航班号" prop="flightNumber">
             <el-input v-model="form.flightNumber" placeholder="请输入航班号" />
           </el-form-item>
-        <el-form-item label="日期" prop="creationDate">
-          <el-date-picker clearable
-                          v-model="form.creationDate"
-                          format="yyyy-MM-dd"
-                          type="date"
-                          value-format="yyyy-MM-dd HH:mm"
-                          placeholder="选择出发时间">
-          </el-date-picker>
-        </el-form-item>
+<!--        <el-form-item label="创建日期" prop="creationDate">-->
+<!--          <el-date-picker clearable-->
+<!--                          v-model="form.transportTime"-->
+<!--                          format="yyyy-MM-dd HH:mm"-->
+<!--                          type="datetime"-->
+<!--                          value-format="yyyy-MM-dd HH:mm"-->
+<!--                          placeholder="选择时间">-->
+<!--          </el-date-picker>-->
+<!--        </el-form-item>-->
           <el-form-item label="出发时间" prop="transportTime">
             <el-date-picker clearable
                             v-model="form.transportTime"

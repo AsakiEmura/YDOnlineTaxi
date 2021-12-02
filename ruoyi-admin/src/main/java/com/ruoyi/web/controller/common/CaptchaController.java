@@ -69,12 +69,12 @@ public class CaptchaController
             String capText = captchaProducerMath.createText();
             capStr = capText.substring(0, capText.lastIndexOf("@"));
             code = capText.substring(capText.lastIndexOf("@") + 1);
-            image = captchaProducerMath.createImage(capStr);
+            image = captchaProducerMath.createImage(code);
         }
         else if ("char".equals(captchaType))
         {
             capStr = code = captchaProducer.createText();
-            image = captchaProducer.createImage(capStr);
+            image = captchaProducer.createImage(code);
         }
 
         redisCache.setCacheObject(verifyKey, code, Constants.CAPTCHA_EXPIRATION, TimeUnit.MINUTES);

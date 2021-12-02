@@ -179,6 +179,8 @@ public class OrderInformationController extends BaseController {
                 long tempHour = date.getTime()-orderDetails.getOrderFinishTime().getTime()/(60*60*1000);
                 if(tempHour > 24){
                     PonitsStatistics ponitsStatistics = ponitsStatisticsService.selectPonitsStatisticsByDriverPhoneNumber(orderDetails.getDriverPhoneNumber());
+                    orderInformation.setDriverBase(orderInformation.getParkingFees() + orderInformation.getTollFees() + orderInformation.getPassengerPrice());
+                    orderInformationService.updateOrderInformation(orderInformation);
                     ponitsStatistics.setTotalPoints(orderInformation.getDriverBase() + ponitsStatistics.getTotalPoints());
                     ponitsStatistics.setMonthPoints(orderInformation.getDriverBase() + ponitsStatistics.getMonthPoints());
                     ponitsStatisticsService.updatePonitsStatistics(ponitsStatistics);
