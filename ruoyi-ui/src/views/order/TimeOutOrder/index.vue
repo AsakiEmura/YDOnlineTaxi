@@ -302,40 +302,86 @@
     <!-- 添加或修改订单信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="用车时间" prop="transportTime">
-          <el-date-picker
-            clearable
-            v-model="form.transportTime"
-            format="yyyy-MM-dd HH:mm"
-            type="datetime"
-            value-format="yyyy-MM-dd HH:mm"
-            placeholder="选择用车时间">
-          </el-date-picker>
+        <el-form-item label="预约号" prop="orderId" :disabled = "modify">
+          <el-input v-model="form.orderId" placeholder="请输入预约号" />
         </el-form-item>
-        <el-form-item label="需求类型" prop="requirementTypes">
-          <el-select v-model="form.requirementTypes" placeholder="请输入需求类型">
-            <el-option label="接站" value="接站" />
-            <el-option label="送站" value="送站" />
-            <el-option label="市内单程" value="市内单程" />
-            <el-option label="市内往返" value="市内往返" />
-            <el-option label="半包" value="半包" />
-            <el-option label="全包" value="全包" />
-            <el-option label="外地单程" value="外地单程" />
-            <el-option label="外地往返" value="外地往返" />
+        <el-form-item label="客户属性" prop="passengerProperty">
+          <el-input v-model="form.passengerProperty" placeholder="请输入客户属性" />
+        </el-form-item>
+        <el-form-item label="客户姓名" prop="passenger">
+          <el-input v-model="form.passenger" placeholder="请输入客户姓名" />
+        </el-form-item>
+        <el-form-item label="性别">
+          <el-select v-model="form.passengerSex" placeholder="请选择性别">
+            <el-option label="女" value="女" />
+            <el-option label="男" value="男" />
           </el-select>
         </el-form-item>
-        <el-form-item label="用车类型" prop="carType">
+        <el-form-item label="联系方式" prop="passengerPhone">
+          <el-input v-model="form.passengerPhone" placeholder="请输入联系方式" />
+        </el-form-item>
+        <el-form-item label="航班号" prop="flightNumber">
+          <el-input v-model="form.flightNumber" placeholder="请输入航班号" />
+        </el-form-item>
+        <!--        <el-form-item label="创建日期" prop="creationDate">-->
+        <!--          <el-date-picker clearable-->
+        <!--                          v-model="form.transportTime"-->
+        <!--                          format="yyyy-MM-dd HH:mm"-->
+        <!--                          type="datetime"-->
+        <!--                          value-format="yyyy-MM-dd HH:mm"-->
+        <!--                          placeholder="选择时间">-->
+        <!--          </el-date-picker>-->
+        <!--        </el-form-item>-->
+        <el-form-item label="出发时间" prop="transportTime">
+          <el-date-picker clearable
+                          v-model="form.transportTime"
+                          format="yyyy-MM-dd HH:mm"
+                          type="datetime"
+                          value-format="yyyy-MM-dd HH:mm"
+                          placeholder="选择出发时间">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="上车地点" prop="departure">
+          <el-input v-model="form.departure" placeholder="请输入上车地点" />
+        </el-form-item>
+        <el-form-item label="中途停靠" prop="intermediatePort">
+          <el-input v-model="form.intermediatePort" placeholder="请输入中途停靠" />
+        </el-form-item>
+        <el-form-item label="下车地点" prop="destination">
+          <el-input v-model="form.destination" placeholder="请输入下车地点" />
+        </el-form-item>
+        <el-form-item label="车型" prop="carType">
           <el-select v-model="form.carType" placeholder="请选择用车类型">
             <el-option label="舒适型" value="舒适型" />
             <el-option label="豪华型" value="豪华型" />
             <el-option label="商务型" value="商务型" />
           </el-select>
         </el-form-item>
-        <el-form-item label="积分" prop="points">
-          <el-input v-model="form.points" placeholder="请输入积分" />
+        <el-form-item label="司机积分" prop="driverBase">
+          <el-input v-model="form.driverBase" placeholder="请输入司机积分" />
         </el-form-item>
-        <el-form-item label="订单备注" prop="note">
-          <el-input v-model="form.note" type="textarea" placeholder="请输入内容" />
+        <el-form-item label="客户积分">
+          <el-input v-model="form.passengerPrice" placeholder="请输入客户积分" />
+        </el-form-item>
+        <el-form-item label="停车积分" prop="parkingFees">
+          <el-input v-model="form.parkingFees" placeholder="请输入停车积分" />
+        </el-form-item>
+        <el-form-item label="高速积分" prop="tollFees">
+          <el-input v-model="form.tollFees" placeholder="请输入高速积分" />
+        </el-form-item>
+        <el-form-item label="备注" prop="note">
+          <el-select v-model="form.requirementTypes" placeholder="请选择需求类型">
+            <el-option label="半包" value="半包" />
+            <el-option label="全包" value="全包" />
+            <el-option label="接站" value="接站" />
+            <el-option label="送站" value="送站" />
+            <el-option label="接机" value="接机" />
+            <el-option label="送机" value="送机" />
+            <el-option label="市内单程" value="市内单程" />
+            <el-option label="市内往返" value="市内往返" />
+            <el-option label="外地单程" value="外地单程" />
+            <el-option label="外地往返" value="外地往返" />
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -499,9 +545,9 @@ export default {
         driverBase: [
           { required: true, message: "司机积分不能为空", trigger: "blur" }
         ],
-        passengerPrice: [
-          { required: true, message: "客户积分不能为空", trigger: "blur" }
-        ],
+        // passengerPrice: [
+        //   { required: true, message: "客户积分不能为空", trigger: "blur" }
+        // ],
         orderStatus: [
           { required: true, message: "状态不能为空", trigger: "blur" }
         ],

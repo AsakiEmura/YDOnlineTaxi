@@ -344,15 +344,6 @@
           <el-form-item label="航班号" prop="flightNumber">
             <el-input v-model="form.flightNumber" placeholder="请输入航班号" />
           </el-form-item>
-<!--        <el-form-item label="创建日期" prop="creationDate">-->
-<!--          <el-date-picker clearable-->
-<!--                          v-model="form.transportTime"-->
-<!--                          format="yyyy-MM-dd HH:mm"-->
-<!--                          type="datetime"-->
-<!--                          value-format="yyyy-MM-dd HH:mm"-->
-<!--                          placeholder="选择时间">-->
-<!--          </el-date-picker>-->
-<!--        </el-form-item>-->
           <el-form-item label="出发时间" prop="transportTime">
             <el-date-picker clearable
                             v-model="form.transportTime"
@@ -381,7 +372,7 @@
           <el-form-item label="司机积分" prop="driverBase">
             <el-input v-model="form.driverBase" placeholder="请输入司机积分" />
           </el-form-item>
-          <el-form-item label="客户积分" prop="passengerPrice">
+          <el-form-item label="客户积分">
             <el-input v-model="form.passengerPrice" placeholder="请输入客户积分" />
           </el-form-item>
           <el-form-item label="停车积分" prop="parkingFees">
@@ -566,9 +557,9 @@ export default {
         driverBase: [
           { required: true, message: "司机积分不能为空", trigger: "blur" }
         ],
-        passengerPrice: [
-          { required: true, message: "客户积分不能为空", trigger: "blur" }
-        ],
+        // passengerPrice: [
+        //   { required: true, message: "客户积分不能为空", trigger: "blur" }
+        // ],
         orderStatus: [
           { required: true, message: "状态不能为空", trigger: "blur" }
         ],

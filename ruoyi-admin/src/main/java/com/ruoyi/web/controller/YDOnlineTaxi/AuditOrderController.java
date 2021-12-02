@@ -94,11 +94,12 @@ public class AuditOrderController extends BaseController {
                 for (ArrivalAuditInformation auditInformation : arrivalAuditList) {
                     if ("停车积分".equals(auditInformation.getNotes())) {
                         orderInformation.setParkingFees(orderInformation.getParkingFees() + auditInformation.getExtraOrderPoints());
+                        orderInformation.setDriverBase(orderInformation.getParkingFees() + orderInformation.getDriverBase());
                     } else if ("高速积分".equals(auditInformation.getNotes())) {
                         orderInformation.setTollFees(orderInformation.getTollFees() + auditInformation.getExtraOrderPoints());
+                        orderInformation.setDriverBase(orderInformation.getTollFees() + orderInformation.getDriverBase());
                     }
                 }
-                orderInformation.setDriverBase(orderInformation.getParkingFees() + orderInformation.getTollFees() + orderInformation.getPassengerPrice());
                 orderInformationService.updateOrderInformation(orderInformation);
                 arrivalAuditInformationService.updateByPrimaryKey(arrivalAuditInformation);
                 sendToRegistrationId(registrationIds,"额外积分申请","额外积分申请","您的额外积分申请已通过");
@@ -131,20 +132,6 @@ public class AuditOrderController extends BaseController {
 
             OrderInformation orderInformation = orderInformationService.selectOrderInformationByOrderId(orderId);
             arrivalAuditInformationService.insert(arrivalAuditInformation);
-
-            if ("已结算".equals(orderInformation.getOrderStatus())) {
-                OrderDetails orderDetails = orderDetailsService.selectByPrimaryKey(orderInformation.getOrderId());
-                PonitsStatistics ponitsStatistics = ponitsStatisticsService.selectPonitsStatisticsByDriverPhoneNumber(orderDetails.getDriverPhoneNumber());
-                DriverInformation driverInformation = driverInformationService.selectDriverInformationByDriverPhoneNumber(orderDetails.getDriverPhoneNumber());
-
-                driverInformation.setDriverCompleteOrderNumber(driverInformation.getDriverCompleteOrderNumber()- 1);
-                driverInformation.setDriverCompleteOrderNumberMonthly(driverInformation.getDriverCompleteOrderNumberMonthly() - 1);
-                driverInformationService.updateDriverInformation(driverInformation);
-
-                ponitsStatistics.setTotalPoints(ponitsStatistics.getTotalPoints() - orderInformation.getPoints());
-                ponitsStatistics.setMonthPoints(ponitsStatistics.getMonthPoints() - orderInformation.getPoints());
-                ponitsStatisticsService.updatePonitsStatistics(ponitsStatistics);
-            }
             orderInformation.setOrderStatus("待审核");
             orderInformationService.updateOrderInformation(orderInformation);
 

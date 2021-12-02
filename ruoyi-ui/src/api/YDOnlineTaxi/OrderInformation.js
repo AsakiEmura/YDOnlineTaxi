@@ -45,6 +45,14 @@ export function receivedListList(query) {
   })
 }
 
+export function oneSettlement(data) {
+  return request({
+    url: '/YDOnlineTaxi/OrderInformation/oneSettlement',
+    method: 'put',
+    data: data
+  })
+}
+
 export function settlement() {
   return request({
     url: '/YDOnlineTaxi/OrderInformation/settlement',

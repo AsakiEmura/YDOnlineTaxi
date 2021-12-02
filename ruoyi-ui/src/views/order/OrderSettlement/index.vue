@@ -212,11 +212,6 @@
       <el-table-column label="性别" align="center" prop="passengerSex" />
       <el-table-column label="联系方式" align="center" prop="passengerPhone" />
       <el-table-column label="航班号" align="center" prop="flightNumber" />
-      <el-table-column label="日期" align="center" prop="creationDate" width="180">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.creationDate, '{y}-{m}-{d} {h}:{i}') }}</span>
-        </template>
-      </el-table-column>
       <el-table-column label="出发时间" align="center" prop="transportTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.transportTime, '{y}-{m}-{d} {h}:{i}') }}</span>
@@ -244,6 +239,15 @@
             v-hasPermi="['YDOnlineTaxi:OrderInformation:edit']"
             v-if="scope.row.orderStatus === '待审核' || scope.row.orderStatus === '未通过'"
           >订单审核</el-button>
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-edit"
+            @click="submitForm2(scope.row)"
+            :disabled="scope.row.flag"
+            v-hasPermi="['YDOnlineTaxi:OrderInformation:edit']"
+            v-if="scope.row.orderStatus === '未结算'"
+          >结算</el-button>
           <el-button
             size="mini"
             type="text"
@@ -314,8 +318,17 @@
         <el-form-item label="用车类型" prop="carType">
           <span>{{form.carType}}</span>
         </el-form-item>
-        <el-form-item label="订单积分" prop="driverBase">
-          <span>{{form.points}}</span>
+        <el-form-item label="司机积分">
+          <span>{{form.driverBase}}</span>
+        </el-form-item>
+        <el-form-item label="客户积分">
+          <span>{{form.passengerPrice}}</span>
+        </el-form-item>
+        <el-form-item label="停车积分">
+          <span>{{form.parkingFees}}</span>
+        </el-form-item>
+        <el-form-item label="高速积分">
+          <span>{{form.tollFees}}</span>
         </el-form-item>
         <el-form-item label="订单备注" prop="note">
           <span>{{form.note}}</span>
@@ -392,6 +405,7 @@
   } from "@/api/YDOnlineTaxi/OrderInformation";
   import {getArrival_Audit_information, updateExtraOrder,} from "@/api/YDOnlineTaxi/audit_information";
   import {getHaveExtraNumber} from "../../../api/YDOnlineTaxi/audit_information";
+  import {oneSettlement} from "../../../api/YDOnlineTaxi/OrderInformation";
 
   export default {
   name: "OrderInformation",
@@ -542,7 +556,7 @@
         points: undefined,
         note: null,
         orderStatus: null,
-        refuseReason: null
+        refuseReason: null,
       };
       this.arrival_form = {
         orderId: null,
@@ -590,6 +604,7 @@
       const orderId = row.orderId || this.ids
       getOrderInformation(orderId).then(response => {
         this.form = response.data;
+        let goTime = response.data.transportTime;
         getArrival_information(orderId).then(response => {
           this.arrival_form = response.data;
           this.arrival_form.arrivalRime = this.arrival_form.arrivalRime.substr(0,10) + " " + this.arrival_form.arrivalRime.substr(11,5)
@@ -602,7 +617,7 @@
           //结束时间
           let end_date = new Date(this.arrival_form.orderFinishTime.replace(/-/g,"/"));//将字符串转化为时间
           //开始时间
-          let sta_date = new Date(response.data.transportTime.replace(/-/g,"/"));
+          let sta_date = new Date(goTime.replace(/-/g,"/"));
           let num = (end_date-sta_date)/(1000*3600);//求出两个时间的时间差，这个是天数
           //转化为整天（小于零的话剧不用转了）
           this.arrival_form.allTime = parseInt(num).toString() + "时";
@@ -667,6 +682,19 @@
             this.getList();
           });
         }
+      });
+    },
+    /** 结算按钮 */
+    submitForm2(row) {
+      this.reset();
+      const orderId = row.orderId || this.ids
+      getOrderInformation(orderId).then(response => {
+        this.form = response.data;
+        oneSettlement(this.form).then(response => {
+          this.msgSuccess("结算成功");
+          this.open = false;
+          this.getList();
+        });
       });
     },
     /** 提交额外积分审核结果按钮 */

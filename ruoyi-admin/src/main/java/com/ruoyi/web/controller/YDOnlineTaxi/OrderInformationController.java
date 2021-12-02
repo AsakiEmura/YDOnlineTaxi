@@ -162,6 +162,48 @@ public class OrderInformationController extends BaseController {
     }
 
     /**
+     * 单个结算或者重新结算
+     */
+    @PutMapping("/oneSettlement")
+    public AjaxResult oneSettlement(@RequestBody OrderInformation orderInformation){
+        try{
+            SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd hh:mm");
+            Date date = new Date();
+            df.format(date);
+
+            OrderDetails orderDetails = orderDetailsService.selectByPrimaryKey(orderInformation.getOrderId());
+            long tempHour = date.getTime()-orderDetails.getOrderFinishTime().getTime()/(60*60*1000);
+            if(tempHour > 24){
+                DriverInformation driverInformation = driverInformationService.selectDriverInformationByDriverPhoneNumber(orderDetails.getDriverPhoneNumber());
+                PonitsStatistics ponitsStatistics = ponitsStatisticsService.selectPonitsStatisticsByDriverPhoneNumber(orderDetails.getDriverPhoneNumber());
+                OrderInformation oldOrderInformation = orderInformationService.selectOrderInformationByOrderId(orderInformation.getOrderId());
+
+                if ("已结算".equals(oldOrderInformation.getOrderStatus())) {
+                    driverInformation.setDriverCompleteOrderNumber(driverInformation.getDriverCompleteOrderNumber()- 1);
+                    driverInformation.setDriverCompleteOrderNumberMonthly(driverInformation.getDriverCompleteOrderNumberMonthly() - 1);
+
+                    ponitsStatistics.setTotalPoints(ponitsStatistics.getTotalPoints() - oldOrderInformation.getDriverBase());
+                    ponitsStatistics.setMonthPoints(ponitsStatistics.getMonthPoints() - oldOrderInformation.getDriverBase());
+                }
+                ponitsStatistics.setTotalPoints(orderInformation.getDriverBase() + ponitsStatistics.getTotalPoints());
+                ponitsStatistics.setMonthPoints(orderInformation.getDriverBase() + ponitsStatistics.getMonthPoints());
+                ponitsStatisticsService.updatePonitsStatistics(ponitsStatistics);
+
+                driverInformation.setDriverCompleteOrderNumber(driverInformation.getDriverCompleteOrderNumber() + 1);
+                driverInformation.setDriverCompleteOrderNumberMonthly(driverInformation.getDriverCompleteOrderNumberMonthly() + 1);
+                driverInformationService.updateDriverInformation(driverInformation);
+
+                orderInformation.setOrderStatus("已结算");
+                orderInformationService.updateOrderInformation(orderInformation);
+                return AjaxResult.success("结算成功");
+            }
+            return  AjaxResult.error("不足24小时");
+        }catch (Exception e){
+            return AjaxResult.error(e.toString());
+        }
+    }
+
+    /**
      * 一键结算
      */
     @PutMapping("settlement")
@@ -178,14 +220,21 @@ public class OrderInformationController extends BaseController {
                 OrderDetails orderDetails = orderDetailsService.selectByPrimaryKey(orderId);
                 long tempHour = date.getTime()-orderDetails.getOrderFinishTime().getTime()/(60*60*1000);
                 if(tempHour > 24){
+                    DriverInformation driverInformation = driverInformationService.selectDriverInformationByDriverPhoneNumber(orderDetails.getDriverPhoneNumber());
                     PonitsStatistics ponitsStatistics = ponitsStatisticsService.selectPonitsStatisticsByDriverPhoneNumber(orderDetails.getDriverPhoneNumber());
-                    orderInformation.setDriverBase(orderInformation.getParkingFees() + orderInformation.getTollFees() + orderInformation.getPassengerPrice());
-                    orderInformationService.updateOrderInformation(orderInformation);
+                    OrderInformation oldOrderInformation = orderInformationService.selectOrderInformationByOrderId(orderInformation.getOrderId());
+
+                    if ("已结算".equals(oldOrderInformation.getOrderStatus())) {
+                        driverInformation.setDriverCompleteOrderNumber(driverInformation.getDriverCompleteOrderNumber()- 1);
+                        driverInformation.setDriverCompleteOrderNumberMonthly(driverInformation.getDriverCompleteOrderNumberMonthly() - 1);
+
+                        ponitsStatistics.setTotalPoints(ponitsStatistics.getTotalPoints() - oldOrderInformation.getDriverBase());
+                        ponitsStatistics.setMonthPoints(ponitsStatistics.getMonthPoints() - oldOrderInformation.getDriverBase());
+                    }
                     ponitsStatistics.setTotalPoints(orderInformation.getDriverBase() + ponitsStatistics.getTotalPoints());
                     ponitsStatistics.setMonthPoints(orderInformation.getDriverBase() + ponitsStatistics.getMonthPoints());
                     ponitsStatisticsService.updatePonitsStatistics(ponitsStatistics);
 
-                    DriverInformation driverInformation =(driverInformationService.selectDriverInformationByDriverPhoneNumber(orderDetails.getDriverPhoneNumber()));
                     driverInformation.setDriverCompleteOrderNumber(driverInformation.getDriverCompleteOrderNumber() + 1);
                     driverInformation.setDriverCompleteOrderNumberMonthly(driverInformation.getDriverCompleteOrderNumberMonthly() + 1);
                     driverInformationService.updateDriverInformation(driverInformation);
@@ -194,7 +243,7 @@ public class OrderInformationController extends BaseController {
                     orderInformationService.updateOrderInformation(orderInformation);
                 }
             }
-            return AjaxResult.success();
+            return AjaxResult.success("结算成功");
         }catch (Exception e){
             return AjaxResult.error(e.toString());
         }
