@@ -54,8 +54,8 @@ public class AuditExtraOrder extends BaseEntity
     private String proofPhoto2;
 
     /** 用车时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    @Excel(name = "用车时间", width = 30, dateFormat = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @Excel(name = "用车时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm")
     private Date transportTime;
 
     /** 拒绝理由 */

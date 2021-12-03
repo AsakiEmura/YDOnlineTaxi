@@ -30,8 +30,8 @@ public class DriverFeedback extends BaseEntity
     private String feedback;
 
     /** 时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    @Excel(name = "时间", width = 30, dateFormat = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @Excel(name = "时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm")
     private Date time;
 
     /** 消息id */

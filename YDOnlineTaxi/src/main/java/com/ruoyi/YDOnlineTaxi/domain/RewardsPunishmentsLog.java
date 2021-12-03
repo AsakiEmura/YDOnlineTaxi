@@ -43,8 +43,8 @@ public class RewardsPunishmentsLog extends BaseEntity {
     /**
      * 操作时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    @Excel(name = "操作时间", width = 30, dateFormat = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @Excel(name = "操作时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm")
     private Date operatingTime;
 
     /**

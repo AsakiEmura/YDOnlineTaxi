@@ -465,6 +465,7 @@ export default {
       phoneNumber_temp: null,
       order_open: false,
       options: [],
+      isChange: false,
       // 遮罩层
       loading: true,
       // 导出遮罩层
@@ -681,12 +682,14 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
+      this.isChange = false;
       this.title = "添加订单信息";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.modify = true;
       this.reset();
+      this.isChange = true;
       const orderId = row.orderId || this.ids
       getOrderInformation(orderId).then(response => {
         this.form = response.data;
@@ -698,11 +701,19 @@ export default {
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          addOrderInformation(this.form).then(response => {
-            this.msgSuccess("新增成功");
-            this.open = false;
-            this.getList();
-          });
+          if(this.isChange){
+            updateOrderInformation(this.form).then(response => {
+              this.msgSuccess("修改成功");
+              this.open = false;
+              this.getList();
+            });
+          }else {
+            addOrderInformation(this.form).then(response => {
+              this.msgSuccess("新增成功");
+              this.open = false;
+              this.getList();
+            });
+          }
         }
       });
     },

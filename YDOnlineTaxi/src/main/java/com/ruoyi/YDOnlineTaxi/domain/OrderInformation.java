@@ -42,13 +42,13 @@ public class OrderInformation extends BaseEntity
     private String flightNumber;
 
     /** 日期 */
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm")
-    @Excel(name = "日期", width = 30, dateFormat = "yyyy/MM/dd hh:mm")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @Excel(name = "日期", width = 30, dateFormat = "yyyy-MM-dd HH:mm")
     private Date creationDate;
 
     /** 出发时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm")
-    @Excel(name = "出发时间", width = 30, dateFormat = "yyyy/MM/dd hh:mm")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @Excel(name = "出发时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm")
     private Date transportTime;
 
     /** 上车地点 */

@@ -237,7 +237,7 @@
             icon="el-icon-edit"
             @click="orderDriver(scope.row)"
             v-hasPermi="['YDOnlineTaxi:OrderInformation:edit']"
-            v-if="scope.row.orderStatus === '已派单' || scope.row.orderStatus === '未出发' || scope.row.orderStatus === '待派单' || scope.row.orderStatus === '已超时'"
+            v-if="scope.row.orderStatus === '已派单' || scope.row.orderStatus === '司机未出发'"
           >指定司机</el-button>
           <el-button
             size="mini"
