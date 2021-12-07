@@ -290,7 +290,7 @@ public class YDOnlineTaxiWxService extends BaseController {
     public boolean getTimeFlag(String orderId)
     {
         try{
-            SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd hh:mm");
+            SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm");
             Date date = new Date();
             df.format(date);
 

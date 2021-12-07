@@ -1,5 +1,6 @@
 package com.ruoyi.YDOnlineTaxi.domain;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -30,7 +31,7 @@ public class AuditExtraOrder extends BaseEntity
 
     /** 额外积分 */
     @Excel(name = "额外积分")
-    private Long extraOrderPoints;
+    private BigDecimal extraOrderPoints;
 
     /** 备注
  */
@@ -93,12 +94,12 @@ public class AuditExtraOrder extends BaseEntity
     {
         return destination;
     }
-    public void setExtraOrderPoints(Long extraOrderPoints) 
+    public void setExtraOrderPoints(BigDecimal extraOrderPoints)
     {
         this.extraOrderPoints = extraOrderPoints;
     }
 
-    public Long getExtraOrderPoints() 
+    public BigDecimal getExtraOrderPoints()
     {
         return extraOrderPoints;
     }

@@ -35,7 +35,7 @@ public class YDOnlineTaxiOrder {
                     return AjaxResult.error("notQualified");
                 }
                 else{
-                    orderUtils.changeOrderStatus(orderInformation.getOrderId(),driverInformation.getDriverName(),driverInformation.getDriverPhoneNumber(),driverInformation.getDriverCarId(), date,orderInformation.getPoints());
+                    orderUtils.changeOrderStatus(orderInformation.getOrderId(),driverInformation.getDriverName(),driverInformation.getDriverPhoneNumber(),driverInformation.getDriverCarId(), date, orderInformation.getPoints());
                     orderInformation.setOrderStatus("已接单");
                     orderInformationService.insertOrderInformation(orderInformation);
                     return AjaxResult.success("success");
@@ -45,7 +45,7 @@ public class YDOnlineTaxiOrder {
                     return AjaxResult.error("notQualified");
                 }
                 else{
-                    orderUtils.changeOrderStatus(orderInformation.getOrderId(),driverInformation.getDriverName(),driverInformation.getDriverPhoneNumber(),driverInformation.getDriverCarId(), date,orderInformation.getPoints());
+                    orderUtils.changeOrderStatus(orderInformation.getOrderId(),driverInformation.getDriverName(),driverInformation.getDriverPhoneNumber(),driverInformation.getDriverCarId(), date, orderInformation.getPoints());
                     orderInformation.setOrderStatus("已接单");
                     orderInformationService.insertOrderInformation(orderInformation);
                     return AjaxResult.success("success");

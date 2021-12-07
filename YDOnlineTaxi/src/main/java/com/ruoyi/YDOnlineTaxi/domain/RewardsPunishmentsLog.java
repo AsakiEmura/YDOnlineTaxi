@@ -6,6 +6,7 @@ import com.ruoyi.common.core.domain.BaseEntity;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -32,7 +33,7 @@ public class RewardsPunishmentsLog extends BaseEntity {
      * 积分
      */
     @Excel(name = "奖惩积分")
-    private String points;
+    private BigDecimal points;
 
     /**
      * 奖惩原因
@@ -93,11 +94,11 @@ public class RewardsPunishmentsLog extends BaseEntity {
         return operatingPeople;
     }
 
-    public String getPoints() {
+    public BigDecimal getPoints() {
         return points;
     }
 
-    public void setPoints(String points) {
+    public void setPoints(BigDecimal points) {
         this.points = points;
     }
 

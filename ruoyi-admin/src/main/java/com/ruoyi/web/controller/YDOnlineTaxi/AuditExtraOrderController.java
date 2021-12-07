@@ -134,11 +134,11 @@ public class AuditExtraOrderController extends BaseController
                 List<ArrivalAuditInformation> arrivalAuditList = arrivalAuditInformationService.selectByPrimaryKeyHaveExtraNumber(arrivalAuditInformation.getOrderId());
                 for (ArrivalAuditInformation auditInformation : arrivalAuditList) {
                     if ("停车积分".equals(auditInformation.getNotes())) {
-                        orderInformation.setParkingFees(orderInformation.getParkingFees() + auditInformation.getExtraOrderPoints());
-                        orderInformation.setDriverBase(orderInformation.getParkingFees() + orderInformation.getDriverBase());
+                        orderInformation.setParkingFees(orderInformation.getParkingFees().add(auditInformation.getExtraOrderPoints()));
+                        orderInformation.setDriverBase(orderInformation.getParkingFees().add(orderInformation.getDriverBase()));
                     } else if ("高速积分".equals(auditInformation.getNotes())) {
-                        orderInformation.setTollFees(orderInformation.getTollFees() + auditInformation.getExtraOrderPoints());
-                        orderInformation.setDriverBase(orderInformation.getTollFees() + orderInformation.getDriverBase());
+                        orderInformation.setTollFees(orderInformation.getTollFees().add(auditInformation.getExtraOrderPoints()));
+                        orderInformation.setDriverBase(orderInformation.getTollFees().add(orderInformation.getDriverBase()));
                     }
                 }
                 orderInformationService.updateOrderInformation(orderInformation);

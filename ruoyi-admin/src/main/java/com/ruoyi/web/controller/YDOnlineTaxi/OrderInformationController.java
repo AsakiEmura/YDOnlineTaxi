@@ -134,7 +134,7 @@ public class OrderInformationController extends BaseController {
             orderDetails.setDriverName(driverInformation.getDriverName());
             orderDetails.setDriverPhoneNumber(driverInformation.getDriverPhoneNumber());
             orderDetails.setDriverCarId(driverInformation.getDriverCarId());
-            SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd hh:mm");
+            SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm");
             Date date = new Date();
             df.format(date);
             orderDetails.setOrderTookTime(date);
@@ -167,7 +167,7 @@ public class OrderInformationController extends BaseController {
     @PutMapping("/oneSettlement")
     public AjaxResult oneSettlement(@RequestBody OrderInformation orderInformation){
         try{
-            SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd hh:mm");
+            SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm");
             Date date = new Date();
             df.format(date);
 
@@ -182,11 +182,11 @@ public class OrderInformationController extends BaseController {
                     driverInformation.setDriverCompleteOrderNumber(driverInformation.getDriverCompleteOrderNumber()- 1);
                     driverInformation.setDriverCompleteOrderNumberMonthly(driverInformation.getDriverCompleteOrderNumberMonthly() - 1);
 
-                    ponitsStatistics.setTotalPoints(ponitsStatistics.getTotalPoints() - oldOrderInformation.getDriverBase());
-                    ponitsStatistics.setMonthPoints(ponitsStatistics.getMonthPoints() - oldOrderInformation.getDriverBase());
+                    ponitsStatistics.setTotalPoints(ponitsStatistics.getTotalPoints().subtract(oldOrderInformation.getDriverBase()));
+                    ponitsStatistics.setMonthPoints(ponitsStatistics.getMonthPoints().subtract(oldOrderInformation.getDriverBase()));
                 }
-                ponitsStatistics.setTotalPoints(orderInformation.getDriverBase() + ponitsStatistics.getTotalPoints());
-                ponitsStatistics.setMonthPoints(orderInformation.getDriverBase() + ponitsStatistics.getMonthPoints());
+                ponitsStatistics.setTotalPoints(orderInformation.getDriverBase().add(ponitsStatistics.getTotalPoints()));
+                ponitsStatistics.setMonthPoints(orderInformation.getDriverBase().add(ponitsStatistics.getMonthPoints()));
                 ponitsStatisticsService.updatePonitsStatistics(ponitsStatistics);
 
                 driverInformation.setDriverCompleteOrderNumber(driverInformation.getDriverCompleteOrderNumber() + 1);
@@ -211,7 +211,7 @@ public class OrderInformationController extends BaseController {
     {
         try{
             List<OrderInformation> list = orderInformationService.selectOrderByStatus("未结算");
-            SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd hh:mm");
+            SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm");
             Date date = new Date();
             df.format(date);
             for(int i=0; i<list.size(); i++){
@@ -228,11 +228,11 @@ public class OrderInformationController extends BaseController {
                         driverInformation.setDriverCompleteOrderNumber(driverInformation.getDriverCompleteOrderNumber()- 1);
                         driverInformation.setDriverCompleteOrderNumberMonthly(driverInformation.getDriverCompleteOrderNumberMonthly() - 1);
 
-                        ponitsStatistics.setTotalPoints(ponitsStatistics.getTotalPoints() - oldOrderInformation.getDriverBase());
-                        ponitsStatistics.setMonthPoints(ponitsStatistics.getMonthPoints() - oldOrderInformation.getDriverBase());
+                        ponitsStatistics.setTotalPoints(ponitsStatistics.getTotalPoints().subtract(oldOrderInformation.getDriverBase()));
+                        ponitsStatistics.setMonthPoints(ponitsStatistics.getMonthPoints().subtract(oldOrderInformation.getDriverBase()));
                     }
-                    ponitsStatistics.setTotalPoints(orderInformation.getDriverBase() + ponitsStatistics.getTotalPoints());
-                    ponitsStatistics.setMonthPoints(orderInformation.getDriverBase() + ponitsStatistics.getMonthPoints());
+                    ponitsStatistics.setTotalPoints(orderInformation.getDriverBase().add(ponitsStatistics.getTotalPoints()));
+                    ponitsStatistics.setMonthPoints(orderInformation.getDriverBase().add(ponitsStatistics.getMonthPoints()));
                     ponitsStatisticsService.updatePonitsStatistics(ponitsStatistics);
 
                     driverInformation.setDriverCompleteOrderNumber(driverInformation.getDriverCompleteOrderNumber() + 1);

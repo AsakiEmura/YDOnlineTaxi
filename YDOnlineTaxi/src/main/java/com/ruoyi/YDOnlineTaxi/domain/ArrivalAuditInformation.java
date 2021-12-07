@@ -1,5 +1,7 @@
 package com.ruoyi.YDOnlineTaxi.domain;
 
+import java.math.BigDecimal;
+
 /**
     * 到达审核信息
     */
@@ -12,7 +14,7 @@ public class ArrivalAuditInformation {
     /**
     * 额外订单积分
     */
-    private Integer extraOrderPoints;
+    private BigDecimal extraOrderPoints;
 
     /**
     * 证明照片1
@@ -47,11 +49,11 @@ public class ArrivalAuditInformation {
         this.orderId = orderId;
     }
 
-    public Integer getExtraOrderPoints() {
+    public BigDecimal getExtraOrderPoints() {
         return extraOrderPoints;
     }
 
-    public void setExtraOrderPoints(Integer extraOrderPoints) {
+    public void setExtraOrderPoints(BigDecimal extraOrderPoints) {
         this.extraOrderPoints = extraOrderPoints;
     }
 

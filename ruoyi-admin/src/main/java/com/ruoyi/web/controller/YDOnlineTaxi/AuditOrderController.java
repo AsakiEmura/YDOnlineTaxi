@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -93,11 +94,11 @@ public class AuditOrderController extends BaseController {
                 List<ArrivalAuditInformation> arrivalAuditList = arrivalAuditInformationService.selectByPrimaryKeyHaveExtraNumber(arrivalAuditInformation.getOrderId());
                 for (ArrivalAuditInformation auditInformation : arrivalAuditList) {
                     if ("停车积分".equals(auditInformation.getNotes())) {
-                        orderInformation.setParkingFees(orderInformation.getParkingFees() + auditInformation.getExtraOrderPoints());
-                        orderInformation.setDriverBase(orderInformation.getParkingFees() + orderInformation.getDriverBase());
+                        orderInformation.setParkingFees(orderInformation.getParkingFees().add(auditInformation.getExtraOrderPoints()));
+                        orderInformation.setDriverBase(orderInformation.getParkingFees().add(orderInformation.getDriverBase()));
                     } else if ("高速积分".equals(auditInformation.getNotes())) {
-                        orderInformation.setTollFees(orderInformation.getTollFees() + auditInformation.getExtraOrderPoints());
-                        orderInformation.setDriverBase(orderInformation.getTollFees() + orderInformation.getDriverBase());
+                        orderInformation.setTollFees(orderInformation.getTollFees().add(auditInformation.getExtraOrderPoints()));
+                        orderInformation.setDriverBase(orderInformation.getTollFees().add(orderInformation.getDriverBase()));
                     }
                 }
                 orderInformationService.updateOrderInformation(orderInformation);
@@ -114,7 +115,7 @@ public class AuditOrderController extends BaseController {
     }
 
     @PostMapping("/UploadEvidence")
-    public AjaxResult UploadEvidence(String orderId, int extraPoints, MultipartFile photoOne, String reason) throws IOException {
+    public AjaxResult UploadEvidence(String orderId, BigDecimal extraPoints, MultipartFile photoOne, String reason) throws IOException {
         try
         {
             ArrivalAuditInformation arrivalAuditInformation = new ArrivalAuditInformation();

@@ -1,5 +1,6 @@
 package com.ruoyi.YDOnlineTaxi.domain;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -73,23 +74,23 @@ public class OrderInformation extends BaseEntity
 
     /** 司机积分 */
     @Excel(name = "司机积分")
-    private Integer driverBase;
+    private BigDecimal driverBase;
 
     /** 客户积分 */
     @Excel(name = "客户积分")
-    private Integer passengerPrice;
+    private BigDecimal passengerPrice;
 
     /** 停车积分 */
     @Excel(name = "停车积分")
-    private Integer parkingFees;
+    private BigDecimal parkingFees;
 
     /** 高速积分 */
     @Excel(name = "高速积分")
-    private Integer tollFees;
+    private BigDecimal tollFees;
 
     /** 积分已入 */
     @Excel(name = "积分已入")
-    private Integer points;
+    private BigDecimal points;
 
     /** 订单备注 */
     @Excel(name = "备注")
@@ -171,12 +172,12 @@ public class OrderInformation extends BaseEntity
     {
         return passengerPhone;
     }
-    public void setPoints(Integer points)
+    public void setPoints(BigDecimal points)
     {
         this.points = points;
     }
 
-    public Integer getPoints()
+    public BigDecimal getPoints()
     {
         return points;
     }
@@ -272,35 +273,35 @@ public class OrderInformation extends BaseEntity
         this.driverInformation = driverInformation;
     }
 
-    public Integer getDriverBase() {
+    public BigDecimal getDriverBase() {
         return driverBase;
     }
 
-    public void setDriverBase(Integer driverBase) {
+    public void setDriverBase(BigDecimal driverBase) {
         this.driverBase = driverBase;
     }
 
-    public Integer getPassengerPrice() {
+    public BigDecimal getPassengerPrice() {
         return passengerPrice;
     }
 
-    public void setPassengerPrice(Integer passengerPrice) {
+    public void setPassengerPrice(BigDecimal passengerPrice) {
         this.passengerPrice = passengerPrice;
     }
 
-    public Integer getParkingFees() {
+    public BigDecimal getParkingFees() {
         return parkingFees;
     }
 
-    public void setParkingFees(Integer parkingFees) {
+    public void setParkingFees(BigDecimal parkingFees) {
         this.parkingFees = parkingFees;
     }
 
-    public Integer getTollFees() {
+    public BigDecimal getTollFees() {
         return tollFees;
     }
 
-    public void setTollFees(Integer tollFee) {
+    public void setTollFees(BigDecimal tollFee) {
         this.tollFees = tollFee;
     }
 

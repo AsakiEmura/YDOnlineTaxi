@@ -5,6 +5,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 
+import java.math.BigDecimal;
+
 /**
  * 积分统计对象 ponits_statistics
  * 
@@ -25,31 +27,31 @@ public class PonitsStatistics extends BaseEntity
 
     /** 未支付 */
     @Excel(name = "未支付")
-    private Long notPaid;
+    private BigDecimal notPaid;
 
     /** 已支付 */
     @Excel(name = "已支付")
-    private Long paid;
+    private BigDecimal paid;
 
     /** 未结算 */
     @Excel(name = "未结算")
-    private Long noSettlement;
+    private BigDecimal noSettlement;
 
     /** 已结算 */
     @Excel(name = "已结算")
-    private Long settlemented;
+    private BigDecimal settlemented;
 
     /** 月积分 */
     @Excel(name = "月积分")
-    private Long monthPoints;
+    private BigDecimal monthPoints;
 
     /** 总积分 */
     @Excel(name = "总积分")
-    private Long totalPoints;
+    private BigDecimal totalPoints;
 
     /** 奖惩积分 */
     @Excel(name = "奖惩积分")
-    private Long rewardsPunishmentPoints;
+    private BigDecimal rewardsPunishmentPoints;
 
     public void setDriverName(String driverName) 
     {
@@ -69,66 +71,66 @@ public class PonitsStatistics extends BaseEntity
     {
         return driverPhoneNumber;
     }
-    public void setNotPaid(Long notPaid) 
+    public void setNotPaid(BigDecimal notPaid)
     {
         this.notPaid = notPaid;
     }
 
-    public Long getNotPaid() 
+    public BigDecimal getNotPaid()
     {
         return notPaid;
     }
-    public void setPaid(Long paid) 
+    public void setPaid(BigDecimal paid)
     {
         this.paid = paid;
     }
 
-    public Long getPaid() 
+    public BigDecimal getPaid()
     {
         return paid;
     }
-    public void setNoSettlement(Long noSettlement) 
+    public void setNoSettlement(BigDecimal noSettlement)
     {
         this.noSettlement = noSettlement;
     }
 
-    public Long getNoSettlement() 
+    public BigDecimal getNoSettlement()
     {
         return noSettlement;
     }
-    public void setSettlemented(Long settlemented) 
+    public void setSettlemented(BigDecimal settlemented)
     {
         this.settlemented = settlemented;
     }
 
-    public Long getSettlemented() 
+    public BigDecimal getSettlemented()
     {
         return settlemented;
     }
-    public void setMonthPoints(Long monthPoints) 
+    public void setMonthPoints(BigDecimal monthPoints)
     {
         this.monthPoints = monthPoints;
     }
 
-    public Long getMonthPoints() 
+    public BigDecimal getMonthPoints()
     {
         return monthPoints;
     }
-    public void setTotalPoints(Long totalPoints) 
+    public void setTotalPoints(BigDecimal totalPoints)
     {
         this.totalPoints = totalPoints;
     }
 
-    public Long getTotalPoints() 
+    public BigDecimal getTotalPoints()
     {
         return totalPoints;
     }
-    public void setRewardsPunishmentPoints(Long rewardsPunishmentPoints) 
+    public void setRewardsPunishmentPoints(BigDecimal rewardsPunishmentPoints)
     {
         this.rewardsPunishmentPoints = rewardsPunishmentPoints;
     }
 
-    public Long getRewardsPunishmentPoints() 
+    public BigDecimal getRewardsPunishmentPoints()
     {
         return rewardsPunishmentPoints;
     }
